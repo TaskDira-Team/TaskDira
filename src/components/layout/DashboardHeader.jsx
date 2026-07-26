@@ -9,7 +9,6 @@ import {
   Shield,
   Star,
   ListTodo,
-  Globe,
 } from 'lucide-react';
 import UserAvatar from '../gamification/UserAvatar';
 import MobileNavDrawer from './MobileNavDrawer';
@@ -106,8 +105,7 @@ export default function DashboardHeader({
                 title={t('langSwitchTo')}
                 aria-label={t('langSwitchTo')}
               >
-                <Globe className="h-4 w-4 shrink-0" />
-                <span>{lang === 'he' ? 'EN' : 'HE'}</span>
+                {lang === 'he' ? '🌐 EN' : '🌐 HE'}
               </button>
 
               <button
@@ -192,8 +190,7 @@ export default function DashboardHeader({
                 title={t('langSwitchTo')}
                 aria-label={t('langSwitchTo')}
               >
-                <Globe className="h-3.5 w-3.5 me-1" />
-                {lang === 'he' ? 'EN' : 'HE'}
+                {lang === 'he' ? '🌐 EN' : '🌐 HE'}
               </button>
               <button
                 type="button"

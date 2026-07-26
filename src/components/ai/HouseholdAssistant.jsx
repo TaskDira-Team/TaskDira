@@ -6,13 +6,6 @@ import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import { useI18n } from '../../context/I18nContext';
 
-const QUICK = [
-  { label: 'תוסיף לקניות', text: 'תוסיף לקניות: חלב, לחם, גבינה עד יום חמישי' },
-  { label: 'סיימתי לשטוף כלים', text: 'סיימתי לשטוף כלים' },
-  { label: 'מה הניקוד של הבית?', text: 'מה הניקוד של הבית?' },
-  { label: 'מתי ניקוי סלון?', text: 'מתי המשימה של ניקוי סלון?' },
-];
-
 const MUTATING = new Set([
   'created',
   'completed',
@@ -26,20 +19,30 @@ const MUTATING = new Set([
 export default function HouseholdAssistant() {
   const { syncUser } = useAuth();
   const { refreshData, addToast } = useApp();
-  const { t } = useI18n();
+  const { t, dir } = useI18n();
   const [open, setOpen] = useState(false);
   const [input, setInput] = useState('');
   const [busy, setBusy] = useState(false);
   const [pendingCreate, setPendingCreate] = useState(null);
   const [pendingDelete, setPendingDelete] = useState(null);
-  const [messages, setMessages] = useState([
-    {
-      id: 'welcome',
-      role: 'bot',
-      text: 'שלום! אני מחובר למשימות ולנקודות של הבית בזמן אמת 🤖\nנסו: תוסיף משימה / סיימתי… / מה הניקוד של הבית?',
-    },
-  ]);
+  const [messages, setMessages] = useState([]);
   const bottomRef = useRef(null);
+
+  const quick = [
+    { label: t('assistant.q1'), text: t('assistant.q1text') },
+    { label: t('assistant.q2'), text: t('assistant.q2text') },
+    { label: t('assistant.q3'), text: t('assistant.q3text') },
+    { label: t('assistant.q4'), text: t('assistant.q4text') },
+  ];
+
+  useEffect(() => {
+    setMessages((prev) => {
+      if (prev.length === 0 || (prev.length === 1 && prev[0].id === 'welcome')) {
+        return [{ id: 'welcome', role: 'bot', text: t('assistant.welcome') }];
+      }
+      return prev.map((m) => (m.id === 'welcome' ? { ...m, text: t('assistant.welcome') } : m));
+    });
+  }, [t]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -97,7 +100,7 @@ export default function HouseholdAssistant() {
     } catch (err) {
       setMessages((prev) => [
         ...prev,
-        { id: `e-${Date.now()}`, role: 'bot', text: err.message || 'משהו השתבש, נסו שוב.' },
+        { id: `e-${Date.now()}`, role: 'bot', text: err.message || t('assistant.error') },
       ]);
     } finally {
       setBusy(false);
@@ -105,10 +108,10 @@ export default function HouseholdAssistant() {
   };
 
   const placeholder = pendingDelete
-    ? 'הזינו PIN (דמו: 1234)…'
+    ? t('assistant.pinPh')
     : pendingCreate
-      ? 'למי לשייך? Ofek / Refael / Amit / פתוחה…'
-      : 'כתבו פקודה…';
+      ? t('assistant.assignPh')
+      : t('assistant.cmdPh');
 
   return (
     <div className="pointer-events-none fixed inset-0 z-40 overflow-x-hidden max-w-full">
@@ -148,7 +151,7 @@ export default function HouseholdAssistant() {
               exit={{ opacity: 0, y: 16, scale: 0.96 }}
               transition={{ type: 'spring', damping: 24, stiffness: 320 }}
               className="pointer-events-auto absolute bottom-4 left-4 z-50 flex flex-col w-[min(100vw-2rem,22rem)] max-w-[calc(100vw-2rem)] h-[min(70vh,28rem)] max-h-[calc(100dvh-2rem)] rounded-2xl border border-slate-200 bg-white shadow-2xl shadow-slate-900/20 overflow-x-hidden overflow-y-hidden"
-              dir="rtl"
+              dir={dir}
               onClick={(e) => e.stopPropagation()}
             >
               <div className="flex items-center justify-between gap-2 px-4 py-3 bg-slate-900 text-white shrink-0 min-w-0">
@@ -158,10 +161,10 @@ export default function HouseholdAssistant() {
                     <p className="text-sm font-semibold truncate">{t('assistantTitle')} 🤖</p>
                     <p className="text-[10px] text-slate-300 truncate">
                       {pendingDelete
-                        ? 'ממתין ל־PIN'
+                        ? t('assistant.waitPin')
                         : pendingCreate
-                          ? 'ממתין לשיוך'
-                          : 'משימות חיות · API'}
+                          ? t('assistant.waitAssign')
+                          : t('assistant.live')}
                     </p>
                   </div>
                 </div>
@@ -195,7 +198,7 @@ export default function HouseholdAssistant() {
                   <div className="flex justify-end">
                     <div className="inline-flex items-center gap-2 bg-white border border-slate-200 rounded-2xl px-3 py-2 text-xs text-slate-500">
                       <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                      מעדכן…
+                      {t('assistant.updating')}
                     </div>
                   </div>
                 )}
@@ -205,7 +208,7 @@ export default function HouseholdAssistant() {
               <div className="shrink-0 border-t border-slate-100 bg-white px-3 pt-2 pb-2 w-full max-w-full overflow-x-hidden">
                 {!pendingCreate && !pendingDelete && (
                   <div className="flex flex-nowrap overflow-x-auto w-full max-w-full no-scrollbar whitespace-nowrap gap-1.5 py-1 mb-2">
-                    {QUICK.map((q) => (
+                    {quick.map((q) => (
                       <button
                         key={q.label}
                         type="button"
@@ -220,7 +223,7 @@ export default function HouseholdAssistant() {
                 )}
                 {pendingCreate && (
                   <div className="flex flex-nowrap overflow-x-auto w-full no-scrollbar gap-1.5 py-1 mb-2">
-                    {['Ofek', 'Refael', 'Amit', 'פתוחה לכולם'].map((name) => (
+                    {['Ofek', 'Refael', 'Amit', t('assistant.openToAll')].map((name) => (
                       <button
                         key={name}
                         type="button"
@@ -248,14 +251,14 @@ export default function HouseholdAssistant() {
                     placeholder={placeholder}
                     disabled={busy}
                     className="flex-1 min-w-0 max-w-full rounded-xl border border-slate-200 px-3 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-slate-900/20 disabled:opacity-60"
-                    dir="rtl"
+                    dir={dir}
                     autoComplete="off"
                   />
                   <button
                     type="submit"
                     disabled={busy || !input.trim()}
                     className="shrink-0 p-2.5 rounded-xl bg-slate-900 text-white hover:bg-slate-800 disabled:opacity-40 touch-manipulation"
-                    aria-label="שלח"
+                    aria-label={t('assistant.send')}
                   >
                     <Send className="h-4 w-4" />
                   </button>

@@ -1,4 +1,5 @@
 import { CheckCircle, Info, AlertTriangle, X } from 'lucide-react';
+import { useI18n } from '../../context/I18nContext';
 
 const icons = {
   success: CheckCircle,
@@ -19,6 +20,7 @@ const iconStyles = {
 };
 
 export default function ToastContainer({ toasts, onDismiss }) {
+  const { t } = useI18n();
   if (toasts.length === 0) return null;
 
   return (
@@ -35,9 +37,10 @@ export default function ToastContainer({ toasts, onDismiss }) {
               {toast.message}
             </p>
             <button
+              type="button"
               onClick={() => onDismiss?.(toast.id)}
               className="shrink-0 opacity-60 hover:opacity-100 transition-opacity touch-manipulation p-0.5"
-              aria-label="סגור"
+              aria-label={t('close')}
             >
               <X className="h-4 w-4" />
             </button>

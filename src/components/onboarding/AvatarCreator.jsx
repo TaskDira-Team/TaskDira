@@ -15,14 +15,16 @@ import {
   buildEmojiAvatarConfig,
 } from '../../services/avatarService';
 import AvatarFrame from '../gamification/AvatarFrame';
+import { useI18n } from '../../context/I18nContext';
 
-const TABS = [
-  { id: 'emoji', label: 'אימוג\'י', icon: Smile },
-  { id: 'sticker', label: 'מדבקות / GIF', icon: Sparkles },
-  { id: 'custom', label: 'העלאה', icon: Upload },
+const TAB_IDS = [
+  { id: 'emoji', labelKey: 'avatar.emoji', icon: Smile },
+  { id: 'sticker', labelKey: 'avatar.stickers', icon: Sparkles },
+  { id: 'custom', labelKey: 'avatar.upload', icon: Upload },
 ];
 
 export default function AvatarCreator({ config, onChange }) {
+  const { t } = useI18n();
   const fileRef = useRef(null);
   const [local, setLocal] = useState({ ...DEFAULT_AVATAR_CONFIG, ...config });
   const [activeTab, setActiveTab] = useState(config?.avatarType || 'emoji');
@@ -72,13 +74,13 @@ export default function AvatarCreator({ config, onChange }) {
         <AvatarFrame avatar={preview} size="xl" showGlow />
         <p className="text-sm font-semibold text-indigo-700">{preview.profileBadgeLabel}</p>
         <p className="text-xs text-slate-500">
-          {preview.iconLabel} · טבעת: {preview.ringLabel}
-          {preview.isAnimated && ' · 🎬 מונפש'}
+          {preview.iconLabel} · {t('avatar.ring')}: {preview.ringLabel}
+          {preview.isAnimated && ` · 🎬 ${t('avatar.animated')}`}
         </p>
       </div>
 
       <div className="flex rounded-xl bg-slate-100 p-1 gap-1">
-        {TABS.map((tab) => {
+        {TAB_IDS.map((tab) => {
           const Icon = tab.icon;
           return (
             <button
@@ -92,7 +94,7 @@ export default function AvatarCreator({ config, onChange }) {
               }`}
             >
               <Icon className="h-3.5 w-3.5" />
-              {tab.label}
+              {t(tab.labelKey)}
             </button>
           );
         })}
@@ -100,7 +102,7 @@ export default function AvatarCreator({ config, onChange }) {
 
       {activeTab === 'emoji' && (
         <div>
-          <label className="block text-sm font-medium text-slate-700 mb-2">אייקון בסיס</label>
+          <label className="block text-sm font-medium text-slate-700 mb-2">{t('avatar.baseIcon')}</label>
           <div className="grid grid-cols-4 sm:grid-cols-8 gap-2">
             {AVATAR_ICONS.map((icon) => (
               <button
@@ -124,7 +126,7 @@ export default function AvatarCreator({ config, onChange }) {
       {activeTab === 'sticker' && (
         <div>
           <label className="block text-sm font-medium text-slate-700 mb-2">
-            גלריית מדבקות ו-GIFs (סגנון WhatsApp)
+            {t('avatar.gallery')}
           </label>
           <div className="grid grid-cols-3 sm:grid-cols-5 gap-3">
             {STICKER_PRESETS.map((sticker) => (
@@ -163,7 +165,7 @@ export default function AvatarCreator({ config, onChange }) {
       {activeTab === 'custom' && (
         <div className="space-y-3">
           <label className="block text-sm font-medium text-slate-700">
-            העלאת תמונה / מדבקה / GIF
+            {t('avatar.uploadTitle')}
           </label>
           <input
             ref={fileRef}
@@ -194,9 +196,9 @@ export default function AvatarCreator({ config, onChange }) {
             <div className="text-center">
               <p className="text-sm font-semibold text-indigo-700 flex items-center justify-center gap-1.5">
                 <Upload className="h-4 w-4" />
-                {uploading ? 'מעלה...' : 'העלאת תמונה/מדבקה'}
+                {uploading ? t('avatar.uploading') : t('avatar.uploadCta')}
               </p>
-              <p className="text-xs text-slate-500 mt-1">PNG, JPG, GIF, WebP · עד 2MB</p>
+              <p className="text-xs text-slate-500 mt-1">{t('avatar.uploadHint')}</p>
             </div>
           </button>
           {uploadError && (
@@ -206,7 +208,7 @@ export default function AvatarCreator({ config, onChange }) {
       )}
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">צבע / טבעת זוהרת</label>
+        <label className="block text-sm font-medium text-slate-700 mb-2">{t('avatar.ringColor')}</label>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
           {RING_COLORS.map((ring) => (
             <button
@@ -227,7 +229,7 @@ export default function AvatarCreator({ config, onChange }) {
       </div>
 
       <div>
-        <label className="block text-sm font-medium text-slate-700 mb-2">תג פרופיל</label>
+        <label className="block text-sm font-medium text-slate-700 mb-2">{t('avatar.badge')}</label>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
           {PROFILE_BADGES.map((badge) => (
             <button

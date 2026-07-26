@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { LogIn, UserPlus, Home, Loader2, Mail, Lock, Globe } from 'lucide-react';
+import { LogIn, UserPlus, Home, Loader2, Mail, Lock } from 'lucide-react';
 import { useAuth } from '../../context/AuthContext';
 import { api } from '../../services/api';
 import OnboardingFlow from '../onboarding/OnboardingFlow';
@@ -28,7 +28,7 @@ export default function AuthScreen() {
     return (
       <div dir={dir} className="relative min-h-screen min-h-dvh w-full max-w-full overflow-hidden">
         <AuthBackground />
-        <LangToggle onClick={toggleLang} label={t('langSwitchTo')} short={lang === 'he' ? 'EN' : 'HE'} />
+        <LangToggle onClick={toggleLang} label={t('langSwitchTo')} short={lang === 'he' ? '🌐 EN' : '🌐 HE'} />
         <div className="relative z-10 w-full max-w-full min-h-dvh grid grid-cols-1 lg:grid-cols-2">
           <BrandPanel />
           <div className="w-full max-w-full flex items-center justify-center p-4 sm:p-8">
@@ -67,7 +67,7 @@ export default function AuthScreen() {
   return (
     <div dir={dir} className="relative min-h-screen min-h-dvh w-full max-w-full overflow-hidden">
       <AuthBackground />
-      <LangToggle onClick={toggleLang} label={t('langSwitchTo')} short={lang === 'he' ? 'EN' : 'HE'} />
+      <LangToggle onClick={toggleLang} label={t('langSwitchTo')} short={lang === 'he' ? '🌐 EN' : '🌐 HE'} />
 
       <div className="relative z-10 w-full max-w-full min-h-dvh grid grid-cols-1 lg:grid-cols-2">
         <BrandPanel />
@@ -210,7 +210,6 @@ function LangToggle({ onClick, label, short }) {
       aria-label={label}
       className="absolute top-4 end-4 z-30 inline-flex flex-row items-center gap-1.5 rounded-xl border border-white/25 bg-white/10 px-3 py-2 text-xs font-semibold text-white backdrop-blur-md transition-colors hover:bg-white/20"
     >
-      <Globe className="h-4 w-4 shrink-0" />
       {short}
     </button>
   );
