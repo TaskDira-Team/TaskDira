@@ -1,0 +1,61 @@
+# .gitignore — TaskDira Backend
+# Scoped to Backend/ deliberately: the repo root is shared with Frontend/,
+# which is owned by another team (CLAUDE.md 10).
+
+## Build output
+bin/
+obj/
+[Dd]ebug/
+[Rr]elease/
+x64/
+x86/
+[Aa][Rr][Mm]/
+[Aa][Rr][Mm]64/
+
+## NuGet
+*.nupkg
+*.snupkg
+project.lock.json
+
+## Test and coverage artifacts
+[Tt]est[Rr]esult*/
+*.trx
+*.coverage
+coverage*.json
+coverage*.xml
+coverage*.info
+
+## IDE / editor
+.vs/
+.vscode/
+.idea/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+## Secrets — never commit (CLAUDE.md 4.6)
+# Real values live in .NET user-secrets locally (stored outside the repo, under
+# %APPDATA%\Microsoft\UserSecrets) and in environment variables when deployed.
+# appsettings.json and appsettings.Development.json stay tracked on purpose:
+# they hold non-sensitive defaults only. These patterns catch the file names
+# people reach for when they need somewhere to put a real connection string.
+.env
+.env.*
+appsettings.Local.json
+appsettings.*.Local.json
+appsettings.Secrets.json
+secrets.json
+*.pfx
+*.p12
+*.pem
+*.key
+
+## OS noise
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# The pinned local tool manifest MUST stay tracked — it is how the team gets
+# the same dotnet-ef 9.x (CLAUDE.md 2). Guard against a future `.config/` rule.
+!.config/dotnet-tools.json
