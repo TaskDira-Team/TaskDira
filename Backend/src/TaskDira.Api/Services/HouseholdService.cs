@@ -68,7 +68,7 @@ public class HouseholdService : IHouseholdService
             Adminuserid = callerUserId,
         };
 
-        var created = await _households.InsertAsync(household, cancellationToken);
+        var created = await _households.InsertAsync(household, HouseholdRoles.Admin, cancellationToken);
         return ToResponse(created);
     }
 

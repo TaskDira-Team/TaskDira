@@ -1,11 +1,11 @@
-using System.Data;
+using System.Data.Common;
 using Npgsql;
 
 namespace TaskDira.Api.Data;
 
 public interface IDbConnectionFactory
 {
-    Task<IDbConnection> CreateOpenConnectionAsync(CancellationToken cancellationToken);
+    Task<DbConnection> CreateOpenConnectionAsync(CancellationToken cancellationToken);
 }
 
 public class NpgsqlConnectionFactory : IDbConnectionFactory
@@ -17,7 +17,7 @@ public class NpgsqlConnectionFactory : IDbConnectionFactory
         _dataSource = dataSource;
     }
 
-    public async Task<IDbConnection> CreateOpenConnectionAsync(CancellationToken cancellationToken)
+    public async Task<DbConnection> CreateOpenConnectionAsync(CancellationToken cancellationToken)
     {
         return await _dataSource.OpenConnectionAsync(cancellationToken);
     }

@@ -1,3 +1,4 @@
+using Dapper;
 using TaskDira.Api.Data;
 using TaskDira.Api.Models;
 
@@ -25,28 +26,69 @@ public class PointsLedgerRepository : IPointsLedgerRepository
         _connections = connections;
     }
 
-    public Task<PointsLedgerEntry?> GetByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<PointsLedgerEntry?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'get points ledger entry by id' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_get_points_ledger_by_id(@p_id)",
+            new { p_id = id },
+            cancellationToken: cancellationToken);
+
+        return await connection.QuerySingleOrDefaultAsync<PointsLedgerEntry>(command);
     }
 
-    public Task<IReadOnlyList<PointsLedgerEntry>> GetPageForHouseholdAsync(int householdId, int offset, int limit, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<PointsLedgerEntry>> GetPageForHouseholdAsync(int householdId, int offset, int limit, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'list points ledger for household paged' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_get_points_ledger_page(@p_householdid, @p_offset, @p_limit)",
+            new { p_householdid = householdId, p_offset = offset, p_limit = limit },
+            cancellationToken: cancellationToken);
+
+        var entries = await connection.QueryAsync<PointsLedgerEntry>(command);
+        return entries.ToList();
     }
 
-    public Task<int> CountForHouseholdAsync(int householdId, CancellationToken cancellationToken)
+    public async Task<int> CountForHouseholdAsync(int householdId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'count points ledger for household' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_count_points_ledger(@p_householdid)",
+            new { p_householdid = householdId },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command);
     }
 
-    public Task<int> GetTotalForUserAsync(int householdId, int userId, CancellationToken cancellationToken)
+    public async Task<int> GetTotalForUserAsync(int householdId, int userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'sum points for user' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_get_user_points_total(@p_householdid, @p_userid)",
+            new { p_householdid = householdId, p_userid = userId },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command);
     }
 
-    public Task<PointsLedgerEntry> InsertAsync(PointsLedgerEntry entry, CancellationToken cancellationToken)
+    public async Task<PointsLedgerEntry> InsertAsync(PointsLedgerEntry entry, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'insert points ledger entry' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_insert_points_ledger(@p_userid, @p_taskid, @p_pointsearned)",
+            new
+            {
+                p_userid = entry.Userid,
+                p_taskid = entry.Taskid,
+                p_pointsearned = entry.Pointsearned,
+            },
+            cancellationToken: cancellationToken);
+
+        return await connection.QuerySingleAsync<PointsLedgerEntry>(command);
     }
 }

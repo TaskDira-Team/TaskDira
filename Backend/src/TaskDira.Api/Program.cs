@@ -1,5 +1,8 @@
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using TaskDira.Api.Data;
+using TaskDira.Api.Middleware;
+using TaskDira.Api.Models;
 using TaskDira.Api.Repositories;
 using TaskDira.Api.Services;
 
@@ -10,6 +13,8 @@ builder.Configuration.AddJsonFile("appsettings.Local.json", optional: true, relo
 
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
+builder.Services.AddProblemDetails();
+builder.Services.AddExceptionHandler<GlobalExceptionHandler>();
 
 var connectionString = builder.Configuration.GetConnectionString("TaskDira");
 if (string.IsNullOrWhiteSpace(connectionString))
@@ -19,6 +24,7 @@ if (string.IsNullOrWhiteSpace(connectionString))
 
 builder.Services.AddNpgsqlDataSource(connectionString);
 builder.Services.AddScoped<IDbConnectionFactory, NpgsqlConnectionFactory>();
+builder.Services.AddScoped<IPasswordHasher<User>, PasswordHasher<User>>();
 
 builder.Services.AddDbContext<TaskDiraDbContext>(options => options.UseNpgsql(connectionString));
 builder.Services.AddScoped<IUserRepository, UserRepository>();
@@ -46,6 +52,8 @@ AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
 {
     Console.Error.WriteLine($"Unhandled exception: {e.ExceptionObject}");
 };
+
+app.UseExceptionHandler();
 
 if (app.Environment.IsDevelopment())
 {
