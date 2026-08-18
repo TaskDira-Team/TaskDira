@@ -1,0 +1,3 @@
+# Read-only Figma Make export kept locally as a design reference. It is not app
+# code and ships its own App.tsx / index.css, which would confuse the build.
+FigmeExtract/

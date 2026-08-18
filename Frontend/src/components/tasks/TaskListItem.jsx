@@ -55,6 +55,8 @@ export default function TaskListItem({
   taskPermissions,
   isAdminUser,
   onComplete,
+  onCompleteDirect,
+  requireProof = false,
   onClaim,
   onApprove,
   onReject,
@@ -72,6 +74,9 @@ export default function TaskListItem({
     isOpen &&
     task.assigneeId &&
     (taskPermissions?.canSubmitProof || taskPermissions?.canMove || isAdminUser);
+  // One click finishes the task. Assignment is not required: an unclaimed chore
+  // can simply be done. Proof only becomes a gate once the real pipeline lands.
+  const canCompleteNow = isOpen && (taskPermissions?.canMove || isAdminUser) && !requireProof;
   const status = statusMeta(task, t);
   const due = getDueStatus(task.dueAt || task.dueDate, task.status, lang);
   const dueLabel = formatDueDateTime(task.dueAt || task.dueDate, lang);
@@ -113,7 +118,7 @@ export default function TaskListItem({
             >
               <Hand className="h-4 w-4" />
             </button>
-          ) : canComplete ? (
+          ) : canComplete && requireProof ? (
             <button
               type="button"
               onClick={() => onComplete(task)}
@@ -221,6 +226,19 @@ export default function TaskListItem({
       )}
 
       <div className="flex flex-row items-center gap-2 w-full max-w-full pt-2 border-t border-slate-100">
+        {canCompleteNow && (
+          <motion.button
+            type="button"
+            whileTap={{ scale: 0.94 }}
+            onClick={() => onCompleteDirect?.(task)}
+            className="inline-flex flex-row items-center gap-1.5 text-xs font-semibold text-white bg-emerald-600 hover:bg-emerald-700 px-3 py-1.5 rounded-full shadow-sm touch-manipulation whitespace-nowrap transition-colors"
+            title={t('markDone')}
+            aria-label={`${t('markDone')}: ${task.title}`}
+          >
+            <Check className="h-3.5 w-3.5 shrink-0" />
+            {t('markDone')}
+          </motion.button>
+        )}
         {isPending && taskPermissions?.canApprove && (
           <button
             type="button"

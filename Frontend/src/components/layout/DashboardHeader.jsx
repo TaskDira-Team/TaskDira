@@ -136,7 +136,7 @@ export default function DashboardHeader({
                   )}
                   <span className="inline-flex flex-row items-center gap-1 text-xs font-semibold text-slate-800 bg-slate-100 border border-slate-200 px-2.5 py-1 rounded-full whitespace-nowrap">
                     <Star className="h-3 w-3 text-amber-500" />
-                    {p(user.points ?? 0)}
+                    {p(user.balance ?? user.points ?? 0)}
                   </span>
                   <button
                     type="button"
@@ -181,7 +181,7 @@ export default function DashboardHeader({
             <div className="flex flex-row items-center gap-1.5 shrink-0">
               <span className="inline-flex flex-row items-center gap-1 text-xs font-semibold text-slate-800 bg-slate-100 px-2 py-1 rounded-full whitespace-nowrap">
                 <Star className="h-3 w-3 text-amber-500" />
-                {user?.points ?? 0}
+                {user?.balance ?? user?.points ?? 0}
               </span>
               <button
                 type="button"
