@@ -23,11 +23,16 @@ public class ChoreTaskService : IChoreTaskService
 {
     private readonly IChoreTaskRepository _tasks;
     private readonly IHouseholdMemberRepository _members;
+    private readonly IPointsLedgerRepository _ledger;
 
-    public ChoreTaskService(IChoreTaskRepository tasks, IHouseholdMemberRepository members)
+    public ChoreTaskService(
+        IChoreTaskRepository tasks,
+        IHouseholdMemberRepository members,
+        IPointsLedgerRepository ledger)
     {
         _tasks = tasks;
         _members = members;
+        _ledger = ledger;
     }
 
     public async Task<ChoreTaskResponse?> GetByIdAsync(int id, int callerUserId, CancellationToken cancellationToken)
@@ -79,6 +84,7 @@ public class ChoreTaskService : IChoreTaskService
             Assigneduserid = request.AssignedUserId,
             Status = ChoreTaskStatus.ToDo,
             Duedate = request.DueDate,
+            Createdbyid = callerUserId,
         };
 
         var created = await _tasks.InsertAsync(task, cancellationToken);
@@ -122,7 +128,10 @@ public class ChoreTaskService : IChoreTaskService
         if (!ChoreTaskStatus.CanTransition(task.Status, request.Status))
             throw new InvalidOperationException($"Cannot move a task from '{task.Status}' to '{request.Status}'.");
 
-        return await _tasks.UpdateStatusAsync(id, ChoreTaskStatus.Canonical(request.Status), cancellationToken);
+        var target = ChoreTaskStatus.Canonical(request.Status);
+        var completedAt = target == ChoreTaskStatus.Done ? DateTime.UtcNow : (DateTime?)null;
+
+        return await _tasks.UpdateStatusAsync(id, target, completedAt, cancellationToken);
     }
 
     public async Task<bool> DeleteAsync(int id, int callerUserId, CancellationToken cancellationToken)
@@ -130,6 +139,13 @@ public class ChoreTaskService : IChoreTaskService
         var task = await LoadVisibleTaskAsync(id, callerUserId, cancellationToken);
         if (task is null)
             return false;
+
+        var awards = await _ledger.CountForTaskAsync(id, cancellationToken);
+        if (awards > 0)
+        {
+            throw new InvalidOperationException(
+                "This task has awarded points and cannot be deleted. The points ledger is append-only.");
+        }
 
         return await _tasks.DeleteAsync(id, cancellationToken);
     }
@@ -164,6 +180,10 @@ public class ChoreTaskService : IChoreTaskService
         Status = task.Status,
         DueDate = task.Duedate,
         ProofImageUrl = task.Proofimageurl,
+        CreatedById = task.Createdbyid,
+        CompletedAt = task.Completedat,
+        ApprovedById = task.Approvedbyid,
+        RejectedReason = task.Rejectedreason,
     };
 }
 

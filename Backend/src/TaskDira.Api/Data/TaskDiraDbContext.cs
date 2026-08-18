@@ -27,8 +27,29 @@ public class TaskDiraDbContext : DbContext
 
     public virtual DbSet<MonthlyLeaderboardEntry> MonthlyLeaderboard => Set<MonthlyLeaderboardEntry>();
 
+    public virtual DbSet<Session> Sessions => Set<Session>();
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        modelBuilder.Entity<Session>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("sessions_pkey");
+
+            entity.ToTable("sessions");
+
+            entity.HasIndex(e => e.Tokenhash, "sessions_tokenhash_key").IsUnique();
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Userid).HasColumnName("userid");
+            entity.Property(e => e.Tokenhash).HasColumnName("tokenhash");
+            entity.Property(e => e.Createdat)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("createdat");
+            entity.Property(e => e.Expiresat)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("expiresat");
+        });
+
         modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("users_pkey");
@@ -39,9 +60,13 @@ public class TaskDiraDbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Avatarstate)
-                .HasMaxLength(50)
-                .HasDefaultValueSql("'neutral'::character varying")
+                .HasColumnType("jsonb")
+                .HasDefaultValueSql("'\"neutral\"'::jsonb")
                 .HasColumnName("avatarstate");
+            entity.Property(e => e.Familyrole)
+                .HasMaxLength(30)
+                .HasDefaultValueSql("'roommate'::character varying")
+                .HasColumnName("familyrole");
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
@@ -78,13 +103,22 @@ public class TaskDiraDbContext : DbContext
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Adminuserid).HasColumnName("adminuserid");
+            entity.Property(e => e.Address)
+                .HasMaxLength(200)
+                .HasColumnName("address");
             entity.Property(e => e.Createdat)
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("createdat");
+            entity.Property(e => e.Monthlygoalpoints)
+                .HasDefaultValue(400)
+                .HasColumnName("monthlygoalpoints");
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
+            entity.Property(e => e.Requireproofapproval)
+                .HasDefaultValue(false)
+                .HasColumnName("requireproofapproval");
         });
 
         modelBuilder.Entity<HouseholdMember>(entity =>
@@ -111,9 +145,15 @@ public class TaskDiraDbContext : DbContext
             entity.ToTable("tasks");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Approvedbyid).HasColumnName("approvedbyid");
             entity.Property(e => e.Assigneduserid).HasColumnName("assigneduserid");
             entity.Property(e => e.Categoryid).HasColumnName("categoryid");
+            entity.Property(e => e.Completedat)
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("completedat");
+            entity.Property(e => e.Createdbyid).HasColumnName("createdbyid");
             entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Rejectedreason).HasColumnName("rejectedreason");
             entity.Property(e => e.Duedate)
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("duedate");
@@ -162,7 +202,9 @@ public class TaskDiraDbContext : DbContext
                 .HasDefaultValueSql("now()")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("earnedat");
+            entity.Property(e => e.Householdid).HasColumnName("householdid");
             entity.Property(e => e.Pointsearned).HasColumnName("pointsearned");
+            entity.Property(e => e.Rewardid).HasColumnName("rewardid");
             entity.Property(e => e.Taskid).HasColumnName("taskid");
             entity.Property(e => e.Userid).HasColumnName("userid");
         });
@@ -174,7 +216,17 @@ public class TaskDiraDbContext : DbContext
             entity.ToTable("rewards");
 
             entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Category)
+                .HasMaxLength(30)
+                .HasColumnName("category");
             entity.Property(e => e.Claimedbyuserid).HasColumnName("claimedbyuserid");
+            entity.Property(e => e.Cost)
+                .HasDefaultValue(0)
+                .HasColumnName("cost");
+            entity.Property(e => e.Description).HasColumnName("description");
+            entity.Property(e => e.Emoji)
+                .HasMaxLength(16)
+                .HasColumnName("emoji");
             entity.Property(e => e.Householdid).HasColumnName("householdid");
             entity.Property(e => e.Requiredpoints).HasColumnName("requiredpoints");
             entity.Property(e => e.Title)

@@ -12,5 +12,7 @@ public class User
 
     public string? Avatarstate { get; set; }
 
+    public string Familyrole { get; set; } = null!;
+
     public DateTime? Createdat { get; set; }
 }

@@ -20,10 +20,13 @@ export default function RewardsScreen() {
   const [redeemingId, setRedeemingId] = useState(null);
   const { t, p, tx } = useI18n();
   const me = users.find((u) => u.id === user?.id) || user;
+  // points is lifetime XP and drives milestone unlocks; balance is the wallet
+  // that actually pays for a reward.
   const points = me?.points ?? 0;
+  const balance = me?.balance ?? points;
 
   const handleRedeem = async (reward) => {
-    if (!reward.unlocked || points < reward.cost) return;
+    if (!reward.unlocked || balance < reward.cost) return;
     setRedeemingId(reward.id);
     try {
       await redeemReward(reward);
@@ -39,7 +42,7 @@ export default function RewardsScreen() {
           <p className="text-xs text-slate-300 font-medium">{t('balanceThisMonth')}</p>
           <p className="text-2xl sm:text-3xl font-semibold flex items-center gap-2 mt-1 tracking-tight break-words">
             <Star className="h-5 w-5 text-amber-400 shrink-0" />
-            {p(points)}
+            {p(balance)}
           </p>
           <p className="text-xs text-slate-400 mt-1.5 leading-relaxed break-words">
             {t('milestoneHint')} {t('pointsShort')}
@@ -92,8 +95,8 @@ export default function RewardsScreen() {
       <div className="px-3 sm:px-4 pb-24 grid grid-cols-2 gap-3 w-full max-w-full">
         {rewards.map((reward) => {
           const milestoneLocked = !reward.unlocked;
-          const balanceShort = points < reward.cost;
-          const canClaim = !milestoneLocked && !balanceShort;
+          const balanceShort = balance < reward.cost;
+          const canClaim = !milestoneLocked && !balanceShort && !reward.claimed;
           return (
             <motion.article
               key={reward.id}
@@ -162,7 +165,7 @@ export default function RewardsScreen() {
                       <Lock className="h-3 w-3" /> {t('locked')}
                     </>
                   ) : balanceShort ? (
-                    `${t('missingPoints')} ${reward.cost - points}`
+                    `${t('missingPoints')} ${reward.cost - balance}`
                   ) : (
                     <>
                       <Gift className="h-3.5 w-3.5" />

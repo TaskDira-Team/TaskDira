@@ -1,3 +1,4 @@
+using Dapper;
 using TaskDira.Api.Data;
 using TaskDira.Api.Models;
 
@@ -15,7 +16,7 @@ public interface IChoreTaskRepository
 
     Task<bool> UpdateAsync(ChoreTask task, CancellationToken cancellationToken);
 
-    Task<bool> UpdateStatusAsync(int id, string status, CancellationToken cancellationToken);
+    Task<bool> UpdateStatusAsync(int id, string status, DateTime? completedAt, CancellationToken cancellationToken);
 
     Task<bool> DeleteAsync(int id, CancellationToken cancellationToken);
 }
@@ -29,38 +30,110 @@ public class ChoreTaskRepository : IChoreTaskRepository
         _connections = connections;
     }
 
-    public Task<ChoreTask?> GetByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<ChoreTask?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'get task by id' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_get_task_by_id(@p_id)",
+            new { p_id = id },
+            cancellationToken: cancellationToken);
+
+        return await connection.QuerySingleOrDefaultAsync<ChoreTask>(command);
     }
 
-    public Task<IReadOnlyList<ChoreTask>> GetPageAsync(int householdId, int offset, int limit, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<ChoreTask>> GetPageAsync(int householdId, int offset, int limit, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'list tasks paged' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_get_household_tasks_page(@p_householdid, @p_offset, @p_limit)",
+            new { p_householdid = householdId, p_offset = offset, p_limit = limit },
+            cancellationToken: cancellationToken);
+
+        var tasks = await connection.QueryAsync<ChoreTask>(command);
+        return tasks.ToList();
     }
 
-    public Task<int> CountAsync(int householdId, CancellationToken cancellationToken)
+    public async Task<int> CountAsync(int householdId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'count tasks' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_count_household_tasks(@p_householdid)",
+            new { p_householdid = householdId },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command);
     }
 
-    public Task<ChoreTask> InsertAsync(ChoreTask task, CancellationToken cancellationToken)
+    public async Task<ChoreTask> InsertAsync(ChoreTask task, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'insert task' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_insert_task(@p_householdid, @p_title, @p_description, @p_categoryid, @p_pointsvalue, @p_assigneduserid, @p_duedate, @p_createdbyid)",
+            new
+            {
+                p_householdid = task.Householdid,
+                p_title = task.Title,
+                p_description = task.Description,
+                p_categoryid = task.Categoryid,
+                p_pointsvalue = task.Pointsvalue,
+                p_assigneduserid = task.Assigneduserid,
+                p_duedate = ToTimestamp(task.Duedate),
+                p_createdbyid = task.Createdbyid,
+            },
+            cancellationToken: cancellationToken);
+
+        return await connection.QuerySingleAsync<ChoreTask>(command);
     }
 
-    public Task<bool> UpdateAsync(ChoreTask task, CancellationToken cancellationToken)
+    public async Task<bool> UpdateAsync(ChoreTask task, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'update task' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_update_task(@p_id, @p_title, @p_description, @p_categoryid, @p_pointsvalue, @p_assigneduserid, @p_duedate)",
+            new
+            {
+                p_id = task.Id,
+                p_title = task.Title,
+                p_description = task.Description,
+                p_categoryid = task.Categoryid,
+                p_pointsvalue = task.Pointsvalue,
+                p_assigneduserid = task.Assigneduserid,
+                p_duedate = ToTimestamp(task.Duedate),
+            },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 
-    public Task<bool> UpdateStatusAsync(int id, string status, CancellationToken cancellationToken)
+    public async Task<bool> UpdateStatusAsync(int id, string status, DateTime? completedAt, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'update task status' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_update_task_status(@p_id, @p_status, @p_completedat)",
+            new { p_id = id, p_status = status, p_completedat = ToTimestamp(completedAt) },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 
-    public Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'delete task' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_delete_task(@p_id)",
+            new { p_id = id },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
+
+    private static DateTime? ToTimestamp(DateTime? value) =>
+        value is null ? null : DateTime.SpecifyKind(value.Value, DateTimeKind.Unspecified);
 }

@@ -98,7 +98,7 @@ export default function MobileNavDrawer({
                   <div className="flex flex-wrap items-center gap-1.5 mt-1">
                     <span className="inline-flex items-center gap-0.5 text-[10px] font-semibold bg-slate-100 text-slate-700 px-1.5 py-0.5 rounded-full">
                       <Star className="h-3 w-3 text-amber-500" />
-                      {p(user.points ?? 0)}
+                      {p(user.balance ?? user.points ?? 0)}
                     </span>
                     {user.isAdmin && (
                       <span className="inline-flex items-center gap-0.5 text-[10px] font-medium bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded-full">

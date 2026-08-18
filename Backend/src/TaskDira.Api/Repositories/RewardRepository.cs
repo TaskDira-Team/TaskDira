@@ -1,3 +1,4 @@
+using Dapper;
 using TaskDira.Api.Data;
 using TaskDira.Api.Models;
 
@@ -29,38 +30,106 @@ public class RewardRepository : IRewardRepository
         _connections = connections;
     }
 
-    public Task<Reward?> GetByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<Reward?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'get reward by id' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_get_reward_by_id(@p_id)",
+            new { p_id = id },
+            cancellationToken: cancellationToken);
+
+        return await connection.QuerySingleOrDefaultAsync<Reward>(command);
     }
 
-    public Task<IReadOnlyList<Reward>> GetPageAsync(int householdId, int offset, int limit, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Reward>> GetPageAsync(int householdId, int offset, int limit, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'list rewards paged' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_get_household_rewards_page(@p_householdid, @p_offset, @p_limit)",
+            new { p_householdid = householdId, p_offset = offset, p_limit = limit },
+            cancellationToken: cancellationToken);
+
+        var rewards = await connection.QueryAsync<Reward>(command);
+        return rewards.ToList();
     }
 
-    public Task<int> CountAsync(int householdId, CancellationToken cancellationToken)
+    public async Task<int> CountAsync(int householdId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'count rewards' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_count_household_rewards(@p_householdid)",
+            new { p_householdid = householdId },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command);
     }
 
-    public Task<Reward> InsertAsync(Reward reward, CancellationToken cancellationToken)
+    public async Task<Reward> InsertAsync(Reward reward, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'insert reward' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_insert_reward(@p_title, @p_requiredpoints, @p_householdid, @p_emoji, @p_description, @p_cost, @p_category)",
+            new
+            {
+                p_title = reward.Title,
+                p_requiredpoints = reward.Requiredpoints,
+                p_householdid = reward.Householdid,
+                p_emoji = reward.Emoji,
+                p_description = reward.Description,
+                p_cost = reward.Cost,
+                p_category = reward.Category,
+            },
+            cancellationToken: cancellationToken);
+
+        return await connection.QuerySingleAsync<Reward>(command);
     }
 
-    public Task<bool> UpdateAsync(Reward reward, CancellationToken cancellationToken)
+    public async Task<bool> UpdateAsync(Reward reward, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'update reward' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_update_reward(@p_id, @p_title, @p_requiredpoints, @p_emoji, @p_description, @p_cost, @p_category)",
+            new
+            {
+                p_id = reward.Id,
+                p_title = reward.Title,
+                p_requiredpoints = reward.Requiredpoints,
+                p_emoji = reward.Emoji,
+                p_description = reward.Description,
+                p_cost = reward.Cost,
+                p_category = reward.Category,
+            },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 
-    public Task<bool> ClaimAsync(int rewardId, int userId, CancellationToken cancellationToken)
+    public async Task<bool> ClaimAsync(int rewardId, int userId, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'claim reward' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_claim_reward(@p_id, @p_userid)",
+            new { p_id = rewardId, p_userid = userId },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 
-    public Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'delete reward' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_delete_reward(@p_id)",
+            new { p_id = id },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 }

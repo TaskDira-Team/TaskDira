@@ -13,7 +13,27 @@ import {
   canApproveTask,
   canSubmitProof,
 } from '../utils/permissions';
-import { store, delay, generateId, getRawUser, assertCurrentUser, recalculateRanks, setActiveHousehold, activateHouseholdForUser, seedHouseholdDefaults, getActiveHouseholdId, getActiveHousehold } from './store';
+import { store, delay, generateId, getRawUser, assertCurrentUser, recalculateRanks, setActiveHousehold, activateHouseholdForUser, seedHouseholdDefaults, getActiveHouseholdId, getActiveHousehold, hydrateAuthenticatedUser, upsertUser, hydrateHouseholdMembers } from './store';
+import { USE_REAL_API } from './config';
+import { loginRequest, registerRequest, logoutRequest, fetchCurrentUser, storedSession } from './authApi';
+import { updateUserProfile, fetchHouseholdRoster, fetchBalance } from './usersRemote';
+import { setRealHouseholdId, clearRealHouseholdId } from './householdContext';
+import {
+  fetchHousehold,
+  findUserByEmail,
+  addMember,
+  updateMemberRole,
+  removeMember as removeMemberRemote,
+} from './householdsRemote';
+import { resetCategoryCache } from './tasksRemote';
+import {
+  fetchRewardsRemote,
+  fetchRewardRemote,
+  createRewardRemote,
+  updateRewardRemote,
+  deleteRewardRemote,
+  claimRewardRemote,
+} from './rewardsRemote';
 import { enrichUser, getLedgerEntry } from './mappers';
 import {
   fetchUsers,
@@ -110,8 +130,48 @@ function formatHouseholdDisplay(h) {
   return h.address ? `${h.name} — ${h.address}` : h.name;
 }
 
+/**
+ * Membership errors carry meaning the generic HTTP map cannot express: 403 is a
+ * member reaching for an admin action, 409 is an admin trying to demote
+ * themselves. Anything else keeps the message the client already produced.
+ */
+function toMemberError(err) {
+  if (err?.status === 403) return new Error('אין הרשאה לפעולה זו');
+  if (err?.status === 409) {
+    const detail = err.body?.detail ?? '';
+    if (detail.includes('own admin role')) {
+      return new Error('לא ניתן להסיר את הרשאת המנהל של עצמך');
+    }
+    return new Error(detail || err.message);
+  }
+  if (err?.status === 404) return new Error('המשתמש אינו חבר בבית');
+  return err;
+}
+
+function adoptRealUser(session, extra = {}) {
+  const raw = hydrateAuthenticatedUser({
+    id: session.userId,
+    fullName: session.fullName,
+    email: session.email,
+    ...extra,
+  });
+  store.currentUser = {
+    ...enrichUser(raw),
+    token: session.token,
+    activeHouseholdId: getActiveHouseholdId(),
+  };
+  store.sessionToken = session.token;
+  return store.currentUser;
+}
+
 export const auth = {
   async login(email, password) {
+    if (USE_REAL_API.auth) {
+      clearRealHouseholdId();
+      resetCategoryCache();
+      const session = await loginRequest(email, password);
+      return adoptRealUser(session);
+    }
     await delay();
     const user = store.users.find(
       (u) => u.email.toLowerCase() === email.toLowerCase() && u.passwordHash === password
@@ -126,6 +186,23 @@ export const auth = {
   },
 
   async register(data) {
+    if (USE_REAL_API.auth) {
+      const householdName = (data.householdName || '').trim();
+      if (!householdName) throw new Error('נא להזין שם דירה / משפחה');
+
+      const session = await registerRequest({
+        fullName: (data.fullName || data.name || '').trim(),
+        email: (data.email || '').trim(),
+        password: data.password || data.passwordHash,
+        householdName,
+      });
+
+      setRealHouseholdId(session.householdId);
+      return adoptRealUser(session, {
+        avatarState: data.avatarState || data.avatarConfig || DEFAULT_AVATAR_CONFIG,
+        role: ROLES.ADMIN,
+      });
+    }
     await delay(600);
     if (store.users.some((u) => u.email.toLowerCase() === data.email.toLowerCase())) {
       throw new Error('כתובת האימייל כבר רשומה במערכת');
@@ -142,7 +219,7 @@ export const auth = {
       adminUserId: null,
       createdAt: now,
       address: (data.address || '').trim(),
-      requireProofApproval: true,
+      requireProofApproval: false,
       monthlyGoalPoints: 400,
     };
     store.households.push(newHousehold);
@@ -192,6 +269,30 @@ export const auth = {
   },
 
   async refresh() {
+    if (USE_REAL_API.auth) {
+      const session = storedSession();
+      if (!session?.token) {
+        store.currentUser = null;
+        store.sessionToken = null;
+        return null;
+      }
+      try {
+        const me = await fetchCurrentUser();
+        if (!me) {
+          store.currentUser = null;
+          store.sessionToken = null;
+          return null;
+        }
+        return adoptRealUser(
+          { ...session, fullName: me.fullName, email: me.email },
+          { avatarState: me.avatarState, createdAt: me.createdAt }
+        );
+      } catch {
+        store.currentUser = null;
+        store.sessionToken = null;
+        return null;
+      }
+    }
     await delay(100);
     const session = readSession();
     if (!session?.userId) {
@@ -223,6 +324,13 @@ export const auth = {
   },
 
   async logout() {
+    if (USE_REAL_API.auth) {
+      await logoutRequest();
+      store.currentUser = null;
+      store.sessionToken = null;
+      clearRealHouseholdId();
+      return;
+    }
     await delay(200);
     clearSession();
     store.currentUser = null;
@@ -236,12 +344,17 @@ export const auth = {
   },
 
   getSessionToken() {
+    if (USE_REAL_API.auth) return storedSession()?.token ?? null;
     return readSession()?.token ?? store.sessionToken ?? null;
   },
 };
 
 export const household = {
   async getHousehold() {
+    if (USE_REAL_API.households) {
+      const real = await fetchHousehold();
+      if (real) return real;
+    }
     await delay(150);
     const h = getActiveHousehold();
     return {
@@ -253,6 +366,17 @@ export const household = {
   },
 
   async getMembers() {
+    if (USE_REAL_API.households) {
+      const roster = await fetchHouseholdRoster();
+      hydrateHouseholdMembers(roster);
+      return roster.map((entry) => ({
+        householdId: store.realHouseholdId,
+        userId: entry.user.id,
+        role: entry.role,
+        joinedAt: entry.joinedAt,
+        user: enrichUser(getRawUser(entry.user.id)),
+      }));
+    }
     await delay();
     const hid = getActiveHouseholdId();
     return store.members
@@ -264,6 +388,27 @@ export const household = {
   },
 
   async inviteUser({ email, role = ROLES.MEMBER }) {
+    if (USE_REAL_API.households) {
+      if (!store.currentUser) throw new Error('יש להתחבר למערכת');
+      if (!isAdmin(store.currentUser)) throw new Error('רק מנהל יכול להזמין משתמשים');
+
+      const found = await findUserByEmail(email);
+      if (!found) {
+        throw new Error('הזמנת משתמש חדש – יש להירשם תחילה עם אותו אימייל');
+      }
+
+      const roster = await fetchHouseholdRoster();
+      if (roster.some((entry) => entry.user.id === found.id)) {
+        throw new Error('המשתמש כבר חבר בבית');
+      }
+
+      await addMember(found.id, role);
+
+      const refreshed = await fetchHouseholdRoster();
+      hydrateHouseholdMembers(refreshed);
+      const raw = getRawUser(found.id);
+      return raw ? enrichUser(raw) : null;
+    }
     await delay(500);
     assertCurrentUser();
     if (!isAdmin(store.currentUser)) throw new Error('רק מנהל יכול להזמין משתמשים');
@@ -297,11 +442,67 @@ export const household = {
     throw new Error('הזמנת משתמש חדש – יש להירשם תחילה עם אותו אימייל');
   },
 
+  async changeMemberRole(userId, role) {
+    if (USE_REAL_API.households) {
+      if (!store.currentUser) throw new Error('יש להתחבר למערכת');
+      if (!isAdmin(store.currentUser)) throw new Error('רק מנהל יכול לשנות תפקידים');
+
+      try {
+        await updateMemberRole(userId, role);
+      } catch (err) {
+        throw toMemberError(err);
+      }
+
+      const refreshed = await fetchHouseholdRoster();
+      hydrateHouseholdMembers(refreshed);
+      return refreshed;
+    }
+    await delay(200);
+    const hid = getActiveHouseholdId();
+    const membership = store.members.find((m) => m.userId === userId && m.householdId === hid);
+    if (!membership) throw new Error('המשתמש אינו חבר בבית');
+    membership.role = role;
+    return store.members.filter((m) => m.householdId === hid);
+  },
+
+  async removeMember(userId) {
+    if (USE_REAL_API.households) {
+      const actor = store.currentUser;
+      if (!actor) throw new Error('יש להתחבר למערכת');
+      // The API allows anyone to remove themselves; removing someone else is
+      // an admin action.
+      const isSelf = actor.id === userId;
+      if (!isSelf && !isAdmin(actor)) throw new Error('רק מנהל יכול להסיר חברים');
+
+      try {
+        await removeMemberRemote(userId);
+      } catch (err) {
+        throw toMemberError(err);
+      }
+
+      if (isSelf) return [];
+
+      const refreshed = await fetchHouseholdRoster();
+      hydrateHouseholdMembers(refreshed);
+      return refreshed;
+    }
+    await delay(200);
+    const hid = getActiveHouseholdId();
+    store.members = store.members.filter((m) => !(m.userId === userId && m.householdId === hid));
+    return store.members.filter((m) => m.householdId === hid);
+  },
+
   async resetMonthlyScore() {
     return resetMonthlyScores();
   },
 
   async switchHousehold(householdId) {
+    if (USE_REAL_API.households) {
+      setRealHouseholdId(householdId);
+      const refreshed = await fetchHouseholdRoster();
+      hydrateHouseholdMembers(refreshed);
+      return fetchHousehold();
+    }
     setActiveHousehold(householdId);
     const user = assertCurrentUser();
     saveSession(user.id, householdId);
@@ -327,6 +528,40 @@ export const tasks = {
 export const gamification = {
   getLeaderboard,
   async redeemReward(rewardId) {
+    if (USE_REAL_API.rewards) {
+      const actor = assertCurrentUser();
+      let claimed;
+      try {
+        claimed = await claimRewardRemote(rewardId);
+      } catch (err) {
+        if (err?.status === 409) {
+          throw new Error(
+            err.body?.detail?.includes('already been claimed')
+              ? 'הפרס כבר מומש'
+              : 'אין מספיק נקודות למימוש פרס זה'
+          );
+        }
+        if (err?.status === 404) throw new Error('פרס לא נמצא');
+        throw err;
+      }
+
+      // The spend row lands server-side, so the wallet is re-read rather than
+      // decremented locally. XP is untouched by a redemption.
+      const ledger = getLedgerEntry(actor.id);
+      if (ledger) ledger.balance = await fetchBalance(actor.id);
+
+      const raw = getRawUser(actor.id);
+      if (raw && store.currentUser?.id === actor.id) {
+        store.currentUser = {
+          ...enrichUser(raw),
+          token: store.currentUser.token,
+          activeHouseholdId: store.currentUser.activeHouseholdId,
+        };
+      }
+
+      const reward = enrichReward(claimed ?? { id: rewardId }, ledger?.totalPoints ?? 0);
+      return { reward, user: store.currentUser };
+    }
     await delay(500);
     const actor = assertCurrentUser();
     const ledger = getLedgerEntry(actor.id);
@@ -341,6 +576,16 @@ export const gamification = {
     return { reward, user };
   },
   async getRewards() {
+    if (USE_REAL_API.rewards) {
+      const actor = assertCurrentUser();
+      const ledger = getLedgerEntry(actor.id);
+      const xpPoints = ledger?.totalPoints ?? 0;
+      const balance = ledger?.balance ?? xpPoints;
+      const rewards = await fetchRewardsRemote();
+      return rewards
+        .map((r) => enrichReward(r, xpPoints, balance))
+        .sort((a, b) => a.requiredPoints - b.requiredPoints);
+    }
     await delay(200);
     const actor = assertCurrentUser();
     const hid = getActiveHouseholdId();
@@ -352,6 +597,20 @@ export const gamification = {
       .sort((a, b) => a.requiredPoints - b.requiredPoints);
   },
   async createReward(data) {
+    if (USE_REAL_API.rewards) {
+      assertCurrentUser();
+      if (!isAdmin(store.currentUser)) throw new Error('רק מנהל הבית יכול ליצור פרסים');
+      const requiredPoints = Number(data.requiredPoints ?? data.cost) || 10;
+      const created = await createRewardRemote({
+        title: (data.title || '').trim(),
+        requiredPoints,
+        emoji: data.emoji,
+        description: data.description?.trim(),
+        cost: Number(data.cost ?? requiredPoints) || requiredPoints,
+        category: data.category,
+      });
+      return enrichReward(created, 0);
+    }
     assertCurrentUser();
     if (!isAdmin(store.currentUser)) throw new Error('רק מנהל הבית יכול ליצור פרסים');
     await delay();
@@ -372,6 +631,23 @@ export const gamification = {
     return enrichReward(reward, 0);
   },
   async updateReward(id, data) {
+    if (USE_REAL_API.rewards) {
+      assertCurrentUser();
+      if (!isAdmin(store.currentUser)) throw new Error('רק מנהל הבית יכול לערוך פרסים');
+      const current = await fetchRewardRemote(id);
+      if (!current) throw new Error('פרס לא נמצא');
+      const requiredPoints =
+        Number(data.requiredPoints ?? current.requiredPoints) || current.requiredPoints;
+      const updated = await updateRewardRemote(id, {
+        title: (data.title ?? current.title).trim(),
+        requiredPoints,
+        emoji: data.emoji ?? current.emoji,
+        description: (data.description ?? current.description)?.trim(),
+        cost: Number(data.cost ?? current.cost ?? requiredPoints) || requiredPoints,
+        category: data.category ?? current.category,
+      });
+      return enrichReward(updated ?? current, 0);
+    }
     assertCurrentUser();
     if (!isAdmin(store.currentUser)) throw new Error('רק מנהל הבית יכול לערוך פרסים');
     await delay();
@@ -386,6 +662,14 @@ export const gamification = {
     return enrichReward(next, 0);
   },
   async deleteReward(id) {
+    if (USE_REAL_API.rewards) {
+      assertCurrentUser();
+      if (!isAdmin(store.currentUser)) throw new Error('רק מנהל הבית יכול למחוק פרסים');
+      const current = await fetchRewardRemote(id);
+      if (!current) throw new Error('פרס לא נמצא');
+      await deleteRewardRemote(id);
+      return enrichReward(current, 0);
+    }
     assertCurrentUser();
     if (!isAdmin(store.currentUser)) throw new Error('רק מנהל הבית יכול למחוק פרסים');
     await delay();
@@ -438,6 +722,7 @@ export const api = {
   refreshCurrentUser: () => auth.refresh(),
   getSessionToken: () => auth.getSessionToken(),
   getDemoUsers: async () => {
+    if (USE_REAL_API.auth) return [];
     await delay(100);
     const prev = getActiveHouseholdId();
     try {
@@ -459,9 +744,38 @@ export const api = {
   },
   getMembers: () => household.getMembers(),
   inviteUser: (payload) => household.inviteUser(payload),
+  changeMemberRole: (userId, role) => household.changeMemberRole(userId, role),
+  removeMember: (userId) => household.removeMember(userId),
   resetMonthlyScores: () => household.resetMonthlyScore(),
 
   async updateProfile(userId, updates) {
+    if (USE_REAL_API.users) {
+      const current = getRawUser(userId);
+      const fullName = (updates.fullName || updates.name || current?.fullName || '').trim();
+      const avatarState = updates.avatarState || updates.avatarConfig || current?.avatarState;
+      const familyRole = updates.familyRole ?? updates.role ?? current?.familyRole;
+
+      const saved = await updateUserProfile(userId, { fullName, avatarState, familyRole });
+
+      const raw = upsertUser({
+        ...(current ?? {}),
+        id: userId,
+        fullName: saved?.fullName ?? fullName,
+        email: saved?.email ?? current?.email,
+        avatarState: saved?.avatarState ?? avatarState,
+        familyRole: saved?.familyRole ?? familyRole,
+      });
+
+      if (store.currentUser?.id === userId) {
+        store.currentUser = {
+          ...enrichUser(raw),
+          token: store.currentUser.token,
+          activeHouseholdId: store.currentUser.activeHouseholdId,
+        };
+        return store.currentUser;
+      }
+      return enrichUser(raw);
+    }
     await delay();
     const user = getRawUser(userId);
     if (!user) throw new Error('משתמש לא נמצא');

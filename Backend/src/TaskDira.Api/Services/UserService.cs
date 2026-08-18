@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Identity;
 using TaskDira.Api.Models;
 using TaskDira.Api.Models.Dtos;
 using TaskDira.Api.Repositories;
@@ -20,10 +21,12 @@ public interface IUserService
 public class UserService : IUserService
 {
     private readonly IUserRepository _users;
+    private readonly IPasswordHasher<User> _passwordHasher;
 
-    public UserService(IUserRepository users)
+    public UserService(IUserRepository users, IPasswordHasher<User> passwordHasher)
     {
         _users = users;
+        _passwordHasher = passwordHasher;
     }
 
     public async Task<UserResponse?> GetByIdAsync(int id, CancellationToken cancellationToken)
@@ -70,8 +73,10 @@ public class UserService : IUserService
         {
             Fullname = request.FullName.Trim(),
             Email = request.Email.Trim().ToLowerInvariant(),
-            Passwordhash = HashPassword(request.Password),
+            Familyrole = string.IsNullOrWhiteSpace(request.FamilyRole) ? "roommate" : request.FamilyRole.Trim(),
         };
+
+        user.Passwordhash = _passwordHasher.HashPassword(user, request.Password);
 
         var created = await _users.InsertAsync(user, cancellationToken);
         return ToResponse(created);
@@ -91,6 +96,8 @@ public class UserService : IUserService
 
         user.Fullname = request.FullName.Trim();
         user.Avatarstate = request.AvatarState;
+        if (!string.IsNullOrWhiteSpace(request.FamilyRole))
+            user.Familyrole = request.FamilyRole.Trim();
 
         return await _users.UpdateAsync(user, cancellationToken);
     }
@@ -105,16 +112,13 @@ public class UserService : IUserService
         return await _users.DeleteAsync(id, cancellationToken);
     }
 
-    private static string HashPassword(string password) =>
-        throw new NotImplementedException(
-            "Password hashing is not wired up — choose a hashing package before enabling user creation.");
-
     private static UserResponse ToResponse(User user) => new()
     {
         Id = user.Id,
         FullName = user.Fullname,
         Email = user.Email,
         AvatarState = user.Avatarstate,
+        FamilyRole = user.Familyrole,
         CreatedAt = user.Createdat,
     };
 }

@@ -14,6 +14,7 @@ export function AppProvider({ children }) {
   const [tasks, setTasks] = useState([]);
   const [leaderboard, setLeaderboard] = useState([]);
   const [rewards, setRewards] = useState([]);
+  const [members, setMembers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [toasts, setToasts] = useState([]);
   const [celebration, setCelebration] = useState(null);
@@ -83,18 +84,21 @@ export function AppProvider({ children }) {
   );
 
   const refreshData = useCallback(async () => {
-    const [householdData, usersData, tasksData, leaderboardData, rewardsData] = await Promise.all([
-      api.getHousehold(),
-      api.getUsers(),
-      api.getTasks(),
-      api.getLeaderboard(),
-      api.getRewards(),
-    ]);
+    const [householdData, usersData, tasksData, leaderboardData, rewardsData, membersData] =
+      await Promise.all([
+        api.getHousehold(),
+        api.getUsers(),
+        api.getTasks(),
+        api.getLeaderboard(),
+        api.getRewards(),
+        api.getMembers().catch(() => []),
+      ]);
     setHousehold(householdData);
     setUsers(usersData);
     setTasks(tasksData);
     setLeaderboard(leaderboardData);
     setRewards(rewardsData);
+    setMembers(membersData);
   }, []);
 
   useEffect(() => {
@@ -278,7 +282,10 @@ export function AppProvider({ children }) {
         await syncUser();
         await refreshData();
         playRewardClaimSound();
-        setCelebration({ reward: result.reward, remainingPoints: result.user.points });
+        setCelebration({
+          reward: result.reward,
+          remainingPoints: result.user?.balance ?? result.user?.points ?? 0,
+        });
         return result;
       } catch (err) {
         addToast(err.message, 'warning');
@@ -330,6 +337,49 @@ export function AppProvider({ children }) {
     [refreshData, addToast]
   );
 
+  const inviteMember = useCallback(
+    async (email) => {
+      try {
+        const invited = await api.inviteUser({ email });
+        await refreshData();
+        addToast('ההזמנה נשלחה בהצלחה');
+        return invited;
+      } catch (err) {
+        addToast(err.message, 'warning');
+        throw err;
+      }
+    },
+    [refreshData, addToast]
+  );
+
+  const changeMemberRole = useCallback(
+    async (userId, role) => {
+      try {
+        await api.changeMemberRole(userId, role);
+        await refreshData();
+        addToast('התפקיד עודכן');
+      } catch (err) {
+        addToast(err.message, 'warning');
+        throw err;
+      }
+    },
+    [refreshData, addToast]
+  );
+
+  const removeMember = useCallback(
+    async (userId) => {
+      try {
+        await api.removeMember(userId);
+        await refreshData();
+        addToast('החבר הוסר מהבית', 'warning');
+      } catch (err) {
+        addToast(err.message, 'warning');
+        throw err;
+      }
+    },
+    [refreshData, addToast]
+  );
+
   const dismissCelebration = useCallback(() => setCelebration(null), []);
 
   const pendingApprovalCount = tasks.filter((t) => t.status === TASK_STATUSES.PENDING_APPROVAL).length;
@@ -343,6 +393,10 @@ export function AppProvider({ children }) {
         tasks,
         leaderboard,
         rewards,
+        members,
+        inviteMember,
+        changeMemberRole,
+        removeMember,
         loading,
         toasts,
         celebration,

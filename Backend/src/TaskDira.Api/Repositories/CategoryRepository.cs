@@ -1,3 +1,4 @@
+using Dapper;
 using TaskDira.Api.Data;
 using TaskDira.Api.Models;
 
@@ -18,11 +19,6 @@ public interface ICategoryRepository
     Task<bool> DeleteAsync(int id, CancellationToken cancellationToken);
 }
 
-/// <summary>
-/// Data access for <c>categories</c>. Dapper-over-stored-procedures; see
-/// <see cref="UserRepository"/> for the call shape each method takes once the
-/// procedures exist.
-/// </summary>
 public class CategoryRepository : ICategoryRepository
 {
     private readonly IDbConnectionFactory _connections;
@@ -32,33 +28,84 @@ public class CategoryRepository : ICategoryRepository
         _connections = connections;
     }
 
-    public Task<Category?> GetByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<Category?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'get category by id' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_get_category_by_id(@p_id)",
+            new { p_id = id },
+            cancellationToken: cancellationToken);
+
+        return await connection.QuerySingleOrDefaultAsync<Category>(command);
     }
 
-    public Task<IReadOnlyList<Category>> GetPageAsync(int offset, int limit, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<Category>> GetPageAsync(int offset, int limit, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'list categories paged' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_get_categories_page(@p_offset, @p_limit)",
+            new { p_offset = offset, p_limit = limit },
+            cancellationToken: cancellationToken);
+
+        var categories = await connection.QueryAsync<Category>(command);
+        return categories.ToList();
     }
 
-    public Task<int> CountAsync(CancellationToken cancellationToken)
+    public async Task<int> CountAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'count categories' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_count_categories()",
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command);
     }
 
-    public Task<Category> InsertAsync(Category category, CancellationToken cancellationToken)
+    public async Task<Category> InsertAsync(Category category, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'insert category' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_insert_category(@p_name, @p_description)",
+            new
+            {
+                p_name = category.Name,
+                p_description = category.Description,
+            },
+            cancellationToken: cancellationToken);
+
+        return await connection.QuerySingleAsync<Category>(command);
     }
 
-    public Task<bool> UpdateAsync(Category category, CancellationToken cancellationToken)
+    public async Task<bool> UpdateAsync(Category category, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'update category' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_update_category(@p_id, @p_name, @p_description)",
+            new
+            {
+                p_id = category.Id,
+                p_name = category.Name,
+                p_description = category.Description,
+            },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 
-    public Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'delete category' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_delete_category(@p_id)",
+            new { p_id = id },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 }

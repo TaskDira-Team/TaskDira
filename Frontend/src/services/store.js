@@ -1,4 +1,5 @@
 import {
+  DEFAULT_AVATAR_CONFIG as DEFAULT_AVATAR_STATE,
   HOUSEHOLD,
   INITIAL_USERS,
   INITIAL_TASKS,
@@ -28,6 +29,10 @@ export const store = {
   notifications: structuredClone(INITIAL_NOTIFICATIONS),
   currentUser: null,
   sessionToken: null,
+  realHouseholdId: null,
+  // Off until the real proof pipeline exists; the mock proof flow cannot gate
+  // completion because nothing persists a PendingApproval state.
+  proofApprovalRequired: false,
 };
 
 store.household = store.households[0];
@@ -66,7 +71,17 @@ export function activateHouseholdForUser(userId) {
 
 export function assertCurrentUser() {
   if (!store.currentUser) throw new Error('יש להתחבר למערכת');
-  return getRawUser(store.currentUser.id);
+  const raw = getRawUser(store.currentUser.id);
+  if (!raw) return store.currentUser;
+  // The raw record holds no role fields, so permission helpers would read every
+  // caller as a non-admin. Carry the resolved role from the enriched user.
+  return {
+    ...raw,
+    userRole: store.currentUser.userRole,
+    role: store.currentUser.role,
+    permissionRole: store.currentUser.permissionRole,
+    isAdmin: store.currentUser.isAdmin,
+  };
 }
 
 export function recalculateRanks(householdId = getActiveHouseholdId()) {
@@ -79,6 +94,113 @@ export function recalculateRanks(householdId = getActiveHouseholdId()) {
   rows.forEach((row, i) => {
     row.rank = i + 1;
   });
+}
+
+export function upsertUser(user) {
+  const index = store.users.findIndex((u) => u.id === user.id);
+  if (index === -1) {
+    store.users.push(user);
+    return store.users[store.users.length - 1];
+  }
+  store.users[index] = { ...store.users[index], ...user };
+  return store.users[index];
+}
+
+export function ensureMembership(userId, householdId = getActiveHouseholdId(), role = 'Member') {
+  let membership = store.members.find((m) => m.userId === userId && m.householdId === householdId);
+  if (!membership) {
+    membership = { householdId, userId, role, joinedAt: new Date().toISOString() };
+    store.members.push(membership);
+  }
+  return membership;
+}
+
+export function ensureLedgerEntry(userId, householdId = getActiveHouseholdId()) {
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const year = now.getFullYear();
+  let ledger = store.pointsLedger.find(
+    (l) => l.userId === userId && l.householdId === householdId && l.month === month && l.year === year
+  );
+  if (!ledger) {
+    ledger = {
+      id: `ledger-${userId}-${householdId}`,
+      householdId,
+      userId,
+      totalPoints: 0,
+      balance: 0,
+      rank: 99,
+      month,
+      year,
+    };
+    store.pointsLedger.push(ledger);
+    recalculateRanks(householdId);
+  }
+  return ledger;
+}
+
+/**
+ * Bridges a real backend user into the in-memory cache so the domains still on
+ * mock (tasks, rewards, leaderboard) keep resolving membership, role and points.
+ */
+export function hydrateAuthenticatedUser({ id, fullName, email, avatarState, createdAt, role, familyRole }) {
+  const householdId = getActiveHouseholdId();
+  const existing = getRawUser(id);
+
+  const user = upsertUser({
+    ...(existing ?? {}),
+    id,
+    fullName,
+    email,
+    avatarState: avatarState ?? existing?.avatarState ?? DEFAULT_AVATAR_STATE,
+    createdAt: createdAt ?? existing?.createdAt ?? new Date().toISOString(),
+    familyRole: familyRole ?? existing?.familyRole ?? null,
+    streakDays: existing?.streakDays ?? 0,
+    tasksCompletedThisMonth: existing?.tasksCompletedThisMonth ?? 0,
+    onboarded: true,
+  });
+
+  ensureMembership(id, householdId, role ?? 'Admin');
+  ensureLedgerEntry(id, householdId);
+
+  return user;
+}
+
+/**
+ * Mirrors a batch of real household members into the cache so `enrichUser`
+ * resolves role, points and rank while other domains are still on mock.
+ */
+export function hydrateHouseholdMembers(entries) {
+  const householdId = getActiveHouseholdId();
+
+  const hydrated = entries.map(({ user, role, joinedAt, points, balance }) => {
+    const existing = getRawUser(user.id);
+    const record = upsertUser({
+      ...(existing ?? {}),
+      id: user.id,
+      fullName: user.fullName,
+      email: user.email,
+      avatarState: user.avatarState ?? existing?.avatarState ?? DEFAULT_AVATAR_STATE,
+      createdAt: user.createdAt ?? existing?.createdAt ?? new Date().toISOString(),
+      familyRole: user.familyRole ?? existing?.familyRole ?? null,
+      streakDays: existing?.streakDays ?? 0,
+      tasksCompletedThisMonth: existing?.tasksCompletedThisMonth ?? 0,
+      onboarded: true,
+    });
+
+    const membership = ensureMembership(user.id, householdId, role);
+    membership.role = role;
+    if (joinedAt) membership.joinedAt = joinedAt;
+
+    const ledger = ensureLedgerEntry(user.id, householdId);
+    if (typeof points === 'number') ledger.totalPoints = points;
+    if (typeof balance === 'number') ledger.balance = balance;
+
+    return record;
+  });
+
+  recalculateRanks(householdId);
+  return hydrated;
 }
 
 export function seedHouseholdDefaults(householdId) {

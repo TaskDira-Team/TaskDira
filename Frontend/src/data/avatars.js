@@ -75,6 +75,24 @@ export const PROFILE_BADGES = [
   { id: 'team-player', label: 'שחקן קבוצה 🤝' },
 ];
 
+/**
+ * The avatar ring palette and the dark-theme kit accent palette were designed
+ * separately. This is the single bijection between them — one accent per ring —
+ * so every screen colours the same user identically.
+ */
+export const RING_ACCENT = {
+  'neon-blue': 'sky',
+  'sunset-gold': 'gold',
+  'emerald-green': 'mint',
+  'purple-flame': 'grape',
+  'rose-pink': 'coral',
+  'slate-cool': 'lime',
+};
+
+export function getRingAccent(ringColorId, fallback = 'lime') {
+  return RING_ACCENT[ringColorId] ?? fallback;
+}
+
 export const DEFAULT_AVATAR_CONFIG = {
   avatarType: AVATAR_TYPES.EMOJI,
   baseIconId: 'lion',

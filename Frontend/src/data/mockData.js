@@ -29,7 +29,7 @@ export const HOUSEHOLD = {
   adminUserId: 'user-ofek',
   createdAt: '2026-01-01T10:00:00.000Z',
   address: 'רוטשילד 12, תל אביב',
-  requireProofApproval: true,
+  requireProofApproval: false,
   monthlyGoalPoints: 400,
 };
 

@@ -20,6 +20,7 @@ const FILTERS = [
 export default function TasksScreen({ filterUserId }) {
   const { user } = useAuth();
   const {
+    household,
     tasks,
     users,
     loading,
@@ -38,6 +39,7 @@ export default function TasksScreen({ filterUserId }) {
   } = useApp();
 
   const { t } = useI18n();
+  const requireProof = household?.requireProofApproval === true;
   const [filter, setFilter] = useState('active');
   const [modalOpen, setModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
@@ -126,6 +128,8 @@ export default function TasksScreen({ filterUserId }) {
                 taskPermissions={getTaskPermissions(task)}
                 isAdminUser={permissions.isAdmin}
                 onComplete={setProofTask}
+                onCompleteDirect={(t) => moveTask(t.id, TASK_STATUSES.DONE)}
+                requireProof={requireProof}
                 onClaim={claimTask}
                 onApprove={approveTask}
                 onReject={handleReject}

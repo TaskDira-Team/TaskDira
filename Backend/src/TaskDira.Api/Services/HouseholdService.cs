@@ -66,9 +66,12 @@ public class HouseholdService : IHouseholdService
         {
             Name = request.Name.Trim(),
             Adminuserid = callerUserId,
+            Address = request.Address,
+            Monthlygoalpoints = request.MonthlyGoalPoints ?? 400,
+            Requireproofapproval = request.RequireProofApproval ?? false,
         };
 
-        var created = await _households.InsertAsync(household, cancellationToken);
+        var created = await _households.InsertAsync(household, HouseholdRoles.Admin, cancellationToken);
         return ToResponse(created);
     }
 
@@ -80,7 +83,7 @@ public class HouseholdService : IHouseholdService
         if (string.IsNullOrWhiteSpace(request.Name))
             throw new ArgumentException("Name is required.", nameof(request));
 
-        if (!await IsAdminAsync(id, callerUserId, cancellationToken))
+        if (!await EnsureAdminAsync(id, callerUserId, cancellationToken))
             return false;
 
         var household = await _households.GetByIdAsync(id, cancellationToken);
@@ -88,6 +91,12 @@ public class HouseholdService : IHouseholdService
             return false;
 
         household.Name = request.Name.Trim();
+        household.Address = request.Address;
+        if (request.MonthlyGoalPoints is int goal)
+            household.Monthlygoalpoints = goal;
+        if (request.RequireProofApproval is bool requireProof)
+            household.Requireproofapproval = requireProof;
+
         return await _households.UpdateAsync(household, cancellationToken);
     }
 
@@ -96,16 +105,22 @@ public class HouseholdService : IHouseholdService
         if (id <= 0)
             return false;
 
-        if (!await IsAdminAsync(id, callerUserId, cancellationToken))
+        if (!await EnsureAdminAsync(id, callerUserId, cancellationToken))
             return false;
 
         return await _households.DeleteAsync(id, cancellationToken);
     }
 
-    private async Task<bool> IsAdminAsync(int householdId, int callerUserId, CancellationToken cancellationToken)
+    private async Task<bool> EnsureAdminAsync(int householdId, int callerUserId, CancellationToken cancellationToken)
     {
         var membership = await _members.GetAsync(householdId, callerUserId, cancellationToken);
-        return membership is not null && HouseholdRoles.IsAdmin(membership.Role);
+        if (membership is null)
+            return false;
+
+        if (!HouseholdRoles.IsAdmin(membership.Role))
+            throw new UnauthorizedAccessException("Only a household admin can perform that action.");
+
+        return true;
     }
 
     private static HouseholdResponse ToResponse(Household household) => new()
@@ -113,6 +128,9 @@ public class HouseholdService : IHouseholdService
         Id = household.Id,
         Name = household.Name,
         AdminUserId = household.Adminuserid,
+        Address = household.Address,
+        MonthlyGoalPoints = household.Monthlygoalpoints,
+        RequireProofApproval = household.Requireproofapproval,
         CreatedAt = household.Createdat,
     };
 }

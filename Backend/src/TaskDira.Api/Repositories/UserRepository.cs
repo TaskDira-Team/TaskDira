@@ -1,3 +1,4 @@
+using Dapper;
 using TaskDira.Api.Data;
 using TaskDira.Api.Models;
 
@@ -29,38 +30,100 @@ public class UserRepository : IUserRepository
         _connections = connections;
     }
 
-    public Task<User?> GetByIdAsync(int id, CancellationToken cancellationToken)
+    public async Task<User?> GetByIdAsync(int id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'get user by id' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_get_user_by_id(@p_id)",
+            new { p_id = id },
+            cancellationToken: cancellationToken);
+
+        return await connection.QuerySingleOrDefaultAsync<User>(command);
     }
 
-    public Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
+    public async Task<User?> GetByEmailAsync(string email, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'get user by email' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_get_user_by_email(@p_email)",
+            new { p_email = email },
+            cancellationToken: cancellationToken);
+
+        return await connection.QuerySingleOrDefaultAsync<User>(command);
     }
 
-    public Task<IReadOnlyList<User>> GetPageAsync(int offset, int limit, CancellationToken cancellationToken)
+    public async Task<IReadOnlyList<User>> GetPageAsync(int offset, int limit, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'list users paged' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_get_users_page(@p_offset, @p_limit)",
+            new { p_offset = offset, p_limit = limit },
+            cancellationToken: cancellationToken);
+
+        var users = await connection.QueryAsync<User>(command);
+        return users.ToList();
     }
 
-    public Task<int> CountAsync(CancellationToken cancellationToken)
+    public async Task<int> CountAsync(CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'count users' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_count_users()",
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command);
     }
 
-    public Task<User> InsertAsync(User user, CancellationToken cancellationToken)
+    public async Task<User> InsertAsync(User user, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'insert user' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT * FROM neondb_stp_insert_user(@p_fullname, @p_email, @p_passwordhash, @p_familyrole, @p_avatarstate)",
+            new
+            {
+                p_fullname = user.Fullname,
+                p_email = user.Email,
+                p_passwordhash = user.Passwordhash,
+                p_familyrole = user.Familyrole,
+                p_avatarstate = user.Avatarstate,
+            },
+            cancellationToken: cancellationToken);
+
+        return await connection.QuerySingleAsync<User>(command);
     }
 
-    public Task<bool> UpdateAsync(User user, CancellationToken cancellationToken)
+    public async Task<bool> UpdateAsync(User user, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'update user' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_update_user(@p_id, @p_fullname, @p_avatarstate, @p_familyrole)",
+            new
+            {
+                p_id = user.Id,
+                p_fullname = user.Fullname,
+                p_avatarstate = user.Avatarstate,
+                p_familyrole = user.Familyrole,
+            },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 
-    public Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
+    public async Task<bool> DeleteAsync(int id, CancellationToken cancellationToken)
     {
-        throw new NotImplementedException("Stored procedure for 'delete user' does not exist yet.");
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+
+        var command = new CommandDefinition(
+            "SELECT neondb_stp_delete_user(@p_id)",
+            new { p_id = id },
+            cancellationToken: cancellationToken);
+
+        return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 }

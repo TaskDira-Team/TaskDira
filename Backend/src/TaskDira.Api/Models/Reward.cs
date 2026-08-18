@@ -10,4 +10,12 @@ public class Reward
     public int? Claimedbyuserid { get; set; }
 
     public int? Householdid { get; set; }
+
+    public string? Emoji { get; set; }
+
+    public string? Description { get; set; }
+
+    public int Cost { get; set; }
+
+    public string? Category { get; set; }
 }

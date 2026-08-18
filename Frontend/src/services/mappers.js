@@ -35,7 +35,10 @@ export function enrichUser(user) {
   const isAdmin = userRole === ROLES.ADMIN;
   const avatarState = user.avatarState || user.avatarConfig || DEFAULT_AVATAR_CONFIG;
   const avatar = resolveAvatarConfig(avatarState);
+  // points is lifetime XP (ranking, levels, milestone unlocks); balance is the
+  // spendable wallet. They only diverge once something has been redeemed.
   const points = ledger?.totalPoints ?? 0;
+  const balance = ledger?.balance ?? points;
   const level = getUserLevel(points);
   const tasksCompletedThisMonth = user.tasksCompletedThisMonth ?? 0;
   const badge = getActivityBadge(tasksCompletedThisMonth);
@@ -58,6 +61,7 @@ export function enrichUser(user) {
     permissionRole: isAdmin ? 'admin' : 'member',
     isAdmin,
     points,
+    balance,
     rank: ledger?.rank,
     level,
     badge,
@@ -67,6 +71,7 @@ export function enrichUser(user) {
     familyRole: user.familyRole || 'roommate',
     familyRoleLabel: getFamilyRoleLabel(user.familyRole || 'roommate'),
     roleLabel: getFamilyRoleLabel(user.familyRole || 'roommate'),
+    hasFamilyRole: !!user.familyRole,
     permissionLabel: getPermissionLabel(isAdmin ? 'admin' : 'member'),
     lastCompletedDate: user.lastCompletedDate || null,
     profileTitle: avatar.profileBadgeLabel,

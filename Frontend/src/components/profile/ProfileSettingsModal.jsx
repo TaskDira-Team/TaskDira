@@ -48,7 +48,7 @@ export default function ProfileSettingsModal({
             <p className="text-xs text-slate-500 mb-0.5">{t('pointsBalance')}</p>
             <p className="text-lg font-bold text-slate-900 inline-flex items-center gap-1.5">
               <Star className="h-4 w-4 text-amber-500" />
-              {p(user.points ?? 0)}
+              {p(user.balance ?? user.points ?? 0)}
             </p>
           </div>
 

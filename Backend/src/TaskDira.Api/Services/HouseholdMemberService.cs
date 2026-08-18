@@ -62,7 +62,7 @@ public class HouseholdMemberService : IHouseholdMemberService
         if (!HouseholdRoles.IsKnown(request.Role))
             throw new ArgumentException($"Unknown role '{request.Role}'.", nameof(request));
 
-        if (!await IsAdminAsync(householdId, callerUserId, cancellationToken))
+        if (!await EnsureAdminAsync(householdId, callerUserId, cancellationToken))
             return null;
 
         var existing = await _members.GetAsync(householdId, request.UserId, cancellationToken);
@@ -85,7 +85,7 @@ public class HouseholdMemberService : IHouseholdMemberService
         if (!HouseholdRoles.IsKnown(request.Role))
             throw new ArgumentException($"Unknown role '{request.Role}'.", nameof(request));
 
-        if (!await IsAdminAsync(householdId, callerUserId, cancellationToken))
+        if (!await EnsureAdminAsync(householdId, callerUserId, cancellationToken))
             return false;
 
         if (userId == callerUserId && !HouseholdRoles.IsAdmin(request.Role))
@@ -97,7 +97,7 @@ public class HouseholdMemberService : IHouseholdMemberService
     public async Task<bool> RemoveAsync(int householdId, int userId, int callerUserId, CancellationToken cancellationToken)
     {
         var isSelf = userId == callerUserId;
-        if (!isSelf && !await IsAdminAsync(householdId, callerUserId, cancellationToken))
+        if (!isSelf && !await EnsureAdminAsync(householdId, callerUserId, cancellationToken))
             return false;
 
         if (isSelf && !await IsMemberAsync(householdId, callerUserId, cancellationToken))
@@ -112,10 +112,16 @@ public class HouseholdMemberService : IHouseholdMemberService
         return membership is not null;
     }
 
-    private async Task<bool> IsAdminAsync(int householdId, int callerUserId, CancellationToken cancellationToken)
+    private async Task<bool> EnsureAdminAsync(int householdId, int callerUserId, CancellationToken cancellationToken)
     {
         var membership = await _members.GetAsync(householdId, callerUserId, cancellationToken);
-        return membership is not null && HouseholdRoles.IsAdmin(membership.Role);
+        if (membership is null)
+            return false;
+
+        if (!HouseholdRoles.IsAdmin(membership.Role))
+            throw new UnauthorizedAccessException("Only a household admin can perform that action.");
+
+        return true;
     }
 
     private static HouseholdMemberResponse ToResponse(HouseholdMember member) => new()

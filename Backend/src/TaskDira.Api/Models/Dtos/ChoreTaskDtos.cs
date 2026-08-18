@@ -21,6 +21,14 @@ public class ChoreTaskResponse
     public DateTime? DueDate { get; set; }
 
     public string? ProofImageUrl { get; set; }
+
+    public int? CreatedById { get; set; }
+
+    public DateTime? CompletedAt { get; set; }
+
+    public int? ApprovedById { get; set; }
+
+    public string? RejectedReason { get; set; }
 }
 
 public class CreateChoreTaskRequest

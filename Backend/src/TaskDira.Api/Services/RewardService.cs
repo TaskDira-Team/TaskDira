@@ -68,7 +68,7 @@ public class RewardService : IRewardService
         if (request.RequiredPoints < 0)
             throw new ArgumentException("Required points cannot be negative.", nameof(request));
 
-        if (!await IsAdminAsync(householdId, callerUserId, cancellationToken))
+        if (!await EnsureAdminAsync(householdId, callerUserId, cancellationToken))
             return null;
 
         var reward = new Reward
@@ -76,6 +76,10 @@ public class RewardService : IRewardService
             Householdid = householdId,
             Title = request.Title.Trim(),
             Requiredpoints = request.RequiredPoints,
+            Emoji = request.Emoji,
+            Description = request.Description,
+            Cost = request.Cost ?? request.RequiredPoints,
+            Category = request.Category,
         };
 
         var created = await _rewards.InsertAsync(reward, cancellationToken);
@@ -96,11 +100,15 @@ public class RewardService : IRewardService
 
         var (reward, householdId) = visible.Value;
 
-        if (!await IsAdminAsync(householdId, callerUserId, cancellationToken))
+        if (!await EnsureAdminAsync(householdId, callerUserId, cancellationToken))
             return false;
 
         reward.Title = request.Title.Trim();
         reward.Requiredpoints = request.RequiredPoints;
+        reward.Emoji = request.Emoji;
+        reward.Description = request.Description;
+        reward.Cost = request.Cost ?? request.RequiredPoints;
+        reward.Category = request.Category;
 
         return await _rewards.UpdateAsync(reward, cancellationToken);
     }
@@ -116,8 +124,12 @@ public class RewardService : IRewardService
         if (reward.Claimedbyuserid is not null)
             throw new InvalidOperationException("That reward has already been claimed.");
 
-        var balance = await _ledger.GetTotalForUserAsync(householdId, callerUserId, cancellationToken);
-        if (balance < reward.Requiredpoints)
+        var balance = await _ledger.GetBalanceForUserAsync(householdId, callerUserId, cancellationToken);
+        if (balance < reward.Cost)
+            throw new InvalidOperationException("Not enough points to claim that reward.");
+
+        var spend = await _ledger.InsertSpendAsync(householdId, callerUserId, id, reward.Cost, cancellationToken);
+        if (spend is null)
             throw new InvalidOperationException("Not enough points to claim that reward.");
 
         // The repository claims only if claimedbyuserid is still null, so two members
@@ -131,7 +143,7 @@ public class RewardService : IRewardService
         if (visible is null)
             return false;
 
-        if (!await IsAdminAsync(visible.Value.HouseholdId, callerUserId, cancellationToken))
+        if (!await EnsureAdminAsync(visible.Value.HouseholdId, callerUserId, cancellationToken))
             return false;
 
         return await _rewards.DeleteAsync(id, cancellationToken);
@@ -155,10 +167,16 @@ public class RewardService : IRewardService
         return membership is not null;
     }
 
-    private async Task<bool> IsAdminAsync(int householdId, int callerUserId, CancellationToken cancellationToken)
+    private async Task<bool> EnsureAdminAsync(int householdId, int callerUserId, CancellationToken cancellationToken)
     {
         var membership = await _members.GetAsync(householdId, callerUserId, cancellationToken);
-        return membership is not null && HouseholdRoles.IsAdmin(membership.Role);
+        if (membership is null)
+            return false;
+
+        if (!HouseholdRoles.IsAdmin(membership.Role))
+            throw new UnauthorizedAccessException("Only a household admin can perform that action.");
+
+        return true;
     }
 
     private static RewardResponse ToResponse(Reward reward) => new()
@@ -168,5 +186,9 @@ public class RewardService : IRewardService
         RequiredPoints = reward.Requiredpoints,
         ClaimedByUserId = reward.Claimedbyuserid,
         HouseholdId = reward.Householdid ?? 0,
+        Emoji = reward.Emoji,
+        Description = reward.Description,
+        Cost = reward.Cost,
+        Category = reward.Category,
     };
 }
