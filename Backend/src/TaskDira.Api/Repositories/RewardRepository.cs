@@ -72,12 +72,16 @@ public class RewardRepository : IRewardRepository
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
         var command = new CommandDefinition(
-            "SELECT * FROM neondb_stp_insert_reward(@p_title, @p_requiredpoints, @p_householdid)",
+            "SELECT * FROM neondb_stp_insert_reward(@p_title, @p_requiredpoints, @p_householdid, @p_emoji, @p_description, @p_cost, @p_category)",
             new
             {
                 p_title = reward.Title,
                 p_requiredpoints = reward.Requiredpoints,
                 p_householdid = reward.Householdid,
+                p_emoji = reward.Emoji,
+                p_description = reward.Description,
+                p_cost = reward.Cost,
+                p_category = reward.Category,
             },
             cancellationToken: cancellationToken);
 
@@ -89,12 +93,16 @@ public class RewardRepository : IRewardRepository
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
         var command = new CommandDefinition(
-            "SELECT neondb_stp_update_reward(@p_id, @p_title, @p_requiredpoints)",
+            "SELECT neondb_stp_update_reward(@p_id, @p_title, @p_requiredpoints, @p_emoji, @p_description, @p_cost, @p_category)",
             new
             {
                 p_id = reward.Id,
                 p_title = reward.Title,
                 p_requiredpoints = reward.Requiredpoints,
+                p_emoji = reward.Emoji,
+                p_description = reward.Description,
+                p_cost = reward.Cost,
+                p_category = reward.Category,
             },
             cancellationToken: cancellationToken);
 

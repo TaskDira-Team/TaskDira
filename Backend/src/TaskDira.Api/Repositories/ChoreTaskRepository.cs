@@ -16,7 +16,7 @@ public interface IChoreTaskRepository
 
     Task<bool> UpdateAsync(ChoreTask task, CancellationToken cancellationToken);
 
-    Task<bool> UpdateStatusAsync(int id, string status, CancellationToken cancellationToken);
+    Task<bool> UpdateStatusAsync(int id, string status, DateTime? completedAt, CancellationToken cancellationToken);
 
     Task<bool> DeleteAsync(int id, CancellationToken cancellationToken);
 }
@@ -72,7 +72,7 @@ public class ChoreTaskRepository : IChoreTaskRepository
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
         var command = new CommandDefinition(
-            "SELECT * FROM neondb_stp_insert_task(@p_householdid, @p_title, @p_description, @p_categoryid, @p_pointsvalue, @p_assigneduserid, @p_duedate)",
+            "SELECT * FROM neondb_stp_insert_task(@p_householdid, @p_title, @p_description, @p_categoryid, @p_pointsvalue, @p_assigneduserid, @p_duedate, @p_createdbyid)",
             new
             {
                 p_householdid = task.Householdid,
@@ -81,7 +81,8 @@ public class ChoreTaskRepository : IChoreTaskRepository
                 p_categoryid = task.Categoryid,
                 p_pointsvalue = task.Pointsvalue,
                 p_assigneduserid = task.Assigneduserid,
-                p_duedate = task.Duedate,
+                p_duedate = ToTimestamp(task.Duedate),
+                p_createdbyid = task.Createdbyid,
             },
             cancellationToken: cancellationToken);
 
@@ -102,20 +103,20 @@ public class ChoreTaskRepository : IChoreTaskRepository
                 p_categoryid = task.Categoryid,
                 p_pointsvalue = task.Pointsvalue,
                 p_assigneduserid = task.Assigneduserid,
-                p_duedate = task.Duedate,
+                p_duedate = ToTimestamp(task.Duedate),
             },
             cancellationToken: cancellationToken);
 
         return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
 
-    public async Task<bool> UpdateStatusAsync(int id, string status, CancellationToken cancellationToken)
+    public async Task<bool> UpdateStatusAsync(int id, string status, DateTime? completedAt, CancellationToken cancellationToken)
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
         var command = new CommandDefinition(
-            "SELECT neondb_stp_update_task_status(@p_id, @p_status)",
-            new { p_id = id, p_status = status },
+            "SELECT neondb_stp_update_task_status(@p_id, @p_status, @p_completedat)",
+            new { p_id = id, p_status = status, p_completedat = ToTimestamp(completedAt) },
             cancellationToken: cancellationToken);
 
         return await connection.ExecuteScalarAsync<int>(command) > 0;
@@ -132,4 +133,7 @@ public class ChoreTaskRepository : IChoreTaskRepository
 
         return await connection.ExecuteScalarAsync<int>(command) > 0;
     }
+
+    private static DateTime? ToTimestamp(DateTime? value) =>
+        value is null ? null : DateTime.SpecifyKind(value.Value, DateTimeKind.Unspecified);
 }

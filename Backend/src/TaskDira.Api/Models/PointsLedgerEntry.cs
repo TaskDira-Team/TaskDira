@@ -4,9 +4,13 @@ public class PointsLedgerEntry
 {
     public int Id { get; set; }
 
+    public int Householdid { get; set; }
+
     public int Userid { get; set; }
 
-    public int Taskid { get; set; }
+    public int? Taskid { get; set; }
+
+    public int? Rewardid { get; set; }
 
     public int Pointsearned { get; set; }
 

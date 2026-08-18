@@ -39,6 +39,18 @@ public class PointsLedgerController : ApiControllerBase
         return total is null ? NotFound() : Ok(total.Value);
     }
 
+    [HttpGet("balance/{userId:int}", Name = "GetUserPointsBalance")]
+    public async Task<ActionResult<int>> GetBalanceForUser(int householdId, int userId, CancellationToken cancellationToken)
+    {
+        if (!TryGetCallerUserId(out var callerUserId))
+        {
+            return Unauthorized();
+        }
+
+        var balance = await _ledger.GetBalanceForUserAsync(householdId, userId, callerUserId, cancellationToken);
+        return balance is null ? NotFound() : Ok(balance.Value);
+    }
+
     [HttpPost(Name = "AwardPoints")]
     public async Task<ActionResult<PointsLedgerEntryResponse>> Award(int householdId, [FromBody] CreatePointsLedgerEntryRequest request, CancellationToken cancellationToken)
     {

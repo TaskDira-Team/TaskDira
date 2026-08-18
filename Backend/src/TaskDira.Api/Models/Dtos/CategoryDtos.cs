@@ -22,3 +22,5 @@ public class UpdateCategoryRequest
 
     public string? Description { get; set; }
 }
+
+

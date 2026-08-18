@@ -24,4 +24,12 @@ public class ChoreTask
     public DateTime? Duedate { get; set; }
 
     public string? Proofimageurl { get; set; }
+
+    public int? Createdbyid { get; set; }
+
+    public DateTime? Completedat { get; set; }
+
+    public int? Approvedbyid { get; set; }
+
+    public string? Rejectedreason { get; set; }
 }

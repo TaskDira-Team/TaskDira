@@ -24,6 +24,7 @@ public class GlobalExceptionHandler : IExceptionHandler
         var (statusCode, title, detail) = exception switch
         {
             ArgumentException => (StatusCodes.Status400BadRequest, "Bad Request", exception.Message),
+            UnauthorizedAccessException => (StatusCodes.Status403Forbidden, "Forbidden", exception.Message),
             InvalidOperationException => (StatusCodes.Status409Conflict, "Conflict", exception.Message),
             _ => (StatusCodes.Status500InternalServerError, "An unexpected error occurred.", (string?)null),
         };

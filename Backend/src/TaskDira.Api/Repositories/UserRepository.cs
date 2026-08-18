@@ -83,12 +83,14 @@ public class UserRepository : IUserRepository
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
         var command = new CommandDefinition(
-            "SELECT * FROM neondb_stp_insert_user(@p_fullname, @p_email, @p_passwordhash)",
+            "SELECT * FROM neondb_stp_insert_user(@p_fullname, @p_email, @p_passwordhash, @p_familyrole, @p_avatarstate)",
             new
             {
                 p_fullname = user.Fullname,
                 p_email = user.Email,
                 p_passwordhash = user.Passwordhash,
+                p_familyrole = user.Familyrole,
+                p_avatarstate = user.Avatarstate,
             },
             cancellationToken: cancellationToken);
 
@@ -100,12 +102,13 @@ public class UserRepository : IUserRepository
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
         var command = new CommandDefinition(
-            "SELECT neondb_stp_update_user(@p_id, @p_fullname, @p_avatarstate)",
+            "SELECT neondb_stp_update_user(@p_id, @p_fullname, @p_avatarstate, @p_familyrole)",
             new
             {
                 p_id = user.Id,
                 p_fullname = user.Fullname,
                 p_avatarstate = user.Avatarstate,
+                p_familyrole = user.Familyrole,
             },
             cancellationToken: cancellationToken);
 

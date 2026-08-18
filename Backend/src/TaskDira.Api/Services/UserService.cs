@@ -73,6 +73,7 @@ public class UserService : IUserService
         {
             Fullname = request.FullName.Trim(),
             Email = request.Email.Trim().ToLowerInvariant(),
+            Familyrole = string.IsNullOrWhiteSpace(request.FamilyRole) ? "roommate" : request.FamilyRole.Trim(),
         };
 
         user.Passwordhash = _passwordHasher.HashPassword(user, request.Password);
@@ -95,6 +96,8 @@ public class UserService : IUserService
 
         user.Fullname = request.FullName.Trim();
         user.Avatarstate = request.AvatarState;
+        if (!string.IsNullOrWhiteSpace(request.FamilyRole))
+            user.Familyrole = request.FamilyRole.Trim();
 
         return await _users.UpdateAsync(user, cancellationToken);
     }
@@ -115,6 +118,7 @@ public class UserService : IUserService
         FullName = user.Fullname,
         Email = user.Email,
         AvatarState = user.Avatarstate,
+        FamilyRole = user.Familyrole,
         CreatedAt = user.Createdat,
     };
 }

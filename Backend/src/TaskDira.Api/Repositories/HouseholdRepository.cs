@@ -70,12 +70,15 @@ public class HouseholdRepository : IHouseholdRepository
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
         var command = new CommandDefinition(
-            "SELECT * FROM neondb_stp_insert_household_with_admin(@p_name, @p_adminuserid, @p_role)",
+            "SELECT * FROM neondb_stp_insert_household_with_admin(@p_name, @p_adminuserid, @p_role, @p_address, @p_monthlygoalpoints, @p_requireproofapproval)",
             new
             {
                 p_name = household.Name,
                 p_adminuserid = household.Adminuserid,
                 p_role = adminRole,
+                p_address = household.Address,
+                p_monthlygoalpoints = household.Monthlygoalpoints,
+                p_requireproofapproval = household.Requireproofapproval,
             },
             cancellationToken: cancellationToken);
 
@@ -87,8 +90,15 @@ public class HouseholdRepository : IHouseholdRepository
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
         var command = new CommandDefinition(
-            "SELECT neondb_stp_update_household(@p_id, @p_name)",
-            new { p_id = household.Id, p_name = household.Name },
+            "SELECT neondb_stp_update_household(@p_id, @p_name, @p_address, @p_monthlygoalpoints, @p_requireproofapproval)",
+            new
+            {
+                p_id = household.Id,
+                p_name = household.Name,
+                p_address = household.Address,
+                p_monthlygoalpoints = household.Monthlygoalpoints,
+                p_requireproofapproval = household.Requireproofapproval,
+            },
             cancellationToken: cancellationToken);
 
         return await connection.ExecuteScalarAsync<int>(command) > 0;
