@@ -88,16 +88,24 @@ export function getHouseholdGoalProgress(users) {
   return { totalPoints, goal: MONTHLY_HOUSEHOLD_GOAL, percent };
 }
 
-export function enrichReward(reward, monthlyPoints = 0) {
+// `unlocked` is earned standing: lifetime XP against requiredPoints, and it
+// never regresses. `affordable` is the wallet: balance against cost, and it
+// drops every time something is redeemed. A reward can be unlocked but
+// unaffordable, which the store renders as two different states.
+export function enrichReward(reward, xpPoints = 0, balance = null) {
   const requiredPoints = reward.requiredPoints ?? reward.cost ?? 0;
   const cost = reward.cost ?? requiredPoints;
+  const wallet = balance ?? xpPoints;
   return {
     id: reward.id,
     title: reward.title,
     emoji: reward.emoji || '🎁',
     requiredPoints,
     cost,
-    unlocked: monthlyPoints >= requiredPoints,
+    unlocked: xpPoints >= requiredPoints,
+    affordable: wallet >= cost,
+    claimed: reward.claimed ?? false,
+    claimedByUserId: reward.claimedByUserId ?? null,
     category: reward.category || (requiredPoints >= 200 ? 'tier3' : requiredPoints >= 100 ? 'tier2' : 'tier1'),
     code: reward.code || null,
     description: reward.description || '',

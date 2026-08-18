@@ -3,6 +3,29 @@ import { isAdmin, canMoveTask, canDeleteTask, canEditTaskFully } from '../utils/
 import { store, delay, generateId, assertCurrentUser, getActiveHouseholdId } from './store';
 import { enrichTaskView } from './mappers';
 import { updateUserPoints } from './usersApi';
+import { USE_REAL_API } from './config';
+import {
+  fetchTasksRemote,
+  fetchTaskRemote,
+  createTaskRemote,
+  updateTaskRemote,
+  updateTaskStatusRemote,
+  deleteTaskRemote,
+  addSubItemsRemote,
+  toggleSubItemRemote,
+  awardPointsRemote,
+} from './tasksRemote';
+
+function cacheTask(task) {
+  const index = store.tasks.findIndex((t) => t.id === task.id);
+  if (index === -1) store.tasks.push(task);
+  else store.tasks[index] = task;
+  return task;
+}
+
+function cachedTask(taskId) {
+  return store.tasks.find((t) => t.id === taskId);
+}
 
 function normalizeSubItems(items) {
   if (!Array.isArray(items)) return [];
@@ -25,6 +48,11 @@ function normalizeSubItems(items) {
 }
 
 export async function fetchTasks() {
+  if (USE_REAL_API.tasks) {
+    const tasks = await fetchTasksRemote();
+    store.tasks = tasks;
+    return tasks.map((t) => enrichTaskView({ ...t }));
+  }
   await delay();
   const hid = getActiveHouseholdId();
   return store.tasks
@@ -33,6 +61,19 @@ export async function fetchTasks() {
 }
 
 export async function createTask(taskData, actor) {
+  if (USE_REAL_API.tasks) {
+    const user = actor || assertCurrentUser();
+    const created = await createTaskRemote({
+      title: taskData.title,
+      description: taskData.description,
+      categoryId: taskData.categoryId || taskData.category || 'other',
+      pointsValue: Number(taskData.pointsValue ?? taskData.points) || 10,
+      assignedUserId: taskData.assignedUserId ?? taskData.assigneeId ?? user?.id ?? null,
+      dueDate: taskData.dueDate || taskData.dueAt || null,
+      subItems: taskData.subItems,
+    });
+    return enrichTaskView({ ...cacheTask(created) });
+  }
   await delay();
   const user = actor || assertCurrentUser();
   const hid = getActiveHouseholdId();
@@ -67,6 +108,47 @@ export async function createTask(taskData, actor) {
 }
 
 export async function updateTask(taskId, updates, actor) {
+  if (USE_REAL_API.tasks) {
+    const user = actor || assertCurrentUser();
+    const current = cachedTask(taskId) || (await fetchTaskRemote(taskId));
+    if (!current) throw new Error('משימה לא נמצאה');
+    if (!canEditTaskFully(user, current)) throw new Error('אין הרשאה לערוך משימה זו');
+
+    const sanitized = { ...updates };
+    if (sanitized.category !== undefined) {
+      sanitized.categoryId = sanitized.category;
+      delete sanitized.category;
+    }
+    if (sanitized.points !== undefined) {
+      sanitized.pointsValue = Number(sanitized.points);
+      delete sanitized.points;
+    }
+    if (sanitized.assigneeId !== undefined) {
+      sanitized.assignedUserId = sanitized.assigneeId;
+      delete sanitized.assigneeId;
+    }
+    if (sanitized.dueAt !== undefined) {
+      sanitized.dueDate = sanitized.dueAt;
+      delete sanitized.dueAt;
+    }
+
+    const { status, subItems, ...rest } = sanitized;
+
+    if (subItems !== undefined) {
+      const texts = normalizeSubItems(subItems)
+        .filter((s) => !current.subItems?.some((c) => c.id === s.id))
+        .map((s) => s.text);
+      if (texts.length) await addSubItemsRemote(taskId, texts);
+    }
+
+    let latest = await updateTaskRemote(taskId, current, rest);
+
+    if (status !== undefined && status !== current.status) {
+      return updateTaskStatus(taskId, status, user);
+    }
+
+    return enrichTaskView({ ...cacheTask(latest) });
+  }
   await delay();
   const user = actor || assertCurrentUser();
   const index = store.tasks.findIndex((t) => t.id === taskId);
@@ -110,6 +192,41 @@ export async function updateTask(taskId, updates, actor) {
 }
 
 export async function updateTaskStatus(taskId, newStatus, actor) {
+  if (USE_REAL_API.tasks) {
+    const user = actor || assertCurrentUser();
+    const current = cachedTask(taskId) || (await fetchTaskRemote(taskId));
+    if (!current) throw new Error('משימה לא נמצאה');
+    if (!canMoveTask(user, current)) throw new Error('אין הרשאה להזיז משימה זו');
+
+    const previousStatus = current.status;
+
+    if (
+      newStatus === TASK_STATUSES.DONE &&
+      store.proofApprovalRequired &&
+      !isAdmin(user) &&
+      previousStatus !== TASK_STATUSES.PENDING_APPROVAL
+    ) {
+      throw new Error('יש להעלות הוכחת ביצוע לאישור מנהל');
+    }
+
+    // PendingApproval has no backend status; the proof flow stays local.
+    if (newStatus === TASK_STATUSES.PENDING_APPROVAL) {
+      const local = { ...current, status: newStatus };
+      cacheTask(local);
+      return enrichTaskView({ ...local, previousStatus });
+    }
+
+    const updated = await updateTaskStatusRemote(taskId, previousStatus, newStatus);
+    cacheTask(updated);
+
+    // The ledger itself rejects a second earn for the same task, so a duplicate
+    // is a no-op rather than an error the user needs to see.
+    if (newStatus === TASK_STATUSES.DONE && previousStatus !== TASK_STATUSES.DONE) {
+      await awardPointsRemote(updated.assignedUserId, taskId, updated.pointsValue);
+    }
+
+    return enrichTaskView({ ...updated, previousStatus });
+  }
   await delay();
   const user = actor || assertCurrentUser();
   const index = store.tasks.findIndex((t) => t.id === taskId);
@@ -122,6 +239,7 @@ export async function updateTaskStatus(taskId, newStatus, actor) {
 
   if (
     newStatus === TASK_STATUSES.DONE &&
+    store.proofApprovalRequired &&
     !isAdmin(user) &&
     previousStatus !== TASK_STATUSES.PENDING_APPROVAL
   ) {
@@ -221,6 +339,18 @@ export async function rejectTask(taskId, reason = '') {
 }
 
 export async function claimTask(taskId) {
+  if (USE_REAL_API.tasks) {
+    const user = assertCurrentUser();
+    const current = cachedTask(taskId) || (await fetchTaskRemote(taskId));
+    if (!current) throw new Error('משימה לא נמצאה');
+    if (current.status !== TASK_STATUSES.TODO && current.status !== TASK_STATUSES.IN_PROGRESS) {
+      throw new Error('לא ניתן לתפוס משימה זו');
+    }
+    if (current.assignedUserId) throw new Error('המשימה כבר תפוסה');
+
+    const updated = await updateTaskRemote(taskId, current, { assignedUserId: user.id });
+    return enrichTaskView({ ...cacheTask(updated) });
+  }
   await delay();
   const user = assertCurrentUser();
   const index = store.tasks.findIndex((t) => t.id === taskId);
@@ -237,6 +367,23 @@ export async function claimTask(taskId) {
 }
 
 export async function deleteTask(taskId) {
+  if (USE_REAL_API.tasks) {
+    const user = assertCurrentUser();
+    if (!canDeleteTask(user)) throw new Error('רק מנהל הבית יכול למחוק משימות');
+    const current = cachedTask(taskId) || (await fetchTaskRemote(taskId));
+    if (!current) throw new Error('משימה לא נמצאה');
+
+    try {
+      await deleteTaskRemote(taskId);
+    } catch (err) {
+      if (err?.status === 409) {
+        throw new Error('לא ניתן למחוק משימה שכבר זיכתה בנקודות — ההיסטוריה נשמרת');
+      }
+      throw err;
+    }
+    store.tasks = store.tasks.filter((t) => t.id !== taskId);
+    return enrichTaskView({ ...current });
+  }
   await delay();
   const user = assertCurrentUser();
   if (!canDeleteTask(user)) throw new Error('רק מנהל הבית יכול למחוק משימות');
@@ -254,6 +401,17 @@ export async function deleteTask(taskId) {
 }
 
 export async function toggleSubItem(taskId, subItemId, isCompleted) {
+  if (USE_REAL_API.tasks) {
+    assertCurrentUser();
+    const current = cachedTask(taskId) || (await fetchTaskRemote(taskId));
+    if (!current) throw new Error('משימה לא נמצאה');
+    const item = current.subItems?.find((s) => s.id === subItemId);
+    if (!item) throw new Error('פריט לא נמצא');
+
+    const next = typeof isCompleted === 'boolean' ? isCompleted : !item.isCompleted;
+    const updated = await toggleSubItemRemote(taskId, subItemId, item.text, next);
+    return enrichTaskView({ ...cacheTask(updated) });
+  }
   await delay(120);
   assertCurrentUser();
   const task = store.tasks.find((t) => t.id === taskId);
@@ -266,6 +424,17 @@ export async function toggleSubItem(taskId, subItemId, isCompleted) {
 }
 
 export async function addSubItems(taskId, texts = []) {
+  if (USE_REAL_API.tasks) {
+    assertCurrentUser();
+    const items = normalizeSubItems(texts).map((s) => s.text);
+    if (items.length === 0) {
+      const current = cachedTask(taskId) || (await fetchTaskRemote(taskId));
+      if (!current) throw new Error('משימה לא נמצאה');
+      return enrichTaskView({ ...current });
+    }
+    const updated = await addSubItemsRemote(taskId, items);
+    return enrichTaskView({ ...cacheTask(updated) });
+  }
   await delay(200);
   assertCurrentUser();
   const task = store.tasks.find((t) => t.id === taskId);

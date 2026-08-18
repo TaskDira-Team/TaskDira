@@ -2,6 +2,118 @@
 
 @theme {
   --font-sans: 'Plus Jakarta Sans', 'Segoe UI', Tahoma, sans-serif;
+
+  /* New design system (Figma) — used by the rebuilt screens; old screens ignore these */
+  --font-landing: 'Nunito', 'Segoe UI', Tahoma, sans-serif;
+  --font-num: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* ground: deep purple / navy */
+  --color-void: #0a0620;
+  --color-abyss: #120a33;
+  --color-panel: #1a1046;
+  --color-panel-2: #221459;
+  --color-hairline: #3a2a7a;
+
+  /* accents */
+  --color-lime: #b8f06a;
+  --color-lime-deep: #8fd53a;
+  --color-grape: #a06cff;
+  --color-sky: #59c8ff;
+  --color-coral: #ff7a8a;
+  --color-gold: #ffcb47;
+  --color-mint: #4fe0c0;
+
+  --color-ink: #f4f0ff;
+  --color-ink-dim: #b9addf;
+  --color-ink-faint: #8577b8;
+}
+
+@utility num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.03em;
+}
+
+/* ---- new design system motion ---- */
+@keyframes bob {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+@keyframes bob-soft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+@keyframes drift {
+  0%,
+  100% {
+    transform: translate3d(0, 0, 0) scale(1);
+  }
+  33% {
+    transform: translate3d(3%, -4%, 0) scale(1.08);
+  }
+  66% {
+    transform: translate3d(-4%, 3%, 0) scale(0.96);
+  }
+}
+@keyframes pulse-glow {
+  0%,
+  100% {
+    opacity: 0.55;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+@keyframes pop-in {
+  0% {
+    transform: scale(0.4) rotate(-14deg);
+    opacity: 0;
+  }
+  70% {
+    transform: scale(1.12) rotate(4deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1) rotate(0);
+    opacity: 1;
+  }
+}
+@keyframes sheen {
+  0% {
+    transform: translateX(-130%);
+  }
+  100% {
+    transform: translateX(260%);
+  }
+}
+
+@utility anim-bob {
+  animation: bob 4.5s ease-in-out infinite;
+}
+@utility anim-bob-soft {
+  animation: bob-soft 3.6s ease-in-out infinite;
+}
+@utility anim-pop {
+  animation: pop-in 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+@utility anim-drift {
+  animation: drift 18s ease-in-out infinite;
+}
+@utility anim-glow {
+  animation: pulse-glow 3.2s ease-in-out infinite;
+}
+@utility anim-sheen {
+  animation: sheen 2.8s ease-in-out infinite;
 }
 
 html,

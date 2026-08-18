@@ -1,6 +1,8 @@
 import { enrichUser, getLedgerEntry } from './mappers';
-import { store, delay, getRawUser, recalculateRanks, getActiveHouseholdId } from './store';
+import { store, delay, getRawUser, recalculateRanks, getActiveHouseholdId, hydrateHouseholdMembers } from './store';
 import { TASK_STATUSES } from '../data/mockData';
+import { USE_REAL_API } from './config';
+import { fetchHouseholdRoster } from './usersRemote';
 
 export { enrichUser };
 
@@ -9,6 +11,21 @@ function monthKey(d = new Date()) {
 }
 
 export async function fetchUsers() {
+  if (USE_REAL_API.users) {
+    const roster = await fetchHouseholdRoster();
+    const hydrated = hydrateHouseholdMembers(roster);
+    if (store.currentUser) {
+      const refreshed = getRawUser(store.currentUser.id);
+      if (refreshed) {
+        store.currentUser = {
+          ...enrichUser(refreshed),
+          token: store.currentUser.token,
+          activeHouseholdId: store.currentUser.activeHouseholdId,
+        };
+      }
+    }
+    return hydrated.map((u) => enrichUser(u));
+  }
   await delay();
   const hid = getActiveHouseholdId();
   const memberIds = new Set(
@@ -17,6 +34,9 @@ export async function fetchUsers() {
   return store.users.filter((u) => memberIds.has(u.id)).map((u) => enrichUser(u));
 }
 
+// Stays local even when USE_REAL_API.users is on: the backend ledger requires a
+// non-null taskid on every award, and task ids are still mock. Points are read
+// from the real ledger in fetchUsers; writes go live with the tasks domain.
 export async function updateUserPoints(userId, pointsDelta) {
   await delay(100);
   const hid = getActiveHouseholdId();
@@ -83,6 +103,10 @@ export async function deductPoints(userId, amount) {
 }
 
 export async function getLeaderboard() {
+  if (USE_REAL_API.users) {
+    const users = await fetchUsers();
+    return [...users].sort((a, b) => b.points - a.points);
+  }
   await delay();
   const hid = getActiveHouseholdId();
   const memberIds = new Set(
