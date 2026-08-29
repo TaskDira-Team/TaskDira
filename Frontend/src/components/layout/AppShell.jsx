@@ -3,6 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { useRoute } from '../../context/RouteContext';
 import { NAV_ROUTES } from '../../routes';
 import { Aurora, Avatar } from '../ui/kit';
+import CoinStreakWidget, { CoinStreakDefs } from '../ui/CoinStreakWidget';
 
 function NavButton({ route, active, onClick, compact }) {
   const { t } = useI18n();
@@ -59,6 +60,14 @@ export default function AppShell({ children }) {
   return (
     <div dir={dir} className="font-landing relative min-h-screen overflow-hidden bg-void text-ink">
       <Aurora />
+      <CoinStreakDefs />
+
+      {/* The sidebar is display:none below lg, so the mobile readout is its own
+          instance in the free top corner — clear of the bottom tab bar and the
+          accessibility button. */}
+      <div className="pointer-events-none fixed top-4 end-4 z-40 lg:hidden">
+        <CoinStreakWidget />
+      </div>
 
       <div className="relative flex min-h-screen">
         <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-e border-white/8 bg-abyss/60 px-4 py-6 backdrop-blur-sm lg:flex">
@@ -88,6 +97,7 @@ export default function AppShell({ children }) {
           </nav>
 
           <div className="mt-auto space-y-2 border-t border-white/8 pt-4">
+            {user && <CoinStreakWidget className="px-2 pb-0.5" />}
             {user && (
               <button
                 type="button"
@@ -97,9 +107,6 @@ export default function AppShell({ children }) {
                 <Avatar emoji="🦊" ring="lime" size={38} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[13px] font-extrabold">{user.fullName || user.name}</span>
-                  <span className="num block text-[11px] text-ink-faint">
-                    {user.balance ?? user.points ?? 0} {t('pointsShort')}
-                  </span>
                 </span>
               </button>
             )}

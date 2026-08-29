@@ -204,6 +204,71 @@ body {
   animation: task-pop-in 0.35s cubic-bezier(0.34, 1.4, 0.64, 1) both;
 }
 
+/* --- coin & streak widget (components/ui/CoinStreakWidget.jsx) --- */
+
+/* Unboxed on the aurora background, so the art carries its own separation. */
+.csw-drop {
+  filter: drop-shadow(0 1px 2px rgb(0 0 0 / 0.6));
+}
+.csw-num {
+  font-family: var(--font-num);
+  font-variant-numeric: tabular-nums;
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1;
+  color: #f3f2ff;
+  text-shadow: 0 1px 3px rgb(0 0 0 / 0.75);
+  display: inline-block;
+}
+
+@keyframes csw-sheen-anim {
+  0% { transform: translateX(-150%); }
+  55%, 100% { transform: translateX(170%); }
+}
+.csw-sheen {
+  animation: csw-sheen-anim 3.2s ease-in-out infinite;
+}
+
+@keyframes csw-flicker-anim {
+  0%, 100% { transform: scaleY(1) scaleX(1); opacity: 1; }
+  25% { transform: scaleY(1.14) scaleX(0.92); opacity: 0.9; }
+  50% { transform: scaleY(0.94) scaleX(1.06); opacity: 1; }
+  75% { transform: scaleY(1.07) scaleX(0.97); opacity: 0.94; }
+}
+.csw-flicker {
+  animation: csw-flicker-anim 1.7s ease-in-out infinite;
+  transform-origin: 50% 100%;
+}
+
+@keyframes csw-coin-fly-anim {
+  0% { opacity: 0; transform: translate(var(--csw-fx), var(--csw-fy)) scale(0.45) rotate(-30deg); }
+  25% { opacity: 1; }
+  70% { opacity: 1; transform: translate(var(--csw-tx), var(--csw-ty)) scale(1) rotate(0deg); }
+  100% { opacity: 0; transform: translate(var(--csw-tx), calc(var(--csw-ty) - 8px)) scale(0.9) rotate(0deg); }
+}
+.csw-coin-fly {
+  opacity: 0;
+  animation: csw-coin-fly-anim 0.9s cubic-bezier(0.3, 1.2, 0.5, 1) both;
+}
+
+@keyframes csw-tick-pop-anim {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.18); }
+  100% { transform: scale(1); }
+}
+.csw-tick-pop {
+  animation: csw-tick-pop-anim 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .csw-sheen,
+  .csw-flicker,
+  .csw-coin-fly,
+  .csw-tick-pop {
+    animation: none;
+  }
+}
+
 .glass-surface {
   background: rgb(255 255 255 / 0.82);
   backdrop-filter: blur(16px);
