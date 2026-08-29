@@ -13,9 +13,25 @@ import {
 } from '../data/avatars';
 import { AVATAR_TYPES } from '../data/stickers';
 import { FAMILY_ROLES } from '../data/gamification';
-import { ACCENTS, LimeButton, Panel, ScreenShell, StatTile, XPRing } from '../components/ui/kit';
+import {
+  ACCENTS,
+  LimeButton,
+  Panel,
+  ScreenShell,
+  SegmentedTabs,
+  StatTile,
+  XPRing,
+  fieldClass,
+} from '../components/ui/kit';
 
 const DEFAULT_FAMILY_ROLE = 'roommate';
+
+/** One scale for the whole screen, so section rhythm stops being ad hoc. */
+const SECTION_HEADING = 'text-[15px] font-black tracking-tight';
+const MICRO_LABEL = 'num text-[11px] font-bold tracking-wider text-ink-faint uppercase';
+const SETTING_LABEL = 'text-[14px] font-bold text-ink-dim';
+/** Separates picker groups the way the settings panel's divide-y separates rows. */
+const GROUP_DIVIDER = 'mt-6 border-t border-white/8 pt-6';
 
 function draftFrom(user) {
   const state = user?.avatarState ?? {};
@@ -79,13 +95,25 @@ export default function Profile() {
     }
   };
 
+  // A wider shell than the max-w-xl default: this screen has three dense
+  // pickers that need room, and the default cap wasted most of the desktop
+  // viewport.
+  //
+  // NOTE (shared, not fixed here): ScreenShell renders its own bg-void + Aurora
+  // and horizontal padding on top of AppShell's, so every screen paints the
+  // aurora twice and pads twice. Fixing that means changing ScreenShell for all
+  // five screens — deliberately out of scope for this Profile-only pass.
   return (
-    <ScreenShell dir={dir}>
-      <div className="space-y-6">
-        <h1 className="text-2xl font-black">{t('profile.title')}</h1>
+    <ScreenShell dir={dir} width="max-w-5xl">
+      <h1 className="mb-8 text-2xl font-black">{t('profile.title')}</h1>
 
+      {/* DOM order is showcase → customize → stats → settings, which is both the
+          intended hierarchy and the mobile reading order. Desktop rearranges via
+          column spans only, never by reordering. Grid follows `direction`, so
+          RTL mirrors the columns automatically. */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5 lg:gap-8">
         {/* showcase */}
-        <Panel className="overflow-hidden p-7 text-center" glow accent={accent}>
+        <Panel className="col-span-full overflow-hidden p-8 text-center" glow accent={accent}>
           <div className="flex justify-center">
             <XPRing value={progress} accent={accent} size={188}>
               <div className="anim-bob">
@@ -131,21 +159,21 @@ export default function Profile() {
         </Panel>
 
         {/* customizer */}
-        <Panel className="p-5">
-          <h3 className="text-[15px] font-extrabold">{t('profile.customize')}</h3>
+        <Panel className="p-6 lg:col-span-3 lg:row-span-2">
+          <h3 className={SECTION_HEADING}>{t('profile.customize')}</h3>
 
-          <div className="mt-4">
-            <div className="num text-[11px] font-bold tracking-wider text-ink-faint uppercase">
-              {t('profile.face')}
-            </div>
-            <div className="mt-2 flex flex-wrap gap-2">
+          <div className="mt-5">
+            <div className={MICRO_LABEL}>{t('profile.face')}</div>
+            {/* 16 icons divide evenly by both 4 and 8, so neither breakpoint
+                leaves a ragged final row. */}
+            <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-8">
               {AVATAR_ICONS.map((icon) => (
                 <button
                   key={icon.id}
                   onClick={() => set({ baseIconId: icon.id })}
                   aria-pressed={icon.id === draft.baseIconId}
                   aria-label={icon.label}
-                  className={`grid h-11 w-11 place-items-center rounded-xl border text-xl transition ${
+                  className={`grid aspect-square w-full place-items-center rounded-xl border text-xl transition ${
                     icon.id === draft.baseIconId
                       ? 'border-lime bg-lime/15'
                       : 'border-white/10 bg-panel/50 hover:border-white/25'
@@ -157,11 +185,9 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="mt-5">
-            <div className="num text-[11px] font-bold tracking-wider text-ink-faint uppercase">
-              {t('profile.ringLabel')}
-            </div>
-            <div className="mt-2 flex gap-3">
+          <div className={GROUP_DIVIDER}>
+            <div className={MICRO_LABEL}>{t('profile.ringLabel')}</div>
+            <div className="mt-3 flex flex-wrap gap-3">
               {RING_COLORS.map((r) => {
                 const a = getRingAccent(r.id);
                 const active = r.id === draft.ringColorId;
@@ -189,11 +215,10 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="mt-5">
-            <div className="num text-[11px] font-bold tracking-wider text-ink-faint uppercase">
-              {t('profile.badges')}
-            </div>
-            <div className="mt-2 grid grid-cols-4 gap-2">
+          <div className={GROUP_DIVIDER}>
+            <div className={MICRO_LABEL}>{t('profile.badges')}</div>
+            {/* Fixed min-height keeps rows even when the longer labels wrap. */}
+            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
               {PROFILE_BADGES.map((b) => {
                 const active = b.id === draft.profileBadgeId;
                 return (
@@ -201,13 +226,13 @@ export default function Profile() {
                     key={b.id}
                     onClick={() => set({ profileBadgeId: b.id })}
                     aria-pressed={active}
-                    className={`rounded-xl border p-2 text-center transition ${
+                    className={`grid min-h-[56px] place-items-center rounded-xl border p-2 text-center transition ${
                       active
                         ? 'border-gold/45 bg-gold/10'
                         : 'border-dashed border-white/15 opacity-55 hover:opacity-90'
                     }`}
                   >
-                    <div className="text-[10px] font-bold text-ink-dim">{b.label}</div>
+                    <div className="text-[11px] leading-snug font-bold text-ink-dim">{b.label}</div>
                   </button>
                 );
               })}
@@ -215,8 +240,9 @@ export default function Profile() {
           </div>
         </Panel>
 
-        {/* stats */}
-        <div className="grid grid-cols-2 gap-3">
+        {/* stats — 2-up on mobile, a 4-wide strip while full width, back to 2-up
+            once it sits in the narrower desktop column. */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:col-span-2 lg:grid-cols-2">
           <StatTile
             emoji="✅"
             value={me?.tasksCompletedThisMonth ?? 0}
@@ -249,22 +275,23 @@ export default function Profile() {
           )}
         </div>
 
-        {/* settings */}
-        <Panel className="divide-y divide-white/8 p-5">
-          <h3 className="pb-4 text-[15px] font-extrabold">{t('settings')}</h3>
+        {/* settings — every field stacked (label above, full-width control) so
+            the six role pills and the language toggle get the whole panel. */}
+        <Panel className="divide-y divide-white/8 p-6 lg:col-span-2">
+          <h3 className={`${SECTION_HEADING} pb-4`}>{t('settings')}</h3>
 
-          <div className="flex items-center justify-between py-4">
-            <span className="text-[14px] font-bold text-ink-dim">{t('profile.displayName')}</span>
+          <div className="py-4">
+            <span className={SETTING_LABEL}>{t('profile.displayName')}</span>
             <input
               value={draft.fullName}
               onChange={(e) => set({ fullName: e.target.value })}
-              className="w-40 rounded-xl border border-white/12 bg-black/30 px-3 py-1.5 text-start text-[13px] font-bold text-ink outline-none focus:border-lime/60"
+              className={`${fieldClass} mt-3`}
             />
           </div>
 
-          <div className="flex flex-wrap items-center justify-between gap-2 py-4">
-            <span className="text-[14px] font-bold text-ink-dim">{t('onboard.role')}</span>
-            <div className="flex flex-wrap gap-1.5">
+          <div className="py-4">
+            <span className={SETTING_LABEL}>{t('onboard.role')}</span>
+            <div className="mt-3 flex flex-wrap gap-2">
               {FAMILY_ROLES.map((role) => (
                 <button
                   key={role.id}
@@ -281,27 +308,21 @@ export default function Profile() {
             </div>
           </div>
 
-          <div className="flex items-center justify-between py-4">
-            <span className="text-[14px] font-bold text-ink-dim">{t('profile.language')}</span>
-            <div className="flex overflow-hidden rounded-full border border-white/12">
-              {[
-                ['he', 'עברית'],
-                ['en', 'English'],
-              ].map(([k, label]) => (
-                <button
-                  key={k}
-                  onClick={() => setLang(k)}
-                  className={`num px-3 py-1.5 text-[12px] font-extrabold transition ${
-                    lang === k ? 'bg-lime text-[#152007]' : 'text-ink-dim'
-                  }`}
-                >
-                  {label}
-                </button>
-              ))}
+          <div className="py-4">
+            <span className={SETTING_LABEL}>{t('profile.language')}</span>
+            <div className="mt-3">
+              <SegmentedTabs
+                items={[
+                  { key: 'he', label: 'עברית' },
+                  { key: 'en', label: 'English' },
+                ]}
+                value={lang}
+                onChange={setLang}
+              />
             </div>
           </div>
 
-          <div className="pt-5">
+          <div className="pt-6">
             <LimeButton className="w-full" onClick={handleSave}>
               {saving ? t('saving') : t('saveChanges')}
             </LimeButton>
