@@ -7,10 +7,16 @@ import { TASK_STATUSES } from '../data/mockData';
 import {
   ACCENTS,
   Avatar,
+  ConfirmDialog,
+  Dialog,
+  Field,
+  GhostButton,
+  LimeButton,
   Panel,
   ScreenShell,
   StatTile,
   XPBar,
+  fieldClass,
 } from '../components/ui/kit';
 
 const FALLBACK_ACCENTS = ['grape', 'mint', 'sky', 'lime', 'coral', 'gold'];
@@ -53,6 +59,9 @@ export default function Household() {
 
   const [editing, setEditing] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [inviteOpen, setInviteOpen] = useState(false);
+  const [inviteEmail, setInviteEmail] = useState('');
+  const [removing, setRemoving] = useState(null);
 
   const isAdmin = permissions?.isAdmin === true;
 
@@ -117,15 +126,19 @@ export default function Household() {
     }
   };
 
-  const handleInvite = () => {
-    const email = window.prompt(t('emailLabel'));
+  const handleInviteSubmit = async (e) => {
+    e.preventDefault();
+    const email = inviteEmail.trim();
     if (!email) return;
-    run(() => inviteMember(email.trim()));
+    await run(() => inviteMember(email));
+    setInviteOpen(false);
+    setInviteEmail('');
   };
 
-  const handleRemove = (row) => {
-    if (!window.confirm(`${t('remove')} "${row.name}"?`)) return;
-    run(() => removeMember(row.userId));
+  const handleConfirmRemove = async () => {
+    if (!removing) return;
+    await run(() => removeMember(removing.userId));
+    setRemoving(null);
   };
 
   return (
@@ -235,7 +248,7 @@ export default function Household() {
                         )}
                         {(m.isSelf || isAdmin) && (
                           <button
-                            onClick={() => handleRemove(m)}
+                            onClick={() => setRemoving(m)}
                             disabled={busy}
                             className="num mt-1 block text-[11px] font-bold text-ink-faint transition hover:text-coral disabled:opacity-40"
                           >
@@ -276,7 +289,7 @@ export default function Household() {
 
         {isAdmin && (
           <button
-            onClick={handleInvite}
+            onClick={() => setInviteOpen(true)}
             disabled={busy}
             className="w-full rounded-2xl border-2 border-dashed border-lime/35 bg-lime/6 py-4 text-[14px] font-extrabold text-lime transition hover:bg-lime/12 disabled:opacity-40"
           >
@@ -296,6 +309,55 @@ export default function Household() {
           </ul>
         </Panel>
       </div>
+
+      <Dialog
+        open={inviteOpen}
+        onClose={() => setInviteOpen(false)}
+        title={t('dialog.inviteTitle')}
+        size="sm"
+        footer={
+          <div className="flex gap-3">
+            <GhostButton onClick={() => setInviteOpen(false)} className="flex-1">
+              {t('cancel')}
+            </GhostButton>
+            <LimeButton
+              type="submit"
+              form="invite-form"
+              disabled={busy || !inviteEmail.trim()}
+              className="flex-1"
+            >
+              {t('dialog.inviteCta')}
+            </LimeButton>
+          </div>
+        }
+      >
+        <form id="invite-form" onSubmit={handleInviteSubmit}>
+          <Field label={t('emailLabel')} htmlFor="invite-email">
+            <input
+              id="invite-email"
+              type="email"
+              value={inviteEmail}
+              onChange={(e) => setInviteEmail(e.target.value)}
+              required
+              placeholder="name@example.com"
+              dir="ltr"
+              autoComplete="email"
+              className={fieldClass}
+            />
+          </Field>
+        </form>
+      </Dialog>
+
+      <ConfirmDialog
+        open={!!removing}
+        title={t('dialog.removeMemberTitle')}
+        message={t('dialog.removeMemberBody').replace('{name}', removing?.name ?? '')}
+        confirmLabel={t('remove')}
+        cancelLabel={t('cancel')}
+        busy={busy}
+        onConfirm={handleConfirmRemove}
+        onCancel={() => setRemoving(null)}
+      />
     </ScreenShell>
   );
 }

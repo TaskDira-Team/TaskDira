@@ -3,7 +3,17 @@ import { Pencil, Trash2 } from 'lucide-react';
 import { useI18n } from '../context/I18nContext';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
-import { ACCENTS, CountUp, LimeButton, Panel, ScreenShell } from '../components/ui/kit';
+import {
+  ACCENTS,
+  ConfirmDialog,
+  CountUp,
+  Dialog,
+  LimeButton,
+  Panel,
+  ScreenShell,
+} from '../components/ui/kit';
+import RewardFormDialog from '../components/rewards/RewardFormDialog';
+import Confetti from '../components/ui/Confetti';
 
 // `category` is free text with no fixed vocabulary; enrichReward falls back to a
 // tier derived from requiredPoints, so colour keys off that with a stable
@@ -128,10 +138,24 @@ function RewardCard({ reward, accent, xp, balance, claiming, onClaim, isAdmin, o
 }
 
 export default function Rewards() {
-  const { t, dir } = useI18n();
+  const { t, dir, tx } = useI18n();
   const { user } = useAuth();
-  const { rewards, users, permissions, redeemReward, createReward, updateReward, deleteReward } = useApp();
+  const {
+    rewards,
+    users,
+    permissions,
+    redeemReward,
+    createReward,
+    updateReward,
+    deleteReward,
+    celebration,
+    dismissCelebration,
+  } = useApp();
   const [claimingId, setClaimingId] = useState(null);
+  const [formOpen, setFormOpen] = useState(false);
+  const [editing, setEditing] = useState(null);
+  const [deleting, setDeleting] = useState(null);
+  const [busy, setBusy] = useState(false);
 
   const me = users.find((u) => u.id === user?.id) || user;
   const xp = me?.points ?? 0;
@@ -149,50 +173,47 @@ export default function Rewards() {
     }
   };
 
-  // Cost is prompted separately from requiredPoints: the first is what the
+  const handleCreate = () => {
+    setEditing(null);
+    setFormOpen(true);
+  };
+
+  const handleEdit = (reward) => {
+    setEditing(reward);
+    setFormOpen(true);
+  };
+
+  // The form keeps cost separate from requiredPoints: the first is what the
   // wallet pays, the second is the XP standing that unlocks it. Welding them
   // together makes the unaffordable-but-unlocked state unreachable.
-  const promptCost = (fallback) => {
-    const raw = window.prompt(t('promptRewardCost'), String(fallback));
-    if (raw === null) return null;
-    const parsed = Number(raw);
-    return raw.trim() === '' || Number.isNaN(parsed) || parsed < 0 ? fallback : parsed;
+  const handleFormSubmit = async (values) => {
+    setBusy(true);
+    try {
+      if (editing) {
+        await updateReward(editing.id, { ...editing, ...values });
+      } else {
+        await createReward({ ...values, emoji: '🎁', description: '' });
+      }
+      setFormOpen(false);
+      setEditing(null);
+    } catch {
+      // AppContext already surfaced the Hebrew message as a toast.
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const handleCreate = async () => {
-    const title = window.prompt(t('promptRewardName'));
-    if (!title) return;
-    const requiredPoints = Number(window.prompt(t('promptRewardThreshold'), '50')) || 50;
-    const cost = promptCost(requiredPoints);
-    if (cost === null) return;
-    await createReward({
-      title,
-      requiredPoints,
-      cost,
-      emoji: '🎁',
-      description: '',
-    });
-  };
-
-  const handleEdit = async (reward) => {
-    const title = window.prompt(t('promptName'), reward.title);
-    if (!title) return;
-    const requiredPoints =
-      Number(window.prompt(t('promptRewardThreshold'), String(reward.requiredPoints))) ||
-      reward.requiredPoints;
-    const cost = promptCost(reward.cost ?? requiredPoints);
-    if (cost === null) return;
-    await updateReward(reward.id, {
-      ...reward,
-      title,
-      requiredPoints,
-      cost,
-    });
-  };
-
-  const handleDelete = async (reward) => {
-    if (!window.confirm(`${t('remove')} "${reward.title}"?`)) return;
-    await deleteReward(reward.id);
+  const handleConfirmDelete = async () => {
+    if (!deleting) return;
+    setBusy(true);
+    try {
+      await deleteReward(deleting.id);
+      setDeleting(null);
+    } catch {
+      // AppContext already surfaced the Hebrew message as a toast.
+    } finally {
+      setBusy(false);
+    }
   };
 
   const nextLocked = rewards
@@ -268,6 +289,64 @@ export default function Rewards() {
           </div>
         )}
       </div>
+
+      <RewardFormDialog
+        open={formOpen}
+        reward={editing}
+        busy={busy}
+        onSubmit={handleFormSubmit}
+        onClose={() => {
+          setFormOpen(false);
+          setEditing(null);
+        }}
+      />
+
+      <ConfirmDialog
+        open={!!deleting}
+        title={t('dialog.deleteRewardTitle')}
+        message={t('dialog.deleteRewardBody').replace('{name}', deleting?.title ?? '')}
+        confirmLabel={t('dialog.delete')}
+        cancelLabel={t('cancel')}
+        busy={busy}
+        onConfirm={handleConfirmDelete}
+        onCancel={() => setDeleting(null)}
+      />
+
+      {/* Redeeming sets `celebration` in AppContext, but only the legacy
+          Dashboard used to render it — the new UI showed nothing. */}
+      {celebration && <Confetti active />}
+      <Dialog
+        open={!!celebration}
+        onClose={dismissCelebration}
+        title={t('congrats')}
+        accent="gold"
+        size="sm"
+        footer={
+          <LimeButton onClick={dismissCelebration} className="w-full">
+            {t('nice')}
+          </LimeButton>
+        }
+      >
+        <div className="text-center">
+          <div className="text-5xl">{celebration?.reward?.emoji ?? '🎁'}</div>
+          <p className="mt-3 text-sm text-ink-dim">{t('redeemedSuccess')}</p>
+          <p className="mt-1 text-lg font-black break-words text-ink">
+            {tx(celebration?.reward?.title ?? '')}
+          </p>
+
+          {celebration?.reward?.code && (
+            <div className="num mt-4 inline-flex items-center gap-2 rounded-xl border border-gold/35 bg-gold/12 px-3 py-2 text-sm font-bold tracking-wide text-gold">
+              {t('voucherCode')}: {celebration.reward.code}
+            </div>
+          )}
+
+          <p className="num mt-4 text-[13px] text-ink-faint">
+            {t('remainingBalance')}{' '}
+            <span className="font-extrabold text-gold">{celebration?.remainingPoints ?? 0}</span>{' '}
+            {t('pointsWord')}
+          </p>
+        </div>
+      </Dialog>
     </ScreenShell>
   );
 }

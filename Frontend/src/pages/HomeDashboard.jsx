@@ -246,6 +246,7 @@ export default function HomeDashboard() {
       {createOpen && (
         <TaskModal
           task={null}
+          variant="dark"
           users={users}
           permissions={permissions}
           currentUserId={user?.id}

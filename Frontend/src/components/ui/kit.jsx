@@ -1,4 +1,7 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useId, useRef, useState } from 'react';
+import { X } from 'lucide-react';
+import { AnimatePresence, motion } from 'framer-motion';
+import { modalVariants, overlayVariants } from '../../utils/motion';
 
 /* ---------------- accent system ---------------- */
 
@@ -73,6 +76,182 @@ export function ScreenShell({ dir, width = 'max-w-xl', className = '', children 
       <Aurora />
       <div className={`relative mx-auto w-full ${width} px-5 pb-16 pt-8 ${className}`}>{children}</div>
     </div>
+  );
+}
+
+/* ---------------- dialog + form fields ---------------- */
+
+/** Dark input treatment shared by every dialog form. The explicit `text-ink`
+ * and `placeholder:text-ink-faint` matter: without them an input inherits the
+ * near-white shell colour and renders invisible on a pale background. */
+export const fieldClass =
+  'w-full min-w-0 rounded-xl border border-white/12 bg-black/30 px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint outline-none transition focus:border-lime/60 disabled:cursor-not-allowed disabled:opacity-50';
+
+/** Native pickers (date, select popups) follow color-scheme, not our CSS —
+ * without this the calendar and dropdown render as white system widgets. */
+export const darkControlStyle = { colorScheme: 'dark' };
+
+/** Windows renders <option> with the OS background regardless of the parent,
+ * so each option needs its colours set directly. */
+export const darkOptionStyle = { background: '#120a33', color: '#f4f0ff' };
+
+export function Field({ label, hint, htmlFor, className = '', children }) {
+  return (
+    <div className={className}>
+      {label && (
+        <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-bold text-ink-dim">
+          {label}
+        </label>
+      )}
+      {children}
+      {hint && <p className="mt-1 text-[11px] leading-snug text-ink-faint">{hint}</p>}
+    </div>
+  );
+}
+
+/**
+ * Dark modal shell for the rebuilt screens — the single dialog vocabulary, so
+ * screens stop hand-rolling overlays. Closes on Escape and on overlay click,
+ * moves focus to the first control on open, and restores it to whatever was
+ * focused before on close.
+ *
+ * Inherits `dir` from the surrounding shell rather than setting its own.
+ */
+export function Dialog({
+  open,
+  onClose,
+  title,
+  subtitle,
+  footer,
+  accent = 'lime',
+  size = 'md',
+  children,
+}) {
+  const panelRef = useRef(null);
+  const restoreRef = useRef(null);
+  const titleId = useId();
+  const c = ACCENTS[accent] ?? ACCENTS.lime;
+
+  useEffect(() => {
+    if (!open) return undefined;
+    restoreRef.current = document.activeElement;
+
+    const onKey = (e) => {
+      if (e.key === 'Escape') onClose?.();
+    };
+    document.addEventListener('keydown', onKey);
+
+    // Deferred so the panel exists before we reach into it.
+    const focusTimer = setTimeout(() => {
+      const panel = panelRef.current;
+      if (!panel) return;
+      const first = panel.querySelector(
+        'input:not([type="hidden"]), textarea, select, button:not([data-dialog-close])'
+      );
+      (first ?? panel).focus?.();
+    }, 0);
+
+    return () => {
+      document.removeEventListener('keydown', onKey);
+      clearTimeout(focusTimer);
+      restoreRef.current?.focus?.();
+    };
+  }, [open, onClose]);
+
+  const width = size === 'sm' ? 'sm:max-w-sm' : size === 'lg' ? 'sm:max-w-2xl' : 'sm:max-w-lg';
+
+  return (
+    <AnimatePresence>
+      {open && (
+        <div className="fixed inset-0 z-[70] flex items-end justify-center p-0 sm:items-center sm:p-4">
+          <motion.div
+            variants={overlayVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="absolute inset-0 bg-black/60 backdrop-blur-sm"
+            onClick={onClose}
+          />
+          <motion.div
+            ref={panelRef}
+            variants={modalVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby={title ? titleId : undefined}
+            tabIndex={-1}
+            className={`relative flex max-h-[90vh] w-full flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-gradient-to-b from-panel-2/95 to-abyss/95 backdrop-blur-md sm:rounded-3xl ${width}`}
+            style={{ boxShadow: `0 0 0 1px ${c}22, 0 30px 80px -30px ${c}55` }}
+          >
+            {(title || onClose) && (
+              <div className="flex items-start justify-between gap-3 border-b border-white/8 px-5 py-4">
+                <div className="min-w-0">
+                  {title && (
+                    <h2 id={titleId} className="text-base font-black text-ink">
+                      {title}
+                    </h2>
+                  )}
+                  {subtitle && <p className="mt-0.5 text-xs text-ink-dim">{subtitle}</p>}
+                </div>
+                {onClose && (
+                  <button
+                    type="button"
+                    data-dialog-close
+                    onClick={onClose}
+                    className="shrink-0 rounded-lg p-1.5 text-ink-faint transition hover:bg-white/8 hover:text-ink"
+                  >
+                    <X className="h-4 w-4" />
+                  </button>
+                )}
+              </div>
+            )}
+
+            <div className="dialog-scroll min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
+
+            {footer && <div className="border-t border-white/8 px-5 py-4">{footer}</div>}
+          </motion.div>
+        </div>
+      )}
+    </AnimatePresence>
+  );
+}
+
+/** Styled stand-in for window.confirm. */
+export function ConfirmDialog({
+  open,
+  title,
+  message,
+  confirmLabel,
+  cancelLabel,
+  tone = 'coral',
+  busy = false,
+  onConfirm,
+  onCancel,
+}) {
+  const c = ACCENTS[tone] ?? ACCENTS.coral;
+  return (
+    <Dialog open={open} onClose={onCancel} title={title} accent={tone} size="sm"
+      footer={
+        <div className="flex gap-3">
+          <GhostButton onClick={onCancel} className="flex-1">
+            {cancelLabel}
+          </GhostButton>
+          <button
+            type="button"
+            onClick={onConfirm}
+            disabled={busy}
+            className="flex-1 rounded-full px-5 py-2 text-[13px] font-extrabold text-[#20060c] transition disabled:cursor-not-allowed disabled:opacity-50"
+            style={{ background: c, boxShadow: `0 0 20px -6px ${c}` }}
+          >
+            {confirmLabel}
+          </button>
+        </div>
+      }
+    >
+      <p className="text-sm leading-relaxed break-words text-ink-dim">{message}</p>
+    </Dialog>
   );
 }
 
@@ -174,6 +353,7 @@ export function LimeButton({
   onClick,
   type = 'button',
   disabled = false,
+  form,
 }) {
   const pad =
     size === 'lg'
@@ -184,6 +364,7 @@ export function LimeButton({
   return (
     <button
       type={type}
+      form={form}
       onClick={onClick}
       disabled={disabled}
       className={`group relative overflow-hidden rounded-full bg-gradient-to-b from-lime to-lime-deep font-extrabold text-[#152007] transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${pad} ${className}`}
