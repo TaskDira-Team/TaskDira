@@ -1,0 +1,4 @@
+# Graphify output — local visual only, deliberately not a context source.
+# Ignored here so frequent graph rebuilds don't churn the prompt cache.
+graph.json
+graphify-out/
