@@ -1,3 +1,7 @@
 # Read-only Figma Make export kept locally as a design reference. It is not app
 # code and ships its own App.tsx / index.css, which would confuse the build.
 FigmeExtract/
+
+# Graphify graph output — regenerable local artifact (rebuilt by the post-commit
+# hook), ~11 MB including caches and dated backups.
+graphify-out/
