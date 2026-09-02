@@ -1,3 +1,4 @@
+import { ChevronRight } from 'lucide-react';
 import { useI18n } from '../../context/I18nContext';
 import { useAuth } from '../../context/AuthContext';
 import { useRoute } from '../../context/RouteContext';
@@ -102,12 +103,14 @@ export default function AppShell({ children }) {
               <button
                 type="button"
                 onClick={() => navigate('/profile')}
-                className="flex w-full items-center gap-3 rounded-2xl px-2 py-2 text-start transition hover:bg-white/5"
+                className="group flex w-full items-center gap-3 rounded-2xl px-2 py-2 text-start transition hover:bg-white/8"
               >
                 <Avatar emoji="🦊" ring="lime" size={38} />
                 <span className="min-w-0 flex-1">
                   <span className="block truncate text-[13px] font-extrabold">{user.fullName || user.name}</span>
                 </span>
+                {/* Points at the inline-end edge; rotates so it still does in RTL. */}
+                <ChevronRight className="h-4 w-4 shrink-0 text-ink-faint transition group-hover:text-ink-dim rtl:rotate-180" />
               </button>
             )}
             <button

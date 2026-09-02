@@ -27,7 +27,6 @@ import {
 const DEFAULT_FAMILY_ROLE = 'roommate';
 
 /** One scale for the whole screen, so section rhythm stops being ad hoc. */
-const SECTION_HEADING = 'text-[15px] font-black tracking-tight';
 const MICRO_LABEL = 'num text-[11px] font-bold tracking-wider text-ink-faint uppercase';
 const SETTING_LABEL = 'text-[14px] font-bold text-ink-dim';
 /** Separates picker groups the way the settings panel's divide-y separates rows. */
@@ -54,6 +53,7 @@ export default function Profile() {
   const [draft, setDraft] = useState(() => draftFrom(me));
   const [dirty, setDirty] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [tab, setTab] = useState('customize');
 
   // Re-seed when the stored profile changes underneath an untouched form, so a
   // refresh or a save elsewhere is reflected rather than overwritten.
@@ -95,10 +95,6 @@ export default function Profile() {
     }
   };
 
-  // A wider shell than the max-w-xl default: this screen has three dense
-  // pickers that need room, and the default cap wasted most of the desktop
-  // viewport.
-  //
   // NOTE (shared, not fixed here): ScreenShell renders its own bg-void + Aurora
   // and horizontal padding on top of AppShell's, so every screen paints the
   // aurora twice and pads twice. Fixing that means changing ScreenShell for all
@@ -107,13 +103,11 @@ export default function Profile() {
     <ScreenShell dir={dir} width="max-w-5xl">
       <h1 className="mb-8 text-2xl font-black">{t('profile.title')}</h1>
 
-      {/* DOM order is showcase → customize → stats → settings, which is both the
-          intended hierarchy and the mobile reading order. Desktop rearranges via
-          column spans only, never by reordering. Grid follows `direction`, so
-          RTL mirrors the columns automatically. */}
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-5 lg:gap-8">
-        {/* showcase */}
-        <Panel className="col-span-full overflow-hidden p-8 text-center" glow accent={accent}>
+      {/* Identity and the scoreboard stay visible at all times — they are what
+          the screen is for. Only the two editing surfaces take turns below. */}
+      <div className="space-y-6 lg:space-y-8">
+        {/* hero — also the live preview for the customizer below */}
+        <Panel className="overflow-hidden p-8 text-center" glow accent={accent}>
           <div className="flex justify-center">
             <XPRing value={progress} accent={accent} size={188}>
               <div className="anim-bob">
@@ -158,91 +152,8 @@ export default function Profile() {
           </div>
         </Panel>
 
-        {/* customizer */}
-        <Panel className="p-6 lg:col-span-3 lg:row-span-2">
-          <h3 className={SECTION_HEADING}>{t('profile.customize')}</h3>
-
-          <div className="mt-5">
-            <div className={MICRO_LABEL}>{t('profile.face')}</div>
-            {/* 16 icons divide evenly by both 4 and 8, so neither breakpoint
-                leaves a ragged final row. */}
-            <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-8">
-              {AVATAR_ICONS.map((icon) => (
-                <button
-                  key={icon.id}
-                  onClick={() => set({ baseIconId: icon.id })}
-                  aria-pressed={icon.id === draft.baseIconId}
-                  aria-label={icon.label}
-                  className={`grid aspect-square w-full place-items-center rounded-xl border text-xl transition ${
-                    icon.id === draft.baseIconId
-                      ? 'border-lime bg-lime/15'
-                      : 'border-white/10 bg-panel/50 hover:border-white/25'
-                  }`}
-                >
-                  {icon.emoji}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          <div className={GROUP_DIVIDER}>
-            <div className={MICRO_LABEL}>{t('profile.ringLabel')}</div>
-            <div className="mt-3 flex flex-wrap gap-3">
-              {RING_COLORS.map((r) => {
-                const a = getRingAccent(r.id);
-                const active = r.id === draft.ringColorId;
-                return (
-                  <button
-                    key={r.id}
-                    onClick={() => set({ ringColorId: r.id })}
-                    aria-label={t('profile.ringAria').replace('{n}', r.labelHe || r.label)}
-                    aria-pressed={active}
-                    className="relative h-10 w-10 rounded-full transition hover:scale-110"
-                    style={{
-                      border: `3px solid ${ACCENTS[a]}`,
-                      background: `${ACCENTS[a]}22`,
-                      boxShadow: active ? `0 0 0 2px #fff4, 0 0 20px -2px ${ACCENTS[a]}` : 'none',
-                    }}
-                  >
-                    {active && (
-                      <span className="absolute inset-0 grid place-items-center text-[12px] font-black text-white">
-                        ✓
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          <div className={GROUP_DIVIDER}>
-            <div className={MICRO_LABEL}>{t('profile.badges')}</div>
-            {/* Fixed min-height keeps rows even when the longer labels wrap. */}
-            <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4">
-              {PROFILE_BADGES.map((b) => {
-                const active = b.id === draft.profileBadgeId;
-                return (
-                  <button
-                    key={b.id}
-                    onClick={() => set({ profileBadgeId: b.id })}
-                    aria-pressed={active}
-                    className={`grid min-h-[56px] place-items-center rounded-xl border p-2 text-center transition ${
-                      active
-                        ? 'border-gold/45 bg-gold/10'
-                        : 'border-dashed border-white/15 opacity-55 hover:opacity-90'
-                    }`}
-                  >
-                    <div className="text-[11px] leading-snug font-bold text-ink-dim">{b.label}</div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        </Panel>
-
-        {/* stats — 2-up on mobile, a 4-wide strip while full width, back to 2-up
-            once it sits in the narrower desktop column. */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4 lg:col-span-2 lg:grid-cols-2">
+        {/* stats */}
+        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
           <StatTile
             emoji="✅"
             value={me?.tasksCompletedThisMonth ?? 0}
@@ -275,59 +186,157 @@ export default function Profile() {
           )}
         </div>
 
-        {/* settings — every field stacked (label above, full-width control) so
-            the six role pills and the language toggle get the whole panel. */}
-        <Panel className="divide-y divide-white/8 p-6 lg:col-span-2">
-          <h3 className={`${SECTION_HEADING} pb-4`}>{t('settings')}</h3>
+        {/* The tab names the section, so the panels below carry no redundant heading. */}
+        <div className="mx-auto w-full max-w-xs">
+          <SegmentedTabs
+            items={[
+              { key: 'customize', label: t('profile.customize') },
+              { key: 'settings', label: t('settings') },
+            ]}
+            value={tab}
+            onChange={setTab}
+          />
+        </div>
 
-          <div className="py-4">
-            <span className={SETTING_LABEL}>{t('profile.displayName')}</span>
-            <input
-              value={draft.fullName}
-              onChange={(e) => set({ fullName: e.target.value })}
-              className={`${fieldClass} mt-3`}
-            />
-          </div>
-
-          <div className="py-4">
-            <span className={SETTING_LABEL}>{t('onboard.role')}</span>
-            <div className="mt-3 flex flex-wrap gap-2">
-              {FAMILY_ROLES.map((role) => (
-                <button
-                  key={role.id}
-                  onClick={() => set({ familyRole: role.id })}
-                  className={`num rounded-full border px-3 py-1.5 text-[12px] font-extrabold transition ${
-                    draft.familyRole === role.id
-                      ? 'border-lime bg-lime text-[#152007]'
-                      : 'border-white/12 text-ink-dim hover:border-white/25 hover:text-ink'
-                  }`}
-                >
-                  {t(`role.${role.id}`)}
-                </button>
-              ))}
+        {tab === 'customize' ? (
+          <Panel className="p-6">
+            <div>
+              <div className={MICRO_LABEL}>{t('profile.face')}</div>
+              {/* 16 icons divide evenly by 4, 8 and 16, so no breakpoint leaves a
+                  ragged final row. */}
+              <div className="mt-3 grid grid-cols-4 gap-2 sm:grid-cols-8 lg:grid-cols-16">
+                {AVATAR_ICONS.map((icon) => (
+                  <button
+                    key={icon.id}
+                    onClick={() => set({ baseIconId: icon.id })}
+                    aria-pressed={icon.id === draft.baseIconId}
+                    aria-label={icon.label}
+                    className={`grid aspect-square w-full place-items-center rounded-xl border text-xl transition ${
+                      icon.id === draft.baseIconId
+                        ? 'border-lime bg-lime/15'
+                        : 'border-white/10 bg-panel/50 hover:border-white/25'
+                    }`}
+                  >
+                    {icon.emoji}
+                  </button>
+                ))}
+              </div>
             </div>
-          </div>
 
-          <div className="py-4">
-            <span className={SETTING_LABEL}>{t('profile.language')}</span>
-            <div className="mt-3">
-              <SegmentedTabs
-                items={[
-                  { key: 'he', label: 'עברית' },
-                  { key: 'en', label: 'English' },
-                ]}
-                value={lang}
-                onChange={setLang}
+            <div className={GROUP_DIVIDER}>
+              <div className={MICRO_LABEL}>{t('profile.ringLabel')}</div>
+              <div className="mt-3 flex flex-wrap gap-3">
+                {RING_COLORS.map((r) => {
+                  const a = getRingAccent(r.id);
+                  const active = r.id === draft.ringColorId;
+                  return (
+                    <button
+                      key={r.id}
+                      onClick={() => set({ ringColorId: r.id })}
+                      aria-label={t('profile.ringAria').replace('{n}', r.labelHe || r.label)}
+                      aria-pressed={active}
+                      className="relative h-10 w-10 rounded-full transition hover:scale-110"
+                      style={{
+                        border: `3px solid ${ACCENTS[a]}`,
+                        background: `${ACCENTS[a]}22`,
+                        boxShadow: active ? `0 0 0 2px #fff4, 0 0 20px -2px ${ACCENTS[a]}` : 'none',
+                      }}
+                    >
+                      {active && (
+                        <span className="absolute inset-0 grid place-items-center text-[12px] font-black text-white">
+                          ✓
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            <div className={GROUP_DIVIDER}>
+              <div className={MICRO_LABEL}>{t('profile.badges')}</div>
+              {/* Fixed min-height keeps rows even when the longer labels wrap. */}
+              <div className="mt-3 grid grid-cols-2 gap-2 sm:grid-cols-4 lg:grid-cols-8">
+                {PROFILE_BADGES.map((b) => {
+                  const active = b.id === draft.profileBadgeId;
+                  return (
+                    <button
+                      key={b.id}
+                      onClick={() => set({ profileBadgeId: b.id })}
+                      aria-pressed={active}
+                      className={`grid min-h-[56px] place-items-center rounded-xl border p-2 text-center transition ${
+                        active
+                          ? 'border-gold/45 bg-gold/10'
+                          : 'border-dashed border-white/15 opacity-55 hover:opacity-90'
+                      }`}
+                    >
+                      <div className="text-[11px] leading-snug font-bold text-ink-dim">
+                        {b.label}
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+          </Panel>
+        ) : (
+          /* Every field stacked (label above, control below), with control width
+             capped so a single input doesn't stretch the full panel. */
+          <Panel className="divide-y divide-white/8 p-6">
+            <div className="pb-4">
+              <span className={SETTING_LABEL}>{t('profile.displayName')}</span>
+              <input
+                value={draft.fullName}
+                onChange={(e) => set({ fullName: e.target.value })}
+                className={`${fieldClass} mt-3 max-w-md`}
               />
             </div>
-          </div>
 
-          <div className="pt-6">
+            <div className="py-4">
+              <span className={SETTING_LABEL}>{t('onboard.role')}</span>
+              <div className="mt-3 flex flex-wrap gap-2">
+                {FAMILY_ROLES.map((role) => (
+                  <button
+                    key={role.id}
+                    onClick={() => set({ familyRole: role.id })}
+                    className={`num rounded-full border px-3 py-1.5 text-[12px] font-extrabold transition ${
+                      draft.familyRole === role.id
+                        ? 'border-lime bg-lime text-[#152007]'
+                        : 'border-white/12 text-ink-dim hover:border-white/25 hover:text-ink'
+                    }`}
+                  >
+                    {t(`role.${role.id}`)}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            <div className="pt-4">
+              <span className={SETTING_LABEL}>{t('profile.language')}</span>
+              <div className="mt-3 max-w-xs">
+                <SegmentedTabs
+                  items={[
+                    { key: 'he', label: 'עברית' },
+                    { key: 'en', label: 'English' },
+                  ]}
+                  value={lang}
+                  onChange={setLang}
+                />
+              </div>
+            </div>
+          </Panel>
+        )}
+
+        {/* One save for the whole draft, shown only when there is something to
+            save. Previously this sat inside the settings panel while also
+            committing avatar edits made on the other section. */}
+        {dirty && (
+          <div className="rounded-2xl border border-lime/25 bg-lime/8 p-4">
             <LimeButton className="w-full" onClick={handleSave}>
               {saving ? t('saving') : t('saveChanges')}
             </LimeButton>
           </div>
-        </Panel>
+        )}
       </div>
     </ScreenShell>
   );

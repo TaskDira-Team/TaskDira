@@ -101,11 +101,17 @@ export function AppProvider({ children }) {
     setMembers(membersData);
   }, []);
 
+  // syncUser after the first load: the auth user is hydrated before the roster
+  // populates the points ledger, so its balance starts at 0 and only corrected
+  // itself after the first earn or redemption. Re-enriching here keeps every
+  // useAuth() consumer honest from the start.
   useEffect(() => {
     if (!user?.id) return;
     setLoading(true);
-    refreshData().finally(() => setLoading(false));
-  }, [user?.id, user?.activeHouseholdId, refreshData]);
+    refreshData()
+      .then(() => syncUser())
+      .finally(() => setLoading(false));
+  }, [user?.id, user?.activeHouseholdId, refreshData, syncUser]);
 
   const createTask = useCallback(
     async (taskData) => {

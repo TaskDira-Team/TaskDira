@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { Pencil, Trash2 } from 'lucide-react';
+import { Pencil, Plus, Trash2 } from 'lucide-react';
 import { useI18n } from '../context/I18nContext';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
@@ -223,14 +223,19 @@ export default function Rewards() {
   return (
     <ScreenShell dir={dir}>
       <div className="space-y-6">
-        <div className="flex items-start justify-between gap-3">
+        {/* The single add-reward entry point: centred against the heading on
+            desktop, stacked below it on mobile rather than crammed alongside. */}
+        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div>
             <h1 className="text-2xl font-black">{t('rewardsStore')}</h1>
             <p className="mt-1 text-[13px] text-ink-dim">{t('rewards.subtitle')}</p>
           </div>
           {isAdmin && (
-            <LimeButton size="sm" onClick={handleCreate}>
-              ＋ {t('addReward')}
+            <LimeButton size="sm" onClick={handleCreate} className="shrink-0">
+              <span className="inline-flex items-center gap-1.5">
+                <Plus className="h-4 w-4" />
+                {t('addReward')}
+              </span>
             </LimeButton>
           )}
         </div>
@@ -253,11 +258,6 @@ export default function Rewards() {
             <div className="text-3xl">🎁</div>
             <div className="mt-3 text-[14px] font-extrabold text-ink-dim">{t('rewardsStore')}</div>
             <div className="num mt-1 text-[12px] text-ink-faint">{t('milestoneHint')}</div>
-            {isAdmin && (
-              <div className="mt-5 flex justify-center">
-                <LimeButton onClick={handleCreate}>＋ {t('addReward')}</LimeButton>
-              </div>
-            )}
           </div>
         ) : (
           <div className="grid grid-cols-2 gap-3">

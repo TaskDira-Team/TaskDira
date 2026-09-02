@@ -21,7 +21,9 @@ export const ROUTES = [
   { key: 'leaderboard', path: '/leaderboard', component: Leaderboard, access: 'private', wired: true, nav: true, icon: '🏆', labelKey: 'nav.leaderboard' },
   { key: 'rewards', path: '/rewards', component: Rewards, access: 'private', wired: true, nav: true, icon: '🎁', labelKey: 'nav.rewards' },
   { key: 'achievements', path: '/achievements', component: Achievements, access: 'private', wired: false, nav: true, icon: '🎖️', labelKey: 'achievements.title' },
-  { key: 'profile', path: '/profile', component: Profile, access: 'private', wired: true, nav: true, icon: '🙂', labelKey: 'profile' },
+  // nav: false — reachable at /profile and from the sidebar's name/avatar block,
+  // just not listed in the nav. Route and screen stay fully functional.
+  { key: 'profile', path: '/profile', component: Profile, access: 'private', wired: true, nav: false, icon: '🙂', labelKey: 'profile' },
   { key: 'household', path: '/household', component: Household, access: 'private', wired: true, nav: true, icon: '🏡', labelKey: 'householdLabel' },
 ];
 

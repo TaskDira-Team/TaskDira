@@ -133,6 +133,18 @@ body {
   letter-spacing: -0.011em;
 }
 
+/* Tailwind v4's preflight leaves buttons at the browser default `cursor: default`,
+ * so every button in the app showed an arrow. Restored app-wide here.
+ *
+ * Lives in @layer base so the cursor-* utilities (e.g. disabled:cursor-not-allowed)
+ * still override it; disabled elements are excluded outright. */
+@layer base {
+  button:not(:disabled),
+  [role='button']:not([aria-disabled='true']) {
+    cursor: pointer;
+  }
+}
+
 .mobile-app-frame {
   max-width: 100vw;
 }

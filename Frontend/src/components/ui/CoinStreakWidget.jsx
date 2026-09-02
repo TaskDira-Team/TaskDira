@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from 'react';
+import { useApp } from '../../context/AppContext';
 import { useAuth } from '../../context/AuthContext';
 import { useI18n } from '../../context/I18nContext';
 
@@ -200,16 +201,22 @@ function CoinBurst({ burstKey }) {
  *
  * Requires <CoinStreakDefs /> somewhere in the document for its gradients.
  *
- * Reads the real spendable wallet (`balance`, not lifetime `points`) and the
- * derived `streakDays` off the enriched auth user; both refresh on their own
- * whenever AppContext calls syncUser() after an earn or a redemption.
+ * Resolves the current user the same way Rewards and HomeDashboard do — from
+ * the enriched member record in `users`, falling back to the auth user. That
+ * matters: the auth user is hydrated by a path that never receives a balance
+ * (hydrateAuthenticatedUser only seeds an empty ledger entry), so reading it
+ * directly reported 0 until the first earn or redemption re-synced it. The
+ * member record is enriched after the roster populates the ledger, so it
+ * carries the real spendable `balance` (not lifetime `points`) and `streakDays`.
  */
 export default function CoinStreakWidget({ className = '' }) {
   const { user } = useAuth();
+  const { users } = useApp();
   const { t, p } = useI18n();
 
-  const balance = user?.balance ?? 0;
-  const streak = user?.streakDays ?? 0;
+  const me = users.find((u) => u.id === user?.id) || user;
+  const balance = me?.balance ?? 0;
+  const streak = me?.streakDays ?? 0;
 
   const [shownBalance, balanceBump] = useTickingValue(balance, {
     delayOnIncrease: COUNT_DELAY_MS,
