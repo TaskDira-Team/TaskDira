@@ -81,7 +81,7 @@ const THEME = {
   },
 };
 
-export default function OnboardingFlow({ onComplete, onBackToLogin, variant = 'light' }) {
+export default function OnboardingFlow({ onComplete, onBackToLogin, variant = 'light', showBrand = true }) {
   const th = THEME[variant] ?? THEME.light;
   const { t, dir, role } = useI18n();
   const [step, setStep] = useState(0);
@@ -147,10 +147,10 @@ export default function OnboardingFlow({ onComplete, onBackToLogin, variant = 'l
   return (
     <div dir={dir} className="w-full max-w-full overflow-x-hidden">
       <div className="w-full max-w-lg min-w-0 mx-auto">
-        <div className="text-center mb-6 lg:hidden">
+        {showBrand && <div className="text-center mb-6 lg:hidden">
           <h1 className={th.brandTitle}>{t('brandName')}</h1>
           <p className={th.brandHint}>{t('onboard.tagline')}</p>
-        </div>
+        </div>}
 
         <div className="flex items-center justify-center gap-2 mb-6">
           {STEP_META.map((s, i) => {
@@ -182,10 +182,11 @@ export default function OnboardingFlow({ onComplete, onBackToLogin, variant = 'l
               <p className={th.hint}>{t('onboard.profileHint')}</p>
 
               <div>
-                <label className={th.label}>
+                <label htmlFor="onboard-full-name" className={th.label}>
                   {t('onboard.fullName')}
                 </label>
                 <input
+                  id="onboard-full-name"
                   type="text"
                   value={form.fullName}
                   onChange={(e) => update('fullName', e.target.value)}
@@ -196,10 +197,11 @@ export default function OnboardingFlow({ onComplete, onBackToLogin, variant = 'l
               </div>
 
               <div>
-                <label className={th.label}>
+                <label htmlFor="onboard-role" className={th.label}>
                   {t('onboard.role')}
                 </label>
                 <select
+                  id="onboard-role"
                   value={form.familyRole}
                   onChange={(e) => update('familyRole', e.target.value)}
                   className={th.select}
@@ -213,10 +215,12 @@ export default function OnboardingFlow({ onComplete, onBackToLogin, variant = 'l
               </div>
 
               <div>
-                <label className={th.label}>
+                <label htmlFor="onboard-email" className={th.label}>
                   {t('emailLabel')}
                 </label>
                 <input
+                  id="onboard-email"
+                  autoComplete="email"
                   type="email"
                   value={form.email}
                   onChange={(e) => update('email', e.target.value)}
@@ -227,10 +231,12 @@ export default function OnboardingFlow({ onComplete, onBackToLogin, variant = 'l
               </div>
 
               <div>
-                <label className={th.label}>
+                <label htmlFor="onboard-password" className={th.label}>
                   {t('passwordLabel')}
                 </label>
                 <input
+                  id="onboard-password"
+                  autoComplete="new-password"
                   type="password"
                   value={form.password}
                   onChange={(e) => update('password', e.target.value)}
@@ -249,10 +255,11 @@ export default function OnboardingFlow({ onComplete, onBackToLogin, variant = 'l
               <p className={th.hint}>{t('onboard.householdHint')}</p>
 
               <div>
-                <label className={th.label}>
+                <label htmlFor="onboard-household" className={th.label}>
                   {t('onboard.householdName')}
                 </label>
                 <input
+                  id="onboard-household"
                   type="text"
                   value={form.householdName}
                   onChange={(e) => update('householdName', e.target.value)}
@@ -262,11 +269,12 @@ export default function OnboardingFlow({ onComplete, onBackToLogin, variant = 'l
               </div>
 
               <div>
-                <label className={th.label}>
+                <label htmlFor="onboard-address" className={th.label}>
                   {t('onboard.address')}{' '}
                   <span className={th.labelMuted}>{t('onboard.optional')}</span>
                 </label>
                 <input
+                  id="onboard-address"
                   type="text"
                   value={form.address}
                   onChange={(e) => update('address', e.target.value)}
