@@ -1,3 +1,4 @@
+import { lazy, Suspense, useEffect } from 'react';
 import { Loader2 } from 'lucide-react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { HouseholdProvider } from './context/HouseholdContext';
@@ -5,17 +6,19 @@ import { I18nProvider } from './context/I18nContext';
 import { RouteProvider, useRoute } from './context/RouteContext';
 import { USE_NEW_UI } from './services/config';
 import { findRoute } from './routes';
-import AppShell from './components/layout/AppShell';
-import Login from './pages/Login';
-import Dashboard from './pages/Dashboard';
 import Landing from './pages/Landing';
-import Leaderboard from './pages/Leaderboard';
-import Rewards from './pages/Rewards';
-import Achievements from './pages/Achievements';
-import Profile from './pages/Profile';
-import Household from './pages/Household';
-import HomeDashboard from './pages/HomeDashboard';
 import AccessibilityWidget from './components/ui/AccessibilityWidget';
+
+// A first-time visitor does not need to download the authenticated workspace.
+const AppShell = lazy(() => import('./components/layout/AppShell'));
+const Login = lazy(() => import('./pages/Login'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
+const Leaderboard = lazy(() => import('./pages/Leaderboard'));
+const Rewards = lazy(() => import('./pages/Rewards'));
+const Achievements = lazy(() => import('./pages/Achievements'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Household = lazy(() => import('./pages/Household'));
+const HomeDashboard = lazy(() => import('./pages/HomeDashboard'));
 
 // Legacy preview map, used only while USE_NEW_UI is off.
 const PREVIEW_SCREENS = {
@@ -31,9 +34,8 @@ const PREVIEW_SCREENS = {
 function LoadingScreen({ dark }) {
   return (
     <div
-      className={`min-h-screen min-h-dvh w-full max-w-full overflow-x-hidden flex items-center justify-center ${
-        dark ? 'bg-void' : 'bg-slate-50'
-      }`}
+      className={`min-h-screen min-h-dvh w-full max-w-full overflow-x-hidden flex items-center justify-center ${dark ? 'bg-void' : 'bg-slate-50'
+        }`}
     >
       <Loader2 className={`h-8 w-8 animate-spin ${dark ? 'text-lime' : 'text-indigo-600'}`} />
     </div>
@@ -43,10 +45,13 @@ function LoadingScreen({ dark }) {
 function NewUiRouter() {
   const { user, loading } = useAuth();
   const { path, navigate } = useRoute();
+  const route = findRoute(path);
+  const redirectHome = !!user && (!route || route.access === 'public');
+  useEffect(() => {
+    if (!loading && redirectHome && path !== '/') navigate('/');
+  }, [loading, redirectHome, path, navigate]);
 
   if (loading) return <LoadingScreen dark />;
-
-  const route = findRoute(path);
 
   if (!user) {
     const publicRoute = route?.access === 'public' ? route : findRoute('/landing');
@@ -56,7 +61,6 @@ function NewUiRouter() {
 
   // A signed-in caller landing on a public route belongs in the app.
   if (!route || route.access === 'public') {
-    if (path !== '/') navigate('/');
     const Home = findRoute('/').component;
     return (
       <HouseholdProvider>
@@ -100,16 +104,18 @@ function LegacyRouter() {
 
 export default function App() {
   return (
-    <div className="w-full max-w-full overflow-x-hidden min-h-screen min-h-dvh">
+    <div className="w-full max-w-full overflow-x-clip min-h-screen min-h-dvh">
       <I18nProvider>
         <AuthProvider>
-          {USE_NEW_UI ? (
-            <RouteProvider>
-              <NewUiRouter />
-            </RouteProvider>
-          ) : (
-            <LegacyRouter />
-          )}
+          <Suspense fallback={<LoadingScreen />}>
+            {USE_NEW_UI ? (
+              <RouteProvider>
+                <NewUiRouter />
+              </RouteProvider>
+            ) : (
+              <LegacyRouter />
+            )}
+          </Suspense>
           <AccessibilityWidget />
         </AuthProvider>
       </I18nProvider>

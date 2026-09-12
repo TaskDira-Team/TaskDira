@@ -1,11 +1,12 @@
+import { lazy } from 'react';
 import Landing from './pages/Landing';
-import HomeDashboard from './pages/HomeDashboard';
-import Leaderboard from './pages/Leaderboard';
-import Rewards from './pages/Rewards';
-import Achievements from './pages/Achievements';
-import Profile from './pages/Profile';
-import Household from './pages/Household';
-import AuthRoute from './pages/AuthRoute';
+const HomeDashboard = lazy(() => import('./pages/HomeDashboard'));
+const Leaderboard = lazy(() => import('./pages/Leaderboard'));
+const Rewards = lazy(() => import('./pages/Rewards'));
+const Achievements = lazy(() => import('./pages/Achievements'));
+const Profile = lazy(() => import('./pages/Profile'));
+const Household = lazy(() => import('./pages/Household'));
+const AuthRoute = lazy(() => import('./pages/AuthRoute'));
 
 /**
  * One table drives routing and navigation.
@@ -17,6 +18,7 @@ import AuthRoute from './pages/AuthRoute';
 export const ROUTES = [
   { key: 'landing', path: '/landing', component: Landing, access: 'public', wired: true },
   { key: 'login', path: '/login', component: AuthRoute, access: 'public', wired: true },
+  { key: 'register', path: '/register', component: AuthRoute, access: 'public', wired: true },
   { key: 'home', path: '/', component: HomeDashboard, access: 'private', wired: true, nav: true, icon: '🏠', labelKey: 'nav.tasks' },
   { key: 'leaderboard', path: '/leaderboard', component: Leaderboard, access: 'private', wired: true, nav: true, icon: '🏆', labelKey: 'nav.leaderboard' },
   { key: 'rewards', path: '/rewards', component: Rewards, access: 'private', wired: true, nav: true, icon: '🎁', labelKey: 'nav.rewards' },

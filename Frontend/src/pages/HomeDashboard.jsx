@@ -1,4 +1,6 @@
 import { useMemo, useState } from 'react';
+import { Bookmark, X } from 'lucide-react';
+import useSavedChores from '../hooks/useSavedChores';
 import { useI18n } from '../context/I18nContext';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
@@ -39,17 +41,16 @@ function endOfToday() {
   return d;
 }
 
-function TaskCard({ task, done, onToggle }) {
-  const { t, category } = useI18n();
+function TaskCard({ task, done, onToggle, saved, onSave, canSave }) {
+  const { t, category, lang } = useI18n();
   const { emoji, accent } = styleFor(task.categoryId);
   const c = ACCENTS[accent];
   const points = task.pointsValue ?? task.points ?? 0;
 
   return (
     <div
-      className={`group relative flex items-center gap-4 overflow-hidden rounded-2xl border p-4 transition-all duration-300 ${
-        done ? 'border-lime/40 bg-lime/8' : 'border-white/8 bg-panel/55 hover:border-white/20'
-      }`}
+      className={`group relative flex items-center gap-4 overflow-hidden rounded-2xl border p-4 transition-all duration-300 ${done ? 'border-lime/40 bg-lime/8' : 'border-white/8 bg-panel/55 hover:border-white/20'
+        }`}
     >
       <span
         aria-hidden
@@ -83,14 +84,16 @@ function TaskCard({ task, done, onToggle }) {
         </div>
       </div>
 
+      <button disabled={!canSave} onClick={onSave} aria-pressed={saved} aria-label={`${saved ? (lang === 'he' ? 'ביטול שמירה' : 'Unsave chore') : (lang === 'he' ? 'שמירה לאחר כך' : 'Save chore')}: ${task.title}`} className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl transition hover:bg-white/10 ${saved ? 'text-lime' : 'text-ink-faint'}`}>
+        <Bookmark size={18} fill={saved ? 'currentColor' : 'none'} />
+      </button>
       <button
         onClick={onToggle}
         disabled={done}
         aria-pressed={done}
         aria-label={t(done ? 'dashboard.uncheckAria' : 'dashboard.checkAria').replace('{t}', task.title)}
-        className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border-2 text-lg transition-transform duration-200 hover:scale-110 disabled:cursor-default disabled:hover:scale-100 ${
-          done ? 'border-lime text-[#152007]' : 'border-white/20 text-transparent hover:border-lime/60'
-        }`}
+        className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border-2 text-lg transition-transform duration-200 hover:scale-110 disabled:cursor-default disabled:hover:scale-100 ${done ? 'border-lime text-[#152007]' : 'border-white/20 text-transparent hover:border-lime/60'
+          }`}
         style={done ? { background: ACCENTS.lime, boxShadow: `0 0 22px -4px ${ACCENTS.lime}` } : undefined}
       >
         ✓
@@ -100,10 +103,13 @@ function TaskCard({ task, done, onToggle }) {
 }
 
 export default function HomeDashboard() {
-  const { t, dir } = useI18n();
+  const { t, dir, lang } = useI18n();
+  const he = lang === 'he';
   const { user } = useAuth();
   const { navigate } = useRoute();
   const { tasks, users, household, moveTask, permissions, createTask } = useApp();
+  const saved = useSavedChores(user?.id, household?.id);
+  const savedTasks = tasks.filter(task => saved.isSaved(task.id));
   const [tab, setTab] = useState('today');
   const [createOpen, setCreateOpen] = useState(false);
 
@@ -128,12 +134,13 @@ export default function HomeDashboard() {
     return buckets;
   }, [tasks]);
 
-  const list = tab === 'done' ? done : tab === 'week' ? week : today;
+  const list = tab === 'saved' ? savedTasks : tab === 'done' ? done : tab === 'week' ? week : today;
 
   const tabs = [
     { key: 'today', label: t('dashboard.tab.today') },
     { key: 'week', label: t('dashboard.tab.week') },
     { key: 'done', label: t('filter.done') },
+    { key: 'saved', label: he ? 'שמורות' : 'Saved' },
   ];
 
   const completedThisMonth = me?.tasksCompletedThisMonth ?? 0;
@@ -217,24 +224,49 @@ export default function HomeDashboard() {
         </button>
       </div>
 
-      <div>
-        <SegmentedTabs items={tabs} value={tab} onChange={setTab} />
+      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_250px]">
+        <div className="min-w-0">
+          <SegmentedTabs items={tabs} value={tab} onChange={setTab} />
 
-        <div className="mt-4 space-y-2.5">
-          {list.map((task) => (
-            <TaskCard
-              key={task.id}
-              task={task}
-              done={task.status === TASK_STATUSES.DONE}
-              onToggle={() => moveTask(task.id, TASK_STATUSES.DONE)}
-            />
-          ))}
-          {list.length === 0 && (
-            <div className="rounded-2xl border border-dashed border-white/15 py-10 text-center text-sm text-ink-faint">
-              {tab === 'done' ? t('emptyTasks') : t('dashboard.empty')}
-            </div>
-          )}
+          <div className="mt-4 space-y-2.5">
+            {list.map((task) => (
+              <TaskCard
+                key={task.id}
+                task={task}
+                saved={saved.isSaved(task.id)}
+                onSave={() => saved.toggle(task.id)}
+                canSave={saved.ready}
+                done={task.status === TASK_STATUSES.DONE}
+                onToggle={() => moveTask(task.id, TASK_STATUSES.DONE)}
+              />
+            ))}
+            {list.length === 0 && (
+              <div className="rounded-2xl border border-dashed border-white/15 py-10 text-center text-sm text-ink-faint">
+                {tab === 'saved' ? (he ? 'לחצו על סימניית המשימה כדי לשמור אותה כאן.' : 'Bookmark a chore to keep it here.') : tab === 'done' ? t('emptyTasks') : t('dashboard.empty')}
+              </div>
+            )}
+          </div>
         </div>
+
+        <aside className="rounded-2xl border border-white/10 bg-panel/60 p-5" aria-label={he ? 'משימות שמורות' : 'Saved chores'}>
+          <div className="flex items-center gap-2 text-lime">
+            <Bookmark size={18} />
+            <h2 className="flex-1 text-sm font-extrabold">{he ? 'שמרתי לאחר כך' : 'Saved for later'}</h2>
+            <span className="num text-xs">{savedTasks.length}</span>
+          </div>
+          <p className="mt-2 text-xs leading-relaxed text-ink-faint">{he ? 'הרשימה האישית שלכם, בדפדפן הזה.' : 'Your personal shortlist, in this browser.'}</p>
+          <div className="mt-4 space-y-2">{savedTasks.map(task => <div key={task.id} className="flex items-center gap-2 rounded-xl bg-white/5 p-2">
+            <span>{styleFor(task.categoryId).emoji}</span>
+            <button className="min-w-0 flex-1 text-start text-xs font-bold" onClick={() => setTab('saved')}>
+              <span className={`block truncate ${task.status === TASK_STATUSES.DONE ? 'line-through opacity-50' : ''}`}>{task.title}</span>
+              <small className="text-ink-faint">+{task.pointsValue ?? task.points ?? 0} XP</small>
+            </button>
+            <button className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-ink-faint hover:bg-white/10" onClick={() => saved.toggle(task.id)} aria-label={`${he ? 'ביטול שמירה' : 'Unsave chore'}: ${task.title}`}>
+              <X size={14} />
+            </button>
+          </div>)}</div>
+          {!savedTasks.length && <div className="mt-4 rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs leading-relaxed text-ink-faint">{he ? 'משהו שתרצו לעשות אחר כך? שמרו אותו בלחיצה על הסימנייה.' : 'Something for later? Tap its bookmark and find it right here.'}</div>}
+        </aside>
       </div>
 
       {permissions?.canCreateTask !== false && (
