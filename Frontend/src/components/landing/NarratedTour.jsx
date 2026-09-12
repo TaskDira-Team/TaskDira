@@ -56,8 +56,10 @@ export default function NarratedTour({ he }) {
   }, [enabled, paused, index, language, voice?.voiceURI, replay]);
   useEffect(() => {
     const onHidden = () => { if (document.hidden) { stop(); spoken.current = null; setPaused(true); } };
+    const onJourney = () => { stop(); spoken.current = null; setPaused(true); };
+    window.addEventListener('taskdira:house-journey', onJourney);
     document.addEventListener('visibilitychange', onHidden);
-    return () => document.removeEventListener('visibilitychange', onHidden);
+    return () => { document.removeEventListener('visibilitychange', onHidden); window.removeEventListener('taskdira:house-journey', onJourney); };
   }, []);
   const start = () => {
     const positions = TOUR_SECTIONS.map(item => ({ top: document.getElementById(item.id)?.getBoundingClientRect().top ?? Infinity }));

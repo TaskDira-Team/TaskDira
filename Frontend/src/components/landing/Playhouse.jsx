@@ -1,14 +1,15 @@
 import { useEffect, useRef, useState } from 'react';
 import { Bookmark, ArrowLeft, ArrowRight, Check, Clock3, Flame, Gift, Home, RotateCcw, Sparkles, Star, Trophy, X, Zap } from 'lucide-react';
-import { balance, completeQuest, DEMO_STORAGE_KEY, earnedPoints, initialDemo, QUESTS, REWARDS, redeemReward, validDemo } from './demoState';
+import { balance, completeQuest, earnedPoints, initialDemo, QUESTS, REWARDS, redeemReward } from './demoState';
 
 import useSavedChores from '../../hooks/useSavedChores';
+import usePlayground from './usePlayground';
 
 export default function Playhouse({ he }) {
   const saved = useSavedChores('demo', 'sunshine');
   const savedQuests = QUESTS.filter(quest => saved.isSaved(quest.id));
   const say = (h, e) => he ? h : e;
-  const [state, setState] = useState(() => { try { return validDemo(JSON.parse(localStorage.getItem(DEMO_STORAGE_KEY))); } catch { return initialDemo(); } });
+  const [state, setState] = usePlayground();
   const [tab, setTab] = useState('tasks');
   const [filter, setFilter] = useState('all');
   const [notice, setNotice] = useState(null);
@@ -18,7 +19,7 @@ export default function Playhouse({ he }) {
   const lastFocus = useRef(null);
   const current = useRef(state);
   const Arrow = he ? ArrowLeft : ArrowRight;
-  useEffect(() => { try { localStorage.setItem(DEMO_STORAGE_KEY, JSON.stringify(state)); } catch { /* The playground also works without storage. */ } }, [state]);
+  current.current = state;
   useEffect(() => { if (!notice) return; const timer = setTimeout(() => setNotice(null), 4500); return () => clearTimeout(timer); }, [notice]);
   useEffect(() => { if (celebration) { lastFocus.current = document.activeElement; dialog.current?.showModal(); } }, [celebration]);
   const update = next => { current.current = next; setState(next); };

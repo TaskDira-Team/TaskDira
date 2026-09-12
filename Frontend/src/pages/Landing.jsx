@@ -6,6 +6,7 @@ import Playhouse from '../components/landing/Playhouse';
 import HouseExplorer from '../components/landing/HouseExplorer';
 import NarratedTour from '../components/landing/NarratedTour';
 import '../components/landing/landing.css';
+import '../components/landing/houseJourney.css';
 
 export function Brand({ onClick }) {
   return <button className="td-brand" onClick={onClick} aria-label="TaskDira">
