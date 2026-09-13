@@ -32,7 +32,7 @@ public class HouseholdMemberRepository : IHouseholdMemberRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_household_member_by_id(@p_householdid, @p_userid)",
             new { p_householdid = householdId, p_userid = userId },
             cancellationToken: cancellationToken);
@@ -44,7 +44,7 @@ public class HouseholdMemberRepository : IHouseholdMemberRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_household_members_page(@p_householdid, @p_offset, @p_limit)",
             new { p_householdid = householdId, p_offset = offset, p_limit = limit },
             cancellationToken: cancellationToken);
@@ -57,7 +57,7 @@ public class HouseholdMemberRepository : IHouseholdMemberRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_count_household_members(@p_householdid)",
             new { p_householdid = householdId },
             cancellationToken: cancellationToken);
@@ -69,7 +69,7 @@ public class HouseholdMemberRepository : IHouseholdMemberRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_insert_household_member(@p_householdid, @p_userid, @p_role)",
             new
             {
@@ -86,7 +86,7 @@ public class HouseholdMemberRepository : IHouseholdMemberRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_update_household_member_role(@p_householdid, @p_userid, @p_role)",
             new { p_householdid = householdId, p_userid = userId, p_role = role },
             cancellationToken: cancellationToken);
@@ -98,7 +98,7 @@ public class HouseholdMemberRepository : IHouseholdMemberRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_delete_household_member(@p_householdid, @p_userid)",
             new { p_householdid = householdId, p_userid = userId },
             cancellationToken: cancellationToken);

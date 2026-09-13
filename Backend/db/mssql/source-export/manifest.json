@@ -1,0 +1,24 @@
+{
+  "capturedUtc": "2026-09-13T06:26:20.2375742Z",
+  "readOnly": true,
+  "applicationRoutines": 59,
+  "liveRoutines": 62,
+  "missing": [],
+  "catalogOnly": [
+    "neondb_stp_delete_expired_sessions",
+    "neondb_stp_insert_household",
+    "neondb_stp_is_household_member"
+  ],
+  "counts": {
+    "categories": 11,
+    "householdinfo": 11,
+    "householdmembers": 11,
+    "monthlyleaderboard": 0,
+    "pointsleader": 8,
+    "rewards": 2,
+    "sessions": 5,
+    "tasks": 10,
+    "tasksubitems": 0,
+    "users": 12
+  }
+}

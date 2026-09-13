@@ -6,6 +6,10 @@ This is the shared source of truth for how the TaskDira backend is built. When a
 
 ---
 
+## Local MSSQL migration (2026-09-13)
+
+The user authorized SQL Server migration on `feat/mssql-migration-preparation`, superseding PostgreSQL-only guidance below for this work. Runtime Dapper supports both providers: PostgreSQL remains the default; `Database:Provider=SqlServer` enables local SQL Server. SQL Server calls use `RoutineCommand` and stored procedures, with atomic registration and reward claims. Original PostgreSQL migrations and scaffolding context remain reference/source-provider tooling. See `docs/MSSQL-Migration-Report.md` for the authoritative migration status and run commands. Migration tests target only local `TaskDira_MigrationDev`.
+
 ## 1. What this project is
 
 TaskDira is a gamified household chore management app. This repository folder (`Backend/`) is the **backend only**: an ASP.NET Core Web API over PostgreSQL, consumed by a React Native client built by a separate team that lives in the sibling `Frontend/` folder.

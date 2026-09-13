@@ -26,7 +26,7 @@ public class SessionRepository : ISessionRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_insert_session(@p_userid, @p_tokenhash, @p_expiresat)",
             new
             {
@@ -43,7 +43,7 @@ public class SessionRepository : ISessionRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_session_by_token_hash(@p_tokenhash)",
             new { p_tokenhash = tokenHash },
             cancellationToken: cancellationToken);
@@ -55,7 +55,7 @@ public class SessionRepository : ISessionRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_delete_session_by_token_hash(@p_tokenhash)",
             new { p_tokenhash = tokenHash },
             cancellationToken: cancellationToken);

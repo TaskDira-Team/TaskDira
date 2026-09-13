@@ -1,5 +1,8 @@
 import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
 import { api } from '../services/api';
+import { fetchMonthlyEarnedXp } from '../services/pointsRemote';
+import { USE_REAL_API } from '../services/config';
+import { completedThisMonth } from '../utils/monthlyStats';
 import { STATUS_LABELS, TASK_STATUSES } from '../data/mockData';
 import { useAuth } from './AuthContext';
 import { fireTaskCompleteConfetti, fireProofSubmittedConfetti } from '../utils/confetti';
@@ -15,6 +18,7 @@ export function AppProvider({ children }) {
   const [leaderboard, setLeaderboard] = useState([]);
   const [rewards, setRewards] = useState([]);
   const [members, setMembers] = useState([]);
+  const [monthlyXp, setMonthlyXp] = useState(0);
   const [loading, setLoading] = useState(true);
   const [toasts, setToasts] = useState([]);
   const [celebration, setCelebration] = useState(null);
@@ -84,7 +88,7 @@ export function AppProvider({ children }) {
   );
 
   const refreshData = useCallback(async () => {
-    const [householdData, usersData, tasksData, leaderboardData, rewardsData, membersData] =
+    const [householdData, usersData, tasksData, leaderboardData, rewardsData, membersData, earnedXp] =
       await Promise.all([
         api.getHousehold(),
         api.getUsers(),
@@ -92,9 +96,11 @@ export function AppProvider({ children }) {
         api.getLeaderboard(),
         api.getRewards(),
         api.getMembers().catch(() => []),
+        USE_REAL_API.tasks ? fetchMonthlyEarnedXp() : Promise.resolve(0),
       ]);
     setHousehold(householdData);
-    setUsers(usersData);
+    setUsers(usersData.map(member => ({ ...member, tasksCompletedThisMonth: completedThisMonth(tasksData, member.id) })));
+    setMonthlyXp(earnedXp);
     setTasks(tasksData);
     setLeaderboard(leaderboardData);
     setRewards(rewardsData);
@@ -393,6 +399,7 @@ export function AppProvider({ children }) {
   return (
     <AppContext.Provider
       value={{
+        monthlyXp,
         household,
         group: household ? { id: household.id, name: household.displayName } : null,
         users,

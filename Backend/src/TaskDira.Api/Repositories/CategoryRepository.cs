@@ -32,7 +32,7 @@ public class CategoryRepository : ICategoryRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_category_by_id(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);
@@ -44,7 +44,7 @@ public class CategoryRepository : ICategoryRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_categories_page(@p_offset, @p_limit)",
             new { p_offset = offset, p_limit = limit },
             cancellationToken: cancellationToken);
@@ -57,7 +57,7 @@ public class CategoryRepository : ICategoryRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_count_categories()",
             cancellationToken: cancellationToken);
 
@@ -68,7 +68,7 @@ public class CategoryRepository : ICategoryRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_insert_category(@p_name, @p_description)",
             new
             {
@@ -84,7 +84,7 @@ public class CategoryRepository : ICategoryRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_update_category(@p_id, @p_name, @p_description)",
             new
             {
@@ -101,7 +101,7 @@ public class CategoryRepository : ICategoryRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_delete_category(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);

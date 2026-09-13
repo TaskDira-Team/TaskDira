@@ -1,0 +1,58 @@
+{
+  "verifiedUtc": "2026-09-13T11:48:37.6950302Z",
+  "tables": [
+    {
+      "table": "categories",
+      "rows": 11,
+      "allColumnValuesMatch": true
+    },
+    {
+      "table": "householdinfo",
+      "rows": 11,
+      "allColumnValuesMatch": true
+    },
+    {
+      "table": "householdmembers",
+      "rows": 11,
+      "allColumnValuesMatch": true
+    },
+    {
+      "table": "monthlyleaderboard",
+      "rows": 0,
+      "allColumnValuesMatch": true
+    },
+    {
+      "table": "pointsleader",
+      "rows": 8,
+      "allColumnValuesMatch": true
+    },
+    {
+      "table": "rewards",
+      "rows": 2,
+      "allColumnValuesMatch": true
+    },
+    {
+      "table": "sessions",
+      "rows": 5,
+      "allColumnValuesMatch": true
+    },
+    {
+      "table": "tasks",
+      "rows": 10,
+      "allColumnValuesMatch": true
+    },
+    {
+      "table": "tasksubitems",
+      "rows": 0,
+      "allColumnValuesMatch": true
+    },
+    {
+      "table": "users",
+      "rows": 12,
+      "allColumnValuesMatch": true
+    }
+  ],
+  "foreignKeysTrusted": true,
+  "constraintsValid": true,
+  "walletsMatch": true
+}

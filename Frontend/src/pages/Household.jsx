@@ -3,7 +3,7 @@ import { useI18n } from '../context/I18nContext';
 import { useAuth } from '../context/AuthContext';
 import { useApp } from '../context/AppContext';
 import { getRingAccent } from '../data/avatars';
-import { TASK_STATUSES } from '../data/mockData';
+import { completedThisMonth } from '../utils/monthlyStats';
 import {
   ACCENTS,
   Avatar,
@@ -51,6 +51,7 @@ export default function Household() {
     members,
     users,
     tasks,
+    monthlyXp,
     permissions,
     inviteMember,
     changeMemberRole,
@@ -91,18 +92,10 @@ export default function Household() {
   const maxXp = rows.reduce((acc, r) => Math.max(acc, r.xp), 0) || 1;
   const familyXp = rows.reduce((acc, r) => acc + r.xp, 0);
 
-  const monthlyDone = useMemo(() => {
-    const now = new Date();
-    return (tasks ?? []).filter((task) => {
-      if (task.status !== TASK_STATUSES.DONE) return false;
-      const at = task.completedAt ? new Date(task.completedAt) : null;
-      if (!at || Number.isNaN(at.getTime())) return true;
-      return at.getMonth() === now.getMonth() && at.getFullYear() === now.getFullYear();
-    }).length;
-  }, [tasks]);
+  const monthlyDone = completedThisMonth(tasks ?? []);
 
   const goal = household?.monthlyGoalPoints ?? 400;
-  const goalPct = Math.min(100, Math.round((monthlyDone / (goal || 1)) * 100));
+  const goalPct = Math.min(100, Math.round((monthlyXp / (goal || 1)) * 100));
 
   const admins = rows.filter((r) => r.admin);
   const managedBy =
@@ -181,7 +174,7 @@ export default function Household() {
             <div className="num mb-1.5 flex justify-between text-[11px] text-ink-dim">
               <span>{t('monthlyGoal')}</span>
               <span className="font-extrabold text-lime">
-                {monthlyDone} / {goal}
+                {monthlyXp} / {goal} XP
               </span>
             </div>
             <XPBar value={goalPct} />

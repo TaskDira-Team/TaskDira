@@ -46,6 +46,7 @@ appsettings.Local.json
 appsettings.*.Local.json
 appsettings.Secrets.json
 secrets.json
+.migration-private/
 *.pfx
 *.p12
 *.pem

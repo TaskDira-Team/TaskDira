@@ -124,6 +124,13 @@ public class RewardService : IRewardService
         if (reward.Claimedbyuserid is not null)
             throw new InvalidOperationException("That reward has already been claimed.");
 
+        if (_rewards.SupportsAtomicClaims)
+        {
+            if (!await _rewards.ClaimAndSpendAsync(id, callerUserId, householdId, cancellationToken))
+                throw new InvalidOperationException("Reward is unavailable, locked, or unaffordable.");
+            return true;
+        }
+
         var balance = await _ledger.GetBalanceForUserAsync(householdId, callerUserId, cancellationToken);
         if (balance < reward.Cost)
             throw new InvalidOperationException("Not enough points to claim that reward.");

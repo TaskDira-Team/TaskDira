@@ -32,7 +32,7 @@ public class TaskSubItemRepository : ITaskSubItemRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_task_sub_item_by_id(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);
@@ -44,7 +44,7 @@ public class TaskSubItemRepository : ITaskSubItemRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_task_sub_items_page(@p_taskid, @p_offset, @p_limit)",
             new { p_taskid = taskId, p_offset = offset, p_limit = limit },
             cancellationToken: cancellationToken);
@@ -57,7 +57,7 @@ public class TaskSubItemRepository : ITaskSubItemRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_count_task_sub_items(@p_taskid)",
             new { p_taskid = taskId },
             cancellationToken: cancellationToken);
@@ -69,7 +69,7 @@ public class TaskSubItemRepository : ITaskSubItemRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_insert_task_sub_item(@p_taskid, @p_itemtext)",
             new
             {
@@ -85,7 +85,7 @@ public class TaskSubItemRepository : ITaskSubItemRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_update_task_sub_item(@p_id, @p_itemtext, @p_iscompleted)",
             new
             {
@@ -102,7 +102,7 @@ public class TaskSubItemRepository : ITaskSubItemRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_delete_task_sub_item(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);

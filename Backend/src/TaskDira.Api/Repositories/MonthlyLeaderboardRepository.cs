@@ -29,7 +29,7 @@ public class MonthlyLeaderboardRepository : IMonthlyLeaderboardRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_leaderboard(@p_householdid, @p_month, @p_year, @p_offset, @p_limit)",
             new
             {
@@ -49,7 +49,7 @@ public class MonthlyLeaderboardRepository : IMonthlyLeaderboardRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_count_leaderboard(@p_householdid, @p_month, @p_year)",
             new { p_householdid = householdId, p_month = month, p_year = year },
             cancellationToken: cancellationToken);
@@ -62,7 +62,7 @@ public class MonthlyLeaderboardRepository : IMonthlyLeaderboardRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_user_leaderboard_entry(@p_householdid, @p_userid, @p_month, @p_year)",
             new
             {

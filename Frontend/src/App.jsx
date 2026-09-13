@@ -1,4 +1,5 @@
 import { Loader2 } from 'lucide-react';
+import { useEffect } from 'react';
 import { AuthProvider, useAuth } from './context/AuthContext';
 import { HouseholdProvider } from './context/HouseholdContext';
 import { I18nProvider } from './context/I18nContext';
@@ -44,6 +45,13 @@ function NewUiRouter() {
   const { user, loading } = useAuth();
   const { path, navigate } = useRoute();
 
+  useEffect(() => {
+    if (loading) return;
+    const current = findRoute(path);
+    if (!user && current?.access !== 'public') navigate('/landing');
+    else if (user && (!current || current.access === 'public')) navigate('/');
+  }, [user, loading, path, navigate]);
+
   if (loading) return <LoadingScreen dark />;
 
   const route = findRoute(path);
@@ -56,7 +64,6 @@ function NewUiRouter() {
 
   // A signed-in caller landing on a public route belongs in the app.
   if (!route || route.access === 'public') {
-    if (path !== '/') navigate('/');
     const Home = findRoute('/').component;
     return (
       <HouseholdProvider>

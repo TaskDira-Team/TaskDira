@@ -29,17 +29,20 @@ public class AuthService : IAuthService
     private readonly ISessionRepository _sessions;
     private readonly IHouseholdRepository _households;
     private readonly IPasswordHasher<User> _passwordHasher;
+    private readonly IRegistrationRepository? _registration;
 
     public AuthService(
         IUserRepository users,
         ISessionRepository sessions,
         IHouseholdRepository households,
-        IPasswordHasher<User> passwordHasher)
+        IPasswordHasher<User> passwordHasher,
+        IRegistrationRepository? registration = null)
     {
         _users = users;
         _sessions = sessions;
         _households = households;
         _passwordHasher = passwordHasher;
+        _registration = registration;
     }
 
     public async Task<RegisterResponse> RegisterAsync(RegisterRequest request, CancellationToken cancellationToken)
@@ -70,6 +73,23 @@ public class AuthService : IAuthService
         };
 
         user.Passwordhash = _passwordHasher.HashPassword(user, request.Password);
+
+        if (_registration?.IsSupported == true)
+        {
+            var atomicToken = GenerateToken();
+            var result = await _registration.RegisterAsync(user, request.HouseholdName.Trim(), HouseholdRoles.Admin,
+                HashToken(atomicToken), DateTime.UtcNow.Add(SessionLifetime), cancellationToken);
+            return new RegisterResponse
+            {
+                Token = atomicToken,
+                ExpiresAt = DateTime.SpecifyKind(result.Session.Expiresat, DateTimeKind.Utc),
+                UserId = result.User.Id,
+                FullName = result.User.Fullname,
+                Email = result.User.Email,
+                HouseholdId = result.Household.Id,
+                HouseholdName = result.Household.Name
+            };
+        }
 
         var createdUser = await _users.InsertAsync(user, cancellationToken);
 

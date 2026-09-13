@@ -132,7 +132,7 @@ export default function AvatarCreator({ config, onChange, variant = 'light' }) {
     <div className="space-y-5">
       <div className="flex flex-col items-center gap-2 py-4">
         <AvatarFrame avatar={preview} size="xl" showGlow />
-        <p className={at.badgeLabel}>{preview.profileBadgeLabel}</p>
+        <p className={at.badgeLabel}>{t(preview.profileBadgeKey)}</p>
         <p className={at.hint}>
           {preview.iconLabel} · {t('avatar.ring')}: {preview.ringLabel}
           {preview.isAnimated && ` · 🎬 ${t('avatar.animated')}`}
@@ -302,7 +302,7 @@ export default function AvatarCreator({ config, onChange, variant = 'light' }) {
                   : at.badgeOff
               }`}
             >
-              {badge.label}
+              {t(badge.labelKey)}
             </button>
           ))}
         </div>

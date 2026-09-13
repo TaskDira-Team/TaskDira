@@ -32,7 +32,7 @@ public class HouseholdRepository : IHouseholdRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_household_by_id(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);
@@ -44,7 +44,7 @@ public class HouseholdRepository : IHouseholdRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_households_page(@p_userid, @p_offset, @p_limit)",
             new { p_userid = userId, p_offset = offset, p_limit = limit },
             cancellationToken: cancellationToken);
@@ -57,7 +57,7 @@ public class HouseholdRepository : IHouseholdRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_count_households(@p_userid)",
             new { p_userid = userId },
             cancellationToken: cancellationToken);
@@ -69,7 +69,7 @@ public class HouseholdRepository : IHouseholdRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_insert_household_with_admin(@p_name, @p_adminuserid, @p_role, @p_address, @p_monthlygoalpoints, @p_requireproofapproval)",
             new
             {
@@ -89,7 +89,7 @@ public class HouseholdRepository : IHouseholdRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_update_household(@p_id, @p_name, @p_address, @p_monthlygoalpoints, @p_requireproofapproval)",
             new
             {
@@ -108,7 +108,7 @@ public class HouseholdRepository : IHouseholdRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_delete_household(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);

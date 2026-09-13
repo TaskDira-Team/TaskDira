@@ -1,4 +1,4 @@
-import { AVATAR_TYPES, getStickerById } from './stickers';
+import { AVATAR_TYPES, getStickerById } from './stickers.js';
 
 export const AVATAR_ICONS = [
   { id: 'lion', emoji: '🦁', label: 'אריה' },
@@ -65,15 +65,20 @@ export const RING_COLORS = [
 ];
 
 export const PROFILE_BADGES = [
-  { id: 'kitchen-champ', label: 'אלוף המטבח 🍳' },
-  { id: 'cleaning-master', label: 'מאסטר ניקיונות 🧹' },
-  { id: 'home-hero', label: 'גיבור הבית 🦸' },
-  { id: 'homework-star', label: 'כוכב שיעורים 📚' },
-  { id: 'pet-lover', label: 'אוהב חיות 🐾' },
-  { id: 'early-bird', label: 'ציפור בוקר 🌅' },
-  { id: 'night-owl', label: 'ינשוף לילה 🦉' },
-  { id: 'team-player', label: 'שחקן קבוצה 🤝' },
-];
+  { id: 'kitchen-champ', label: 'אלוף המטבח 🍳', labelEn: 'Kitchen champion 🍳' },
+  { id: 'cleaning-master', label: 'מאסטר ניקיונות 🧹', labelEn: 'Cleaning master 🧹' },
+  { id: 'home-hero', label: 'גיבור הבית 🦸', labelEn: 'Home hero 🦸' },
+  { id: 'homework-star', label: 'כוכב שיעורים 📚', labelEn: 'Homework star 📚' },
+  { id: 'pet-lover', label: 'אוהב חיות 🐾', labelEn: 'Pet lover 🐾' },
+  { id: 'early-bird', label: 'ציפור בוקר 🌅', labelEn: 'Early bird 🌅' },
+  { id: 'night-owl', label: 'ינשוף לילה 🦉', labelEn: 'Night owl 🦉' },
+  { id: 'team-player', label: 'שחקן קבוצה 🤝', labelEn: 'Team player 🤝' },
+].map(badge => ({ ...badge, labelKey: `badge.${badge.id}` }));
+
+export const BADGE_TRANSLATIONS = {
+  he: Object.fromEntries(PROFILE_BADGES.map(b => [b.labelKey, b.label])),
+  en: Object.fromEntries(PROFILE_BADGES.map(b => [b.labelKey, b.labelEn])),
+};
 
 /**
  * The avatar ring palette and the dark-theme kit accent palette were designed
@@ -112,13 +117,13 @@ export function getRingColor(id) {
 }
 
 export function getProfileBadge(id) {
-  return PROFILE_BADGES.find((b) => b.id === id) || PROFILE_BADGES[2];
+  return PROFILE_BADGES.find((b) => b.id === id || b.labelKey === id || b.label === id || b.labelEn === id) || PROFILE_BADGES[2];
 }
 
 export function resolveAvatarConfig(config) {
   const base = { ...DEFAULT_AVATAR_CONFIG, ...config };
   const ring = getRingColor(base.ringColorId);
-  const profileBadge = getProfileBadge(base.profileBadgeId);
+  const profileBadge = getProfileBadge(config?.profileBadgeId || config?.profileBadgeKey || config?.profileBadgeLabel);
   const avatarType = base.avatarType || AVATAR_TYPES.EMOJI;
 
   const shared = {
@@ -128,6 +133,8 @@ export function resolveAvatarConfig(config) {
     ringClass: ring.ring,
     ringLabel: ring.labelHe,
     profileBadgeLabel: profileBadge.label,
+    profileBadgeId: profileBadge.id,
+    profileBadgeKey: profileBadge.labelKey,
   };
 
   if (avatarType === AVATAR_TYPES.CUSTOM && base.customImageData) {

@@ -1,0 +1,3290 @@
+{
+  "database": [
+    {
+      "version": "18.6 (Debian 18.6-1.pgdg13\u002B2)",
+      "datctype": "en_US.utf8",
+      "timezone": "Etc/UTC",
+      "read_only": "on",
+      "datcollate": "en_US.utf8",
+      "size_bytes": 8615615
+    }
+  ],
+  "columns": [
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "categories",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "nextval(\u0027categories_id_seq\u0027::regclass)",
+      "ordinal_position": 1,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "categories",
+      "column_name": "name",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 2,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 150
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "categories",
+      "column_name": "description",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 3,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "householdinfo",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "nextval(\u0027householdinfo_id_seq\u0027::regclass)",
+      "ordinal_position": 1,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "householdinfo",
+      "column_name": "name",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 2,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 100
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "householdinfo",
+      "column_name": "adminuserid",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 3,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "timestamp",
+      "data_type": "timestamp without time zone",
+      "table_name": "householdinfo",
+      "column_name": "createdat",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": "now()",
+      "ordinal_position": 4,
+      "numeric_precision": null,
+      "datetime_precision": 6,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "householdinfo",
+      "column_name": "address",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 5,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 200
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "householdinfo",
+      "column_name": "monthlygoalpoints",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "400",
+      "ordinal_position": 6,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "bool",
+      "data_type": "boolean",
+      "table_name": "householdinfo",
+      "column_name": "requireproofapproval",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": "false",
+      "ordinal_position": 7,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "householdmembers",
+      "column_name": "householdid",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 1,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "householdmembers",
+      "column_name": "userid",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 2,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "householdmembers",
+      "column_name": "role",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 3,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 30
+    },
+    {
+      "udt_name": "timestamp",
+      "data_type": "timestamp without time zone",
+      "table_name": "householdmembers",
+      "column_name": "joinedat",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": "now()",
+      "ordinal_position": 4,
+      "numeric_precision": null,
+      "datetime_precision": 6,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "monthlyleaderboard",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "nextval(\u0027monthlyleaderboard_id_seq\u0027::regclass)",
+      "ordinal_position": 1,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "monthlyleaderboard",
+      "column_name": "householdid",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 2,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "monthlyleaderboard",
+      "column_name": "userid",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 3,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "monthlyleaderboard",
+      "column_name": "month",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 4,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "monthlyleaderboard",
+      "column_name": "year",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 5,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "monthlyleaderboard",
+      "column_name": "totalpoints",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "0",
+      "ordinal_position": 6,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "monthlyleaderboard",
+      "column_name": "rank",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 7,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "pointsleader",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "nextval(\u0027pointsledger_id_seq\u0027::regclass)",
+      "ordinal_position": 1,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "pointsleader",
+      "column_name": "userid",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 2,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "pointsleader",
+      "column_name": "taskid",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 3,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "pointsleader",
+      "column_name": "pointsearned",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 4,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "timestamp",
+      "data_type": "timestamp without time zone",
+      "table_name": "pointsleader",
+      "column_name": "earnedat",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": "now()",
+      "ordinal_position": 5,
+      "numeric_precision": null,
+      "datetime_precision": 6,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "pointsleader",
+      "column_name": "rewardid",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 6,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "pointsleader",
+      "column_name": "householdid",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 7,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "rewards",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "nextval(\u0027rewards_id_seq\u0027::regclass)",
+      "ordinal_position": 1,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "rewards",
+      "column_name": "title",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 2,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 150
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "rewards",
+      "column_name": "requiredpoints",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 3,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "rewards",
+      "column_name": "claimedbyuserid",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 4,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "rewards",
+      "column_name": "householdid",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 5,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "rewards",
+      "column_name": "emoji",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 6,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 16
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "rewards",
+      "column_name": "description",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 7,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "rewards",
+      "column_name": "cost",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "0",
+      "ordinal_position": 8,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "rewards",
+      "column_name": "category",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 9,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 30
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "sessions",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "nextval(\u0027sessions_id_seq\u0027::regclass)",
+      "ordinal_position": 1,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "sessions",
+      "column_name": "userid",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 2,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "sessions",
+      "column_name": "tokenhash",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 3,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "timestamp",
+      "data_type": "timestamp without time zone",
+      "table_name": "sessions",
+      "column_name": "createdat",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": "(now() AT TIME ZONE \u0027utc\u0027::text)",
+      "ordinal_position": 4,
+      "numeric_precision": null,
+      "datetime_precision": 6,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "timestamp",
+      "data_type": "timestamp without time zone",
+      "table_name": "sessions",
+      "column_name": "expiresat",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 5,
+      "numeric_precision": null,
+      "datetime_precision": 6,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "tasks",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "nextval(\u0027tasks_id_seq\u0027::regclass)",
+      "ordinal_position": 1,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "tasks",
+      "column_name": "householdid",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 2,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "tasks",
+      "column_name": "title",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 3,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 150
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "tasks",
+      "column_name": "description",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 4,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "tasks",
+      "column_name": "categoryid",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 5,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "tasks",
+      "column_name": "pointsvalue",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "0",
+      "ordinal_position": 6,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "tasks",
+      "column_name": "assigneduserid",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 7,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "tasks",
+      "column_name": "status",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": "\u0027ToDo\u0027::character varying",
+      "ordinal_position": 8,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 20
+    },
+    {
+      "udt_name": "timestamp",
+      "data_type": "timestamp without time zone",
+      "table_name": "tasks",
+      "column_name": "duedate",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 9,
+      "numeric_precision": null,
+      "datetime_precision": 6,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "tasks",
+      "column_name": "proofimageurl",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 10,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 255
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "tasks",
+      "column_name": "createdbyid",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 11,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "timestamp",
+      "data_type": "timestamp without time zone",
+      "table_name": "tasks",
+      "column_name": "completedat",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 12,
+      "numeric_precision": null,
+      "datetime_precision": 6,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "tasks",
+      "column_name": "approvedbyid",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 13,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "text",
+      "data_type": "text",
+      "table_name": "tasks",
+      "column_name": "rejectedreason",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 14,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "tasksubitems",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "nextval(\u0027tasksubitems_id_seq\u0027::regclass)",
+      "ordinal_position": 1,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "tasksubitems",
+      "column_name": "taskid",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 2,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "tasksubitems",
+      "column_name": "itemtext",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 3,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 150
+    },
+    {
+      "udt_name": "bool",
+      "data_type": "boolean",
+      "table_name": "tasksubitems",
+      "column_name": "iscompleted",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": "false",
+      "ordinal_position": 4,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "int4",
+      "data_type": "integer",
+      "table_name": "users",
+      "column_name": "id",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": 0,
+      "collation_name": null,
+      "column_default": "nextval(\u0027users_id_seq\u0027::regclass)",
+      "ordinal_position": 1,
+      "numeric_precision": 32,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "users",
+      "column_name": "fullname",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 2,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 100
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "users",
+      "column_name": "email",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 3,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 150
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "users",
+      "column_name": "passwordhash",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": null,
+      "ordinal_position": 4,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 255
+    },
+    {
+      "udt_name": "jsonb",
+      "data_type": "jsonb",
+      "table_name": "users",
+      "column_name": "avatarstate",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": "\u0027\u0022neutral\u0022\u0027::jsonb",
+      "ordinal_position": 5,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "timestamp",
+      "data_type": "timestamp without time zone",
+      "table_name": "users",
+      "column_name": "createdat",
+      "is_identity": "NO",
+      "is_nullable": "YES",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": "now()",
+      "ordinal_position": 6,
+      "numeric_precision": null,
+      "datetime_precision": 6,
+      "character_maximum_length": null
+    },
+    {
+      "udt_name": "varchar",
+      "data_type": "character varying",
+      "table_name": "users",
+      "column_name": "familyrole",
+      "is_identity": "NO",
+      "is_nullable": "NO",
+      "table_schema": "public",
+      "numeric_scale": null,
+      "collation_name": null,
+      "column_default": "\u0027roommate\u0027::character varying",
+      "ordinal_position": 7,
+      "numeric_precision": null,
+      "datetime_precision": null,
+      "character_maximum_length": 30
+    }
+  ],
+  "constraints": [
+    {
+      "name": "categories_id_not_null",
+      "type": "n",
+      "definition": "NOT NULL id",
+      "table_name": "categories",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "categories_name_not_null",
+      "type": "n",
+      "definition": "NOT NULL name",
+      "table_name": "categories",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "categories_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "categories",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdinfo_adminuserid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (adminuserid) REFERENCES users(id)",
+      "table_name": "householdinfo",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdinfo_adminuserid_not_null",
+      "type": "n",
+      "definition": "NOT NULL adminuserid",
+      "table_name": "householdinfo",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdinfo_id_not_null",
+      "type": "n",
+      "definition": "NOT NULL id",
+      "table_name": "householdinfo",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdinfo_monthlygoalpoints_not_null",
+      "type": "n",
+      "definition": "NOT NULL monthlygoalpoints",
+      "table_name": "householdinfo",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdinfo_name_not_null",
+      "type": "n",
+      "definition": "NOT NULL name",
+      "table_name": "householdinfo",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdinfo_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "householdinfo",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdinfo_requireproofapproval_not_null",
+      "type": "n",
+      "definition": "NOT NULL requireproofapproval",
+      "table_name": "householdinfo",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdmembers_householdid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (householdid) REFERENCES householdinfo(id)",
+      "table_name": "householdmembers",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdmembers_householdid_not_null",
+      "type": "n",
+      "definition": "NOT NULL householdid",
+      "table_name": "householdmembers",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdmembers_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (householdid, userid)",
+      "table_name": "householdmembers",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdmembers_role_not_null",
+      "type": "n",
+      "definition": "NOT NULL role",
+      "table_name": "householdmembers",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdmembers_userid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (userid) REFERENCES users(id)",
+      "table_name": "householdmembers",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "householdmembers_userid_not_null",
+      "type": "n",
+      "definition": "NOT NULL userid",
+      "table_name": "householdmembers",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "monthlyleaderboard_householdid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (householdid) REFERENCES householdinfo(id)",
+      "table_name": "monthlyleaderboard",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "monthlyleaderboard_householdid_not_null",
+      "type": "n",
+      "definition": "NOT NULL householdid",
+      "table_name": "monthlyleaderboard",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "monthlyleaderboard_id_not_null",
+      "type": "n",
+      "definition": "NOT NULL id",
+      "table_name": "monthlyleaderboard",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "monthlyleaderboard_month_not_null",
+      "type": "n",
+      "definition": "NOT NULL month",
+      "table_name": "monthlyleaderboard",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "monthlyleaderboard_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "monthlyleaderboard",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "monthlyleaderboard_totalpoints_not_null",
+      "type": "n",
+      "definition": "NOT NULL totalpoints",
+      "table_name": "monthlyleaderboard",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "monthlyleaderboard_userid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (userid) REFERENCES users(id)",
+      "table_name": "monthlyleaderboard",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "monthlyleaderboard_userid_not_null",
+      "type": "n",
+      "definition": "NOT NULL userid",
+      "table_name": "monthlyleaderboard",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "monthlyleaderboard_year_not_null",
+      "type": "n",
+      "definition": "NOT NULL year",
+      "table_name": "monthlyleaderboard",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "pointsleader_householdid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (householdid) REFERENCES householdinfo(id)",
+      "table_name": "pointsleader",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "pointsleader_householdid_not_null",
+      "type": "n",
+      "definition": "NOT NULL householdid",
+      "table_name": "pointsleader",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "pointsleader_pointsearned_nonzero",
+      "type": "c",
+      "definition": "CHECK (pointsearned \u003C\u003E 0)",
+      "table_name": "pointsleader",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "pointsleader_rewardid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (rewardid) REFERENCES rewards(id)",
+      "table_name": "pointsleader",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "pointsleader_task_or_reward",
+      "type": "c",
+      "definition": "CHECK (taskid IS NOT NULL OR rewardid IS NOT NULL)",
+      "table_name": "pointsleader",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "pointsledger_id_not_null",
+      "type": "n",
+      "definition": "NOT NULL id",
+      "table_name": "pointsleader",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "pointsledger_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "pointsleader",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "pointsledger_pointsearned_not_null",
+      "type": "n",
+      "definition": "NOT NULL pointsearned",
+      "table_name": "pointsleader",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "pointsledger_taskid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (taskid) REFERENCES tasks(id)",
+      "table_name": "pointsleader",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "pointsledger_userid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (userid) REFERENCES users(id)",
+      "table_name": "pointsleader",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "pointsledger_userid_not_null",
+      "type": "n",
+      "definition": "NOT NULL userid",
+      "table_name": "pointsleader",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "rewards_claimedbyuserid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (claimedbyuserid) REFERENCES users(id)",
+      "table_name": "rewards",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "rewards_cost_not_null",
+      "type": "n",
+      "definition": "NOT NULL cost",
+      "table_name": "rewards",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "rewards_householdid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (householdid) REFERENCES householdinfo(id)",
+      "table_name": "rewards",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "rewards_id_not_null",
+      "type": "n",
+      "definition": "NOT NULL id",
+      "table_name": "rewards",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "rewards_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "rewards",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "rewards_requiredpoints_not_null",
+      "type": "n",
+      "definition": "NOT NULL requiredpoints",
+      "table_name": "rewards",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "rewards_title_not_null",
+      "type": "n",
+      "definition": "NOT NULL title",
+      "table_name": "rewards",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "sessions_createdat_not_null",
+      "type": "n",
+      "definition": "NOT NULL createdat",
+      "table_name": "sessions",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "sessions_expiresat_not_null",
+      "type": "n",
+      "definition": "NOT NULL expiresat",
+      "table_name": "sessions",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "sessions_id_not_null",
+      "type": "n",
+      "definition": "NOT NULL id",
+      "table_name": "sessions",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "sessions_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "sessions",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "sessions_tokenhash_key",
+      "type": "u",
+      "definition": "UNIQUE (tokenhash)",
+      "table_name": "sessions",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "sessions_tokenhash_not_null",
+      "type": "n",
+      "definition": "NOT NULL tokenhash",
+      "table_name": "sessions",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "sessions_userid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (userid) REFERENCES users(id) ON DELETE CASCADE",
+      "table_name": "sessions",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "sessions_userid_not_null",
+      "type": "n",
+      "definition": "NOT NULL userid",
+      "table_name": "sessions",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasks_approvedbyid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (approvedbyid) REFERENCES users(id)",
+      "table_name": "tasks",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasks_assigneduserid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (assigneduserid) REFERENCES users(id)",
+      "table_name": "tasks",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasks_categoryid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (categoryid) REFERENCES categories(id)",
+      "table_name": "tasks",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasks_createdbyid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (createdbyid) REFERENCES users(id)",
+      "table_name": "tasks",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasks_householdid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (householdid) REFERENCES householdinfo(id)",
+      "table_name": "tasks",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasks_householdid_not_null",
+      "type": "n",
+      "definition": "NOT NULL householdid",
+      "table_name": "tasks",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasks_id_not_null",
+      "type": "n",
+      "definition": "NOT NULL id",
+      "table_name": "tasks",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasks_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "tasks",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasks_pointsvalue_not_null",
+      "type": "n",
+      "definition": "NOT NULL pointsvalue",
+      "table_name": "tasks",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasks_status_not_null",
+      "type": "n",
+      "definition": "NOT NULL status",
+      "table_name": "tasks",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasks_title_not_null",
+      "type": "n",
+      "definition": "NOT NULL title",
+      "table_name": "tasks",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasksubitems_id_not_null",
+      "type": "n",
+      "definition": "NOT NULL id",
+      "table_name": "tasksubitems",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasksubitems_iscompleted_not_null",
+      "type": "n",
+      "definition": "NOT NULL iscompleted",
+      "table_name": "tasksubitems",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasksubitems_itemtext_not_null",
+      "type": "n",
+      "definition": "NOT NULL itemtext",
+      "table_name": "tasksubitems",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasksubitems_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "tasksubitems",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasksubitems_taskid_fkey",
+      "type": "f",
+      "definition": "FOREIGN KEY (taskid) REFERENCES tasks(id) ON DELETE CASCADE",
+      "table_name": "tasksubitems",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "tasksubitems_taskid_not_null",
+      "type": "n",
+      "definition": "NOT NULL taskid",
+      "table_name": "tasksubitems",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "users_email_key",
+      "type": "u",
+      "definition": "UNIQUE (email)",
+      "table_name": "users",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "users_email_not_null",
+      "type": "n",
+      "definition": "NOT NULL email",
+      "table_name": "users",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "users_familyrole_not_null",
+      "type": "n",
+      "definition": "NOT NULL familyrole",
+      "table_name": "users",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "users_fullname_not_null",
+      "type": "n",
+      "definition": "NOT NULL fullname",
+      "table_name": "users",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "users_id_not_null",
+      "type": "n",
+      "definition": "NOT NULL id",
+      "table_name": "users",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "users_passwordhash_not_null",
+      "type": "n",
+      "definition": "NOT NULL passwordhash",
+      "table_name": "users",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    },
+    {
+      "name": "users_pkey",
+      "type": "p",
+      "definition": "PRIMARY KEY (id)",
+      "table_name": "users",
+      "condeferred": false,
+      "convalidated": true,
+      "condeferrable": false
+    }
+  ],
+  "indexes": [
+    {
+      "name": "categories_pkey",
+      "definition": "CREATE UNIQUE INDEX categories_pkey ON public.categories USING btree (id)",
+      "table_name": "categories"
+    },
+    {
+      "name": "householdinfo_pkey",
+      "definition": "CREATE UNIQUE INDEX householdinfo_pkey ON public.householdinfo USING btree (id)",
+      "table_name": "householdinfo"
+    },
+    {
+      "name": "householdmembers_pkey",
+      "definition": "CREATE UNIQUE INDEX householdmembers_pkey ON public.householdmembers USING btree (householdid, userid)",
+      "table_name": "householdmembers"
+    },
+    {
+      "name": "monthlyleaderboard_pkey",
+      "definition": "CREATE UNIQUE INDEX monthlyleaderboard_pkey ON public.monthlyleaderboard USING btree (id)",
+      "table_name": "monthlyleaderboard"
+    },
+    {
+      "name": "pointsledger_pkey",
+      "definition": "CREATE UNIQUE INDEX pointsledger_pkey ON public.pointsleader USING btree (id)",
+      "table_name": "pointsleader"
+    },
+    {
+      "name": "ux_pointsleader_task_earn",
+      "definition": "CREATE UNIQUE INDEX ux_pointsleader_task_earn ON public.pointsleader USING btree (taskid) WHERE (pointsearned \u003E 0)",
+      "table_name": "pointsleader"
+    },
+    {
+      "name": "rewards_pkey",
+      "definition": "CREATE UNIQUE INDEX rewards_pkey ON public.rewards USING btree (id)",
+      "table_name": "rewards"
+    },
+    {
+      "name": "idx_sessions_userid",
+      "definition": "CREATE INDEX idx_sessions_userid ON public.sessions USING btree (userid)",
+      "table_name": "sessions"
+    },
+    {
+      "name": "sessions_pkey",
+      "definition": "CREATE UNIQUE INDEX sessions_pkey ON public.sessions USING btree (id)",
+      "table_name": "sessions"
+    },
+    {
+      "name": "sessions_tokenhash_key",
+      "definition": "CREATE UNIQUE INDEX sessions_tokenhash_key ON public.sessions USING btree (tokenhash)",
+      "table_name": "sessions"
+    },
+    {
+      "name": "tasks_pkey",
+      "definition": "CREATE UNIQUE INDEX tasks_pkey ON public.tasks USING btree (id)",
+      "table_name": "tasks"
+    },
+    {
+      "name": "tasksubitems_pkey",
+      "definition": "CREATE UNIQUE INDEX tasksubitems_pkey ON public.tasksubitems USING btree (id)",
+      "table_name": "tasksubitems"
+    },
+    {
+      "name": "users_email_key",
+      "definition": "CREATE UNIQUE INDEX users_email_key ON public.users USING btree (email)",
+      "table_name": "users"
+    },
+    {
+      "name": "users_pkey",
+      "definition": "CREATE UNIQUE INDEX users_pkey ON public.users USING btree (id)",
+      "table_name": "users"
+    }
+  ],
+  "sequences": [
+    {
+      "name": "categories_id_seq",
+      "cycle": false,
+      "data_type": "integer",
+      "max_value": 2147483647,
+      "min_value": 1,
+      "cache_size": 1,
+      "last_value": 11,
+      "start_value": 1,
+      "increment_by": 1
+    },
+    {
+      "name": "householdinfo_id_seq",
+      "cycle": false,
+      "data_type": "integer",
+      "max_value": 2147483647,
+      "min_value": 1,
+      "cache_size": 1,
+      "last_value": 27,
+      "start_value": 1,
+      "increment_by": 1
+    },
+    {
+      "name": "monthlyleaderboard_id_seq",
+      "cycle": false,
+      "data_type": "integer",
+      "max_value": 2147483647,
+      "min_value": 1,
+      "cache_size": 1,
+      "last_value": null,
+      "start_value": 1,
+      "increment_by": 1
+    },
+    {
+      "name": "pointsledger_id_seq",
+      "cycle": false,
+      "data_type": "integer",
+      "max_value": 2147483647,
+      "min_value": 1,
+      "cache_size": 1,
+      "last_value": 18,
+      "start_value": 1,
+      "increment_by": 1
+    },
+    {
+      "name": "rewards_id_seq",
+      "cycle": false,
+      "data_type": "integer",
+      "max_value": 2147483647,
+      "min_value": 1,
+      "cache_size": 1,
+      "last_value": 4,
+      "start_value": 1,
+      "increment_by": 1
+    },
+    {
+      "name": "sessions_id_seq",
+      "cycle": false,
+      "data_type": "integer",
+      "max_value": 2147483647,
+      "min_value": 1,
+      "cache_size": 1,
+      "last_value": 40,
+      "start_value": 1,
+      "increment_by": 1
+    },
+    {
+      "name": "tasks_id_seq",
+      "cycle": false,
+      "data_type": "integer",
+      "max_value": 2147483647,
+      "min_value": 1,
+      "cache_size": 1,
+      "last_value": 25,
+      "start_value": 1,
+      "increment_by": 1
+    },
+    {
+      "name": "tasksubitems_id_seq",
+      "cycle": false,
+      "data_type": "integer",
+      "max_value": 2147483647,
+      "min_value": 1,
+      "cache_size": 1,
+      "last_value": 3,
+      "start_value": 1,
+      "increment_by": 1
+    },
+    {
+      "name": "users_id_seq",
+      "cycle": false,
+      "data_type": "integer",
+      "max_value": 2147483647,
+      "min_value": 1,
+      "cache_size": 1,
+      "last_value": 38,
+      "start_value": 1,
+      "increment_by": 1
+    }
+  ],
+  "routines": [
+    {
+      "oid": "24577",
+      "kind": "f",
+      "name": "neondb_stp_claim_reward",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer, p_userid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_claim_reward(p_id integer, p_userid integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    WITH claimed AS (\n        UPDATE rewards SET claimedbyuserid = p_userid\n        WHERE id = p_id AND claimedbyuserid IS NULL\n        RETURNING 1\n    )\n    SELECT count(*)::int FROM claimed;\n$function$\n"
+    },
+    {
+      "oid": "24578",
+      "kind": "f",
+      "name": "neondb_stp_count_categories",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_count_categories()\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    SELECT count(*)::int FROM categories;\n$function$\n"
+    },
+    {
+      "oid": "24579",
+      "kind": "f",
+      "name": "neondb_stp_count_household_members",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_householdid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_count_household_members(p_householdid integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    SELECT count(*)::int FROM householdmembers WHERE householdid = p_householdid;\n$function$\n"
+    },
+    {
+      "oid": "24580",
+      "kind": "f",
+      "name": "neondb_stp_count_household_rewards",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_householdid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_count_household_rewards(p_householdid integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    SELECT count(*)::int FROM rewards WHERE householdid = p_householdid;\n$function$\n"
+    },
+    {
+      "oid": "24581",
+      "kind": "f",
+      "name": "neondb_stp_count_household_tasks",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_householdid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_count_household_tasks(p_householdid integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    SELECT count(*)::int FROM tasks WHERE householdid = p_householdid;\n$function$\n"
+    },
+    {
+      "oid": "24582",
+      "kind": "f",
+      "name": "neondb_stp_count_households",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_userid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_count_households(p_userid integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    SELECT count(*)::int FROM householdinfo h\n    JOIN householdmembers hm ON hm.householdid = h.id\n    WHERE hm.userid = p_userid;\n$function$\n"
+    },
+    {
+      "oid": "24583",
+      "kind": "f",
+      "name": "neondb_stp_count_leaderboard",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_month integer, p_year integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_count_leaderboard(p_householdid integer, p_month integer, p_year integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    SELECT count(*)::int FROM monthlyleaderboard\n    WHERE householdid = p_householdid AND month = p_month AND year = p_year;\n$function$\n"
+    },
+    {
+      "oid": "24584",
+      "kind": "f",
+      "name": "neondb_stp_count_points_ledger",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_householdid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_count_points_ledger(p_householdid integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$ SELECT count(*)::int FROM pointsleader WHERE householdid = p_householdid; $function$\n"
+    },
+    {
+      "oid": "24837",
+      "kind": "f",
+      "name": "neondb_stp_count_points_ledger_for_task",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_taskid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_count_points_ledger_for_task(p_taskid integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$ SELECT COUNT(*)::integer FROM pointsleader WHERE taskid = p_taskid; $function$\n"
+    },
+    {
+      "oid": "24585",
+      "kind": "f",
+      "name": "neondb_stp_count_task_sub_items",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_taskid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_count_task_sub_items(p_taskid integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    SELECT count(*)::int FROM tasksubitems WHERE taskid = p_taskid;\n$function$\n"
+    },
+    {
+      "oid": "24586",
+      "kind": "f",
+      "name": "neondb_stp_count_users",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_count_users()\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    SELECT count(*)::int FROM users;\n$function$\n"
+    },
+    {
+      "oid": "24587",
+      "kind": "f",
+      "name": "neondb_stp_delete_category",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_delete_category(p_id integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    WITH deleted AS (\n        DELETE FROM categories WHERE id = p_id RETURNING 1\n    )\n    SELECT count(*)::int FROM deleted;\n$function$\n"
+    },
+    {
+      "oid": "24836",
+      "kind": "f",
+      "name": "neondb_stp_delete_expired_sessions",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_delete_expired_sessions()\n RETURNS integer\n LANGUAGE sql\nAS $function$ WITH deleted AS (DELETE FROM sessions WHERE expiresat \u003C= (now() AT TIME ZONE \u0027utc\u0027) RETURNING id) SELECT COUNT(*)::integer FROM deleted; $function$\n"
+    },
+    {
+      "oid": "24588",
+      "kind": "f",
+      "name": "neondb_stp_delete_household",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_delete_household(p_id integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    WITH deleted AS (\n        DELETE FROM householdinfo WHERE id = p_id RETURNING 1\n    )\n    SELECT count(*)::int FROM deleted;\n$function$\n"
+    },
+    {
+      "oid": "24589",
+      "kind": "f",
+      "name": "neondb_stp_delete_household_member",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_userid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_delete_household_member(p_householdid integer, p_userid integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    WITH deleted AS (\n        DELETE FROM householdmembers\n        WHERE householdid = p_householdid AND userid = p_userid\n        RETURNING 1\n    )\n    SELECT count(*)::int FROM deleted;\n$function$\n"
+    },
+    {
+      "oid": "24590",
+      "kind": "f",
+      "name": "neondb_stp_delete_reward",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_delete_reward(p_id integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    WITH deleted AS (\n        DELETE FROM rewards WHERE id = p_id RETURNING 1\n    )\n    SELECT count(*)::int FROM deleted;\n$function$\n"
+    },
+    {
+      "oid": "24835",
+      "kind": "f",
+      "name": "neondb_stp_delete_session_by_token_hash",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_tokenhash text",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_delete_session_by_token_hash(p_tokenhash text)\n RETURNS integer\n LANGUAGE sql\nAS $function$ WITH deleted AS (DELETE FROM sessions WHERE tokenhash = p_tokenhash RETURNING id) SELECT COUNT(*)::integer FROM deleted; $function$\n"
+    },
+    {
+      "oid": "24591",
+      "kind": "f",
+      "name": "neondb_stp_delete_task",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_delete_task(p_id integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    WITH deleted AS (\n        DELETE FROM tasks WHERE id = p_id RETURNING 1\n    )\n    SELECT count(*)::int FROM deleted;\n$function$\n"
+    },
+    {
+      "oid": "24592",
+      "kind": "f",
+      "name": "neondb_stp_delete_task_sub_item",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_delete_task_sub_item(p_id integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    WITH deleted AS (\n        DELETE FROM tasksubitems WHERE id = p_id RETURNING 1\n    )\n    SELECT count(*)::int FROM deleted;\n$function$\n"
+    },
+    {
+      "oid": "24593",
+      "kind": "f",
+      "name": "neondb_stp_delete_user",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_delete_user(p_id integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    WITH deleted AS (\n        DELETE FROM users WHERE id = p_id RETURNING 1\n    )\n    SELECT count(*)::int FROM deleted;\n$function$\n"
+    },
+    {
+      "oid": "24601",
+      "kind": "f",
+      "name": "neondb_stp_get_categories_page",
+      "result": "SETOF categories",
+      "language": "sql",
+      "arguments": "p_offset integer, p_limit integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_categories_page(p_offset integer, p_limit integer)\n RETURNS SETOF categories\n LANGUAGE sql\nAS $function$\n    SELECT * FROM categories ORDER BY id OFFSET p_offset LIMIT p_limit;\n$function$\n"
+    },
+    {
+      "oid": "24602",
+      "kind": "f",
+      "name": "neondb_stp_get_category_by_id",
+      "result": "SETOF categories",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_category_by_id(p_id integer)\n RETURNS SETOF categories\n LANGUAGE sql\nAS $function$\n    SELECT * FROM categories WHERE id = p_id;\n$function$\n"
+    },
+    {
+      "oid": "24610",
+      "kind": "f",
+      "name": "neondb_stp_get_household_by_id",
+      "result": "SETOF householdinfo",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_household_by_id(p_id integer)\n RETURNS SETOF householdinfo\n LANGUAGE sql\nAS $function$\n    SELECT * FROM householdinfo WHERE id = p_id;\n$function$\n"
+    },
+    {
+      "oid": "24618",
+      "kind": "f",
+      "name": "neondb_stp_get_household_member_by_id",
+      "result": "SETOF householdmembers",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_userid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_household_member_by_id(p_householdid integer, p_userid integer)\n RETURNS SETOF householdmembers\n LANGUAGE sql\nAS $function$\n    SELECT * FROM householdmembers\n    WHERE householdid = p_householdid AND userid = p_userid;\n$function$\n"
+    },
+    {
+      "oid": "24619",
+      "kind": "f",
+      "name": "neondb_stp_get_household_members_page",
+      "result": "SETOF householdmembers",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_offset integer, p_limit integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_household_members_page(p_householdid integer, p_offset integer, p_limit integer)\n RETURNS SETOF householdmembers\n LANGUAGE sql\nAS $function$\n    SELECT * FROM householdmembers\n    WHERE householdid = p_householdid\n    ORDER BY userid OFFSET p_offset LIMIT p_limit;\n$function$\n"
+    },
+    {
+      "oid": "24626",
+      "kind": "f",
+      "name": "neondb_stp_get_household_rewards_page",
+      "result": "SETOF rewards",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_offset integer, p_limit integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_household_rewards_page(p_householdid integer, p_offset integer, p_limit integer)\n RETURNS SETOF rewards\n LANGUAGE sql\nAS $function$\n    SELECT * FROM rewards\n    WHERE householdid = p_householdid\n    ORDER BY id OFFSET p_offset LIMIT p_limit;\n$function$\n"
+    },
+    {
+      "oid": "24639",
+      "kind": "f",
+      "name": "neondb_stp_get_household_tasks_page",
+      "result": "SETOF tasks",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_offset integer, p_limit integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_household_tasks_page(p_householdid integer, p_offset integer, p_limit integer)\n RETURNS SETOF tasks\n LANGUAGE sql\nAS $function$\n    SELECT * FROM tasks\n    WHERE householdid = p_householdid\n    ORDER BY id OFFSET p_offset LIMIT p_limit;\n$function$\n"
+    },
+    {
+      "oid": "24640",
+      "kind": "f",
+      "name": "neondb_stp_get_households_page",
+      "result": "SETOF householdinfo",
+      "language": "sql",
+      "arguments": "p_userid integer, p_offset integer, p_limit integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_households_page(p_userid integer, p_offset integer, p_limit integer)\n RETURNS SETOF householdinfo\n LANGUAGE sql\nAS $function$\n    SELECT h.* FROM householdinfo h\n    JOIN householdmembers hm ON hm.householdid = h.id\n    WHERE hm.userid = p_userid\n    ORDER BY h.id OFFSET p_offset LIMIT p_limit;\n$function$\n"
+    },
+    {
+      "oid": "24651",
+      "kind": "f",
+      "name": "neondb_stp_get_leaderboard",
+      "result": "SETOF monthlyleaderboard",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_month integer, p_year integer, p_offset integer, p_limit integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_leaderboard(p_householdid integer, p_month integer, p_year integer, p_offset integer, p_limit integer)\n RETURNS SETOF monthlyleaderboard\n LANGUAGE sql\nAS $function$\n    SELECT * FROM monthlyleaderboard\n    WHERE householdid = p_householdid AND month = p_month AND year = p_year\n    ORDER BY rank OFFSET p_offset LIMIT p_limit;\n$function$\n"
+    },
+    {
+      "oid": "24660",
+      "kind": "f",
+      "name": "neondb_stp_get_points_ledger_by_id",
+      "result": "SETOF pointsleader",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_points_ledger_by_id(p_id integer)\n RETURNS SETOF pointsleader\n LANGUAGE sql\nAS $function$\n    SELECT * FROM pointsleader WHERE id = p_id;\n$function$\n"
+    },
+    {
+      "oid": "24661",
+      "kind": "f",
+      "name": "neondb_stp_get_points_ledger_page",
+      "result": "SETOF pointsleader",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_offset integer, p_limit integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_points_ledger_page(p_householdid integer, p_offset integer, p_limit integer)\n RETURNS SETOF pointsleader\n LANGUAGE sql\nAS $function$ SELECT * FROM pointsleader WHERE householdid = p_householdid ORDER BY earnedat DESC, id DESC OFFSET p_offset LIMIT p_limit; $function$\n"
+    },
+    {
+      "oid": "24662",
+      "kind": "f",
+      "name": "neondb_stp_get_reward_by_id",
+      "result": "SETOF rewards",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_reward_by_id(p_id integer)\n RETURNS SETOF rewards\n LANGUAGE sql\nAS $function$\n    SELECT * FROM rewards WHERE id = p_id;\n$function$\n"
+    },
+    {
+      "oid": "24834",
+      "kind": "f",
+      "name": "neondb_stp_get_session_by_token_hash",
+      "result": "SETOF sessions",
+      "language": "sql",
+      "arguments": "p_tokenhash text",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_session_by_token_hash(p_tokenhash text)\n RETURNS SETOF sessions\n LANGUAGE sql\nAS $function$ SELECT * FROM sessions WHERE tokenhash = p_tokenhash; $function$\n"
+    },
+    {
+      "oid": "24663",
+      "kind": "f",
+      "name": "neondb_stp_get_task_by_id",
+      "result": "SETOF tasks",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_task_by_id(p_id integer)\n RETURNS SETOF tasks\n LANGUAGE sql\nAS $function$\n    SELECT * FROM tasks WHERE id = p_id;\n$function$\n"
+    },
+    {
+      "oid": "24672",
+      "kind": "f",
+      "name": "neondb_stp_get_task_sub_item_by_id",
+      "result": "SETOF tasksubitems",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_task_sub_item_by_id(p_id integer)\n RETURNS SETOF tasksubitems\n LANGUAGE sql\nAS $function$\n    SELECT * FROM tasksubitems WHERE id = p_id;\n$function$\n"
+    },
+    {
+      "oid": "24673",
+      "kind": "f",
+      "name": "neondb_stp_get_task_sub_items_page",
+      "result": "SETOF tasksubitems",
+      "language": "sql",
+      "arguments": "p_taskid integer, p_offset integer, p_limit integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_task_sub_items_page(p_taskid integer, p_offset integer, p_limit integer)\n RETURNS SETOF tasksubitems\n LANGUAGE sql\nAS $function$\n    SELECT * FROM tasksubitems\n    WHERE taskid = p_taskid\n    ORDER BY id OFFSET p_offset LIMIT p_limit;\n$function$\n"
+    },
+    {
+      "oid": "24685",
+      "kind": "f",
+      "name": "neondb_stp_get_user_by_email",
+      "result": "SETOF users",
+      "language": "sql",
+      "arguments": "p_email text",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_user_by_email(p_email text)\n RETURNS SETOF users\n LANGUAGE sql\nAS $function$\n    SELECT * FROM users WHERE email = p_email;\n$function$\n"
+    },
+    {
+      "oid": "24686",
+      "kind": "f",
+      "name": "neondb_stp_get_user_by_id",
+      "result": "SETOF users",
+      "language": "sql",
+      "arguments": "p_id integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_user_by_id(p_id integer)\n RETURNS SETOF users\n LANGUAGE sql\nAS $function$\n    SELECT * FROM users WHERE id = p_id;\n$function$\n"
+    },
+    {
+      "oid": "24687",
+      "kind": "f",
+      "name": "neondb_stp_get_user_leaderboard_entry",
+      "result": "SETOF monthlyleaderboard",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_userid integer, p_month integer, p_year integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_user_leaderboard_entry(p_householdid integer, p_userid integer, p_month integer, p_year integer)\n RETURNS SETOF monthlyleaderboard\n LANGUAGE sql\nAS $function$\n    SELECT * FROM monthlyleaderboard\n    WHERE householdid = p_householdid AND userid = p_userid AND month = p_month AND year = p_year;\n$function$\n"
+    },
+    {
+      "oid": "24890",
+      "kind": "f",
+      "name": "neondb_stp_get_user_points_balance",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_userid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_user_points_balance(p_householdid integer, p_userid integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$ SELECT COALESCE(SUM(pointsearned), 0)::int FROM pointsleader WHERE userid = p_userid AND householdid = p_householdid; $function$\n"
+    },
+    {
+      "oid": "24688",
+      "kind": "f",
+      "name": "neondb_stp_get_user_points_total",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_userid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_user_points_total(p_householdid integer, p_userid integer)\n RETURNS integer\n LANGUAGE sql\nAS $function$ SELECT COALESCE(SUM(pointsearned), 0)::int FROM pointsleader WHERE userid = p_userid AND householdid = p_householdid AND pointsearned \u003E 0; $function$\n"
+    },
+    {
+      "oid": "24689",
+      "kind": "f",
+      "name": "neondb_stp_get_users_page",
+      "result": "SETOF users",
+      "language": "sql",
+      "arguments": "p_offset integer, p_limit integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_get_users_page(p_offset integer, p_limit integer)\n RETURNS SETOF users\n LANGUAGE sql\nAS $function$\n    SELECT * FROM users ORDER BY id OFFSET p_offset LIMIT p_limit;\n$function$\n"
+    },
+    {
+      "oid": "24690",
+      "kind": "f",
+      "name": "neondb_stp_insert_category",
+      "result": "SETOF categories",
+      "language": "sql",
+      "arguments": "p_name text, p_description text",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_insert_category(p_name text, p_description text)\n RETURNS SETOF categories\n LANGUAGE sql\nAS $function$\n    INSERT INTO categories (name, description)\n    VALUES (p_name, p_description)\n    RETURNING *;\n$function$\n"
+    },
+    {
+      "oid": "24691",
+      "kind": "f",
+      "name": "neondb_stp_insert_household",
+      "result": "SETOF householdinfo",
+      "language": "sql",
+      "arguments": "p_name text, p_adminuserid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_insert_household(p_name text, p_adminuserid integer)\n RETURNS SETOF householdinfo\n LANGUAGE sql\nAS $function$\n    INSERT INTO householdinfo (name, adminuserid)\n    VALUES (p_name, p_adminuserid)\n    RETURNING *;\n$function$\n"
+    },
+    {
+      "oid": "24692",
+      "kind": "f",
+      "name": "neondb_stp_insert_household_member",
+      "result": "SETOF householdmembers",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_userid integer, p_role text",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_insert_household_member(p_householdid integer, p_userid integer, p_role text)\n RETURNS SETOF householdmembers\n LANGUAGE sql\nAS $function$\n    INSERT INTO householdmembers (householdid, userid, role)\n    VALUES (p_householdid, p_userid, p_role)\n    RETURNING *;\n$function$\n"
+    },
+    {
+      "oid": "24884",
+      "kind": "f",
+      "name": "neondb_stp_insert_household_with_admin",
+      "result": "SETOF householdinfo",
+      "language": "sql",
+      "arguments": "p_name text, p_adminuserid integer, p_role text, p_address text, p_monthlygoalpoints integer, p_requireproofapproval boolean",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_insert_household_with_admin(p_name text, p_adminuserid integer, p_role text, p_address text, p_monthlygoalpoints integer, p_requireproofapproval boolean)\n RETURNS SETOF householdinfo\n LANGUAGE sql\nAS $function$ WITH new_household AS (INSERT INTO householdinfo (name, adminuserid, address, monthlygoalpoints, requireproofapproval) VALUES (p_name, p_adminuserid, p_address, COALESCE(p_monthlygoalpoints, 400), COALESCE(p_requireproofapproval, false)) RETURNING *), new_member AS (INSERT INTO householdmembers (householdid, userid, role) SELECT id, p_adminuserid, p_role FROM new_household RETURNING 1) SELECT * FROM new_household; $function$\n"
+    },
+    {
+      "oid": "24889",
+      "kind": "f",
+      "name": "neondb_stp_insert_points_ledger",
+      "result": "SETOF pointsleader",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_userid integer, p_taskid integer, p_pointsearned integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_insert_points_ledger(p_householdid integer, p_userid integer, p_taskid integer, p_pointsearned integer)\n RETURNS SETOF pointsleader\n LANGUAGE sql\nAS $function$ INSERT INTO pointsleader (householdid, userid, taskid, pointsearned) VALUES (p_householdid, p_userid, p_taskid, p_pointsearned) ON CONFLICT (taskid) WHERE pointsearned \u003E 0 DO NOTHING RETURNING *; $function$\n"
+    },
+    {
+      "oid": "24891",
+      "kind": "f",
+      "name": "neondb_stp_insert_points_spend",
+      "result": "SETOF pointsleader",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_userid integer, p_rewardid integer, p_points integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_insert_points_spend(p_householdid integer, p_userid integer, p_rewardid integer, p_points integer)\n RETURNS SETOF pointsleader\n LANGUAGE sql\nAS $function$ INSERT INTO pointsleader (householdid, userid, rewardid, taskid, pointsearned) SELECT p_householdid, p_userid, p_rewardid, NULL, -abs(p_points) WHERE (SELECT COALESCE(SUM(pointsearned), 0) FROM pointsleader WHERE userid = p_userid AND householdid = p_householdid) \u003E= abs(p_points) RETURNING *; $function$\n"
+    },
+    {
+      "oid": "24885",
+      "kind": "f",
+      "name": "neondb_stp_insert_reward",
+      "result": "SETOF rewards",
+      "language": "sql",
+      "arguments": "p_title text, p_requiredpoints integer, p_householdid integer, p_emoji text, p_description text, p_cost integer, p_category text",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_insert_reward(p_title text, p_requiredpoints integer, p_householdid integer, p_emoji text, p_description text, p_cost integer, p_category text)\n RETURNS SETOF rewards\n LANGUAGE sql\nAS $function$ INSERT INTO rewards (title, requiredpoints, householdid, emoji, description, cost, category) VALUES (p_title, p_requiredpoints, p_householdid, p_emoji, p_description, COALESCE(p_cost, p_requiredpoints), p_category) RETURNING *; $function$\n"
+    },
+    {
+      "oid": "24833",
+      "kind": "f",
+      "name": "neondb_stp_insert_session",
+      "result": "SETOF sessions",
+      "language": "sql",
+      "arguments": "p_userid integer, p_tokenhash text, p_expiresat timestamp without time zone",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_insert_session(p_userid integer, p_tokenhash text, p_expiresat timestamp without time zone)\n RETURNS SETOF sessions\n LANGUAGE sql\nAS $function$ INSERT INTO sessions (userid, tokenhash, expiresat) VALUES (p_userid, p_tokenhash, p_expiresat) RETURNING *; $function$\n"
+    },
+    {
+      "oid": "24887",
+      "kind": "f",
+      "name": "neondb_stp_insert_task",
+      "result": "SETOF tasks",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_title text, p_description text, p_categoryid integer, p_pointsvalue integer, p_assigneduserid integer, p_duedate timestamp without time zone, p_createdbyid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_insert_task(p_householdid integer, p_title text, p_description text, p_categoryid integer, p_pointsvalue integer, p_assigneduserid integer, p_duedate timestamp without time zone, p_createdbyid integer)\n RETURNS SETOF tasks\n LANGUAGE sql\nAS $function$ INSERT INTO tasks (householdid, title, description, categoryid, pointsvalue, assigneduserid, duedate, createdbyid) VALUES (p_householdid, p_title, p_description, p_categoryid, p_pointsvalue, p_assigneduserid, p_duedate, p_createdbyid) RETURNING *; $function$\n"
+    },
+    {
+      "oid": "24697",
+      "kind": "f",
+      "name": "neondb_stp_insert_task_sub_item",
+      "result": "SETOF tasksubitems",
+      "language": "sql",
+      "arguments": "p_taskid integer, p_itemtext text",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_insert_task_sub_item(p_taskid integer, p_itemtext text)\n RETURNS SETOF tasksubitems\n LANGUAGE sql\nAS $function$\n    INSERT INTO tasksubitems (taskid, itemtext)\n    VALUES (p_taskid, p_itemtext)\n    RETURNING *;\n$function$\n"
+    },
+    {
+      "oid": "24881",
+      "kind": "f",
+      "name": "neondb_stp_insert_user",
+      "result": "SETOF users",
+      "language": "sql",
+      "arguments": "p_fullname text, p_email text, p_passwordhash text, p_familyrole text, p_avatarstate text",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_insert_user(p_fullname text, p_email text, p_passwordhash text, p_familyrole text, p_avatarstate text)\n RETURNS SETOF users\n LANGUAGE sql\nAS $function$ INSERT INTO users (fullname, email, passwordhash, familyrole, avatarstate) VALUES (p_fullname, p_email, p_passwordhash, COALESCE(p_familyrole, \u0027roommate\u0027), COALESCE(p_avatarstate::jsonb, \u0027\u0022neutral\u0022\u0027::jsonb)) RETURNING *; $function$\n"
+    },
+    {
+      "oid": "24699",
+      "kind": "f",
+      "name": "neondb_stp_is_household_member",
+      "result": "boolean",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_userid integer",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_is_household_member(p_householdid integer, p_userid integer)\n RETURNS boolean\n LANGUAGE sql\nAS $function$\n    SELECT EXISTS (\n        SELECT 1 FROM householdmembers\n        WHERE householdid = p_householdid AND userid = p_userid\n    );\n$function$\n"
+    },
+    {
+      "oid": "24700",
+      "kind": "f",
+      "name": "neondb_stp_update_category",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer, p_name text, p_description text",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_update_category(p_id integer, p_name text, p_description text)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    WITH updated AS (\n        UPDATE categories SET name = p_name, description = p_description\n        WHERE id = p_id\n        RETURNING 1\n    )\n    SELECT count(*)::int FROM updated;\n$function$\n"
+    },
+    {
+      "oid": "24883",
+      "kind": "f",
+      "name": "neondb_stp_update_household",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer, p_name text, p_address text, p_monthlygoalpoints integer, p_requireproofapproval boolean",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_update_household(p_id integer, p_name text, p_address text, p_monthlygoalpoints integer, p_requireproofapproval boolean)\n RETURNS integer\n LANGUAGE sql\nAS $function$ WITH updated AS (UPDATE householdinfo SET name = p_name, address = p_address, monthlygoalpoints = COALESCE(p_monthlygoalpoints, monthlygoalpoints), requireproofapproval = COALESCE(p_requireproofapproval, requireproofapproval) WHERE id = p_id RETURNING 1) SELECT count(*)::int FROM updated; $function$\n"
+    },
+    {
+      "oid": "24702",
+      "kind": "f",
+      "name": "neondb_stp_update_household_member_role",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_householdid integer, p_userid integer, p_role text",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_update_household_member_role(p_householdid integer, p_userid integer, p_role text)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    WITH updated AS (\n        UPDATE householdmembers SET role = p_role\n        WHERE householdid = p_householdid AND userid = p_userid\n        RETURNING 1\n    )\n    SELECT count(*)::int FROM updated;\n$function$\n"
+    },
+    {
+      "oid": "24886",
+      "kind": "f",
+      "name": "neondb_stp_update_reward",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer, p_title text, p_requiredpoints integer, p_emoji text, p_description text, p_cost integer, p_category text",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_update_reward(p_id integer, p_title text, p_requiredpoints integer, p_emoji text, p_description text, p_cost integer, p_category text)\n RETURNS integer\n LANGUAGE sql\nAS $function$ WITH updated AS (UPDATE rewards SET title = p_title, requiredpoints = p_requiredpoints, emoji = p_emoji, description = p_description, cost = COALESCE(p_cost, p_requiredpoints), category = p_category WHERE id = p_id RETURNING 1) SELECT count(*)::int FROM updated; $function$\n"
+    },
+    {
+      "oid": "24704",
+      "kind": "f",
+      "name": "neondb_stp_update_task",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer, p_title text, p_description text, p_categoryid integer, p_pointsvalue integer, p_assigneduserid integer, p_duedate timestamp without time zone",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_update_task(p_id integer, p_title text, p_description text, p_categoryid integer, p_pointsvalue integer, p_assigneduserid integer, p_duedate timestamp without time zone)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    WITH updated AS (\n        UPDATE tasks SET\n            title = p_title,\n            description = p_description,\n            categoryid = p_categoryid,\n            pointsvalue = p_pointsvalue,\n            assigneduserid = p_assigneduserid,\n            duedate = p_duedate\n        WHERE id = p_id\n        RETURNING 1\n    )\n    SELECT count(*)::int FROM updated;\n$function$\n"
+    },
+    {
+      "oid": "24888",
+      "kind": "f",
+      "name": "neondb_stp_update_task_status",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer, p_status text, p_completedat timestamp without time zone",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_update_task_status(p_id integer, p_status text, p_completedat timestamp without time zone)\n RETURNS integer\n LANGUAGE sql\nAS $function$ WITH updated AS (UPDATE tasks SET status = p_status, completedat = CASE WHEN p_status = \u0027Done\u0027 THEN COALESCE(p_completedat, now() AT TIME ZONE \u0027utc\u0027) ELSE NULL END WHERE id = p_id RETURNING 1) SELECT count(*)::int FROM updated; $function$\n"
+    },
+    {
+      "oid": "24706",
+      "kind": "f",
+      "name": "neondb_stp_update_task_sub_item",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer, p_itemtext text, p_iscompleted boolean",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_update_task_sub_item(p_id integer, p_itemtext text, p_iscompleted boolean)\n RETURNS integer\n LANGUAGE sql\nAS $function$\n    WITH updated AS (\n        UPDATE tasksubitems SET itemtext = p_itemtext, iscompleted = p_iscompleted\n        WHERE id = p_id\n        RETURNING 1\n    )\n    SELECT count(*)::int FROM updated;\n$function$\n"
+    },
+    {
+      "oid": "24882",
+      "kind": "f",
+      "name": "neondb_stp_update_user",
+      "result": "integer",
+      "language": "sql",
+      "arguments": "p_id integer, p_fullname text, p_avatarstate text, p_familyrole text",
+      "definition": "CREATE OR REPLACE FUNCTION public.neondb_stp_update_user(p_id integer, p_fullname text, p_avatarstate text, p_familyrole text)\n RETURNS integer\n LANGUAGE sql\nAS $function$ WITH updated AS (UPDATE users SET fullname = p_fullname, avatarstate = COALESCE(p_avatarstate::jsonb, avatarstate), familyrole = COALESCE(p_familyrole, familyrole) WHERE id = p_id RETURNING 1) SELECT count(*)::int FROM updated; $function$\n"
+    }
+  ],
+  "dependencies": [
+    {
+      "object": "function neondb_stp_claim_reward(integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_count_categories()",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_count_household_members(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_count_household_rewards(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_count_households(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_count_household_tasks(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_count_leaderboard(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_count_points_ledger_for_task(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_count_points_ledger(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_count_task_sub_items(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_count_users()",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_delete_category(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_delete_expired_sessions()",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_delete_household(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_delete_household_member(integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_delete_reward(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_delete_session_by_token_hash(text)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_delete_task(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_delete_task_sub_item(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_delete_user(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_categories_page(integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_categories_page(integer,integer)",
+      "deptype": "n",
+      "dependency": "type categories"
+    },
+    {
+      "object": "function neondb_stp_get_category_by_id(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_category_by_id(integer)",
+      "deptype": "n",
+      "dependency": "type categories"
+    },
+    {
+      "object": "function neondb_stp_get_household_by_id(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_household_by_id(integer)",
+      "deptype": "n",
+      "dependency": "type householdinfo"
+    },
+    {
+      "object": "function neondb_stp_get_household_member_by_id(integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_household_member_by_id(integer,integer)",
+      "deptype": "n",
+      "dependency": "type householdmembers"
+    },
+    {
+      "object": "function neondb_stp_get_household_members_page(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_household_members_page(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "type householdmembers"
+    },
+    {
+      "object": "function neondb_stp_get_household_rewards_page(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_household_rewards_page(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "type rewards"
+    },
+    {
+      "object": "function neondb_stp_get_households_page(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_households_page(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "type householdinfo"
+    },
+    {
+      "object": "function neondb_stp_get_household_tasks_page(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_household_tasks_page(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "type tasks"
+    },
+    {
+      "object": "function neondb_stp_get_leaderboard(integer,integer,integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_leaderboard(integer,integer,integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "type monthlyleaderboard"
+    },
+    {
+      "object": "function neondb_stp_get_points_ledger_by_id(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_points_ledger_by_id(integer)",
+      "deptype": "n",
+      "dependency": "type pointsleader"
+    },
+    {
+      "object": "function neondb_stp_get_points_ledger_page(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_points_ledger_page(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "type pointsleader"
+    },
+    {
+      "object": "function neondb_stp_get_reward_by_id(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_reward_by_id(integer)",
+      "deptype": "n",
+      "dependency": "type rewards"
+    },
+    {
+      "object": "function neondb_stp_get_session_by_token_hash(text)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_session_by_token_hash(text)",
+      "deptype": "n",
+      "dependency": "type sessions"
+    },
+    {
+      "object": "function neondb_stp_get_task_by_id(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_task_by_id(integer)",
+      "deptype": "n",
+      "dependency": "type tasks"
+    },
+    {
+      "object": "function neondb_stp_get_task_sub_item_by_id(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_task_sub_item_by_id(integer)",
+      "deptype": "n",
+      "dependency": "type tasksubitems"
+    },
+    {
+      "object": "function neondb_stp_get_task_sub_items_page(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_task_sub_items_page(integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "type tasksubitems"
+    },
+    {
+      "object": "function neondb_stp_get_user_by_email(text)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_user_by_email(text)",
+      "deptype": "n",
+      "dependency": "type users"
+    },
+    {
+      "object": "function neondb_stp_get_user_by_id(integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_user_by_id(integer)",
+      "deptype": "n",
+      "dependency": "type users"
+    },
+    {
+      "object": "function neondb_stp_get_user_leaderboard_entry(integer,integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_user_leaderboard_entry(integer,integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "type monthlyleaderboard"
+    },
+    {
+      "object": "function neondb_stp_get_user_points_balance(integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_user_points_total(integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_users_page(integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_get_users_page(integer,integer)",
+      "deptype": "n",
+      "dependency": "type users"
+    },
+    {
+      "object": "function neondb_stp_insert_category(text,text)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_insert_category(text,text)",
+      "deptype": "n",
+      "dependency": "type categories"
+    },
+    {
+      "object": "function neondb_stp_insert_household_member(integer,integer,text)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_insert_household_member(integer,integer,text)",
+      "deptype": "n",
+      "dependency": "type householdmembers"
+    },
+    {
+      "object": "function neondb_stp_insert_household(text,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_insert_household(text,integer)",
+      "deptype": "n",
+      "dependency": "type householdinfo"
+    },
+    {
+      "object": "function neondb_stp_insert_household_with_admin(text,integer,text,text,integer,boolean)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_insert_household_with_admin(text,integer,text,text,integer,boolean)",
+      "deptype": "n",
+      "dependency": "type householdinfo"
+    },
+    {
+      "object": "function neondb_stp_insert_points_ledger(integer,integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_insert_points_ledger(integer,integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "type pointsleader"
+    },
+    {
+      "object": "function neondb_stp_insert_points_spend(integer,integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_insert_points_spend(integer,integer,integer,integer)",
+      "deptype": "n",
+      "dependency": "type pointsleader"
+    },
+    {
+      "object": "function neondb_stp_insert_reward(text,integer,integer,text,text,integer,text)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_insert_reward(text,integer,integer,text,text,integer,text)",
+      "deptype": "n",
+      "dependency": "type rewards"
+    },
+    {
+      "object": "function neondb_stp_insert_session(integer,text,timestamp without time zone)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_insert_session(integer,text,timestamp without time zone)",
+      "deptype": "n",
+      "dependency": "type sessions"
+    },
+    {
+      "object": "function neondb_stp_insert_task(integer,text,text,integer,integer,integer,timestamp without time zone,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_insert_task(integer,text,text,integer,integer,integer,timestamp without time zone,integer)",
+      "deptype": "n",
+      "dependency": "type tasks"
+    },
+    {
+      "object": "function neondb_stp_insert_task_sub_item(integer,text)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_insert_task_sub_item(integer,text)",
+      "deptype": "n",
+      "dependency": "type tasksubitems"
+    },
+    {
+      "object": "function neondb_stp_insert_user(text,text,text,text,text)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_insert_user(text,text,text,text,text)",
+      "deptype": "n",
+      "dependency": "type users"
+    },
+    {
+      "object": "function neondb_stp_is_household_member(integer,integer)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_update_category(integer,text,text)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_update_household(integer,text,text,integer,boolean)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_update_household_member_role(integer,integer,text)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_update_reward(integer,text,integer,text,text,integer,text)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_update_task(integer,text,text,integer,integer,integer,timestamp without time zone)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_update_task_status(integer,text,timestamp without time zone)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_update_task_sub_item(integer,text,boolean)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "function neondb_stp_update_user(integer,text,text,text)",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "index categories_pkey",
+      "deptype": "i",
+      "dependency": "constraint categories_pkey on table categories"
+    },
+    {
+      "object": "index householdinfo_pkey",
+      "deptype": "i",
+      "dependency": "constraint householdinfo_pkey on table householdinfo"
+    },
+    {
+      "object": "index householdmembers_pkey",
+      "deptype": "i",
+      "dependency": "constraint householdmembers_pkey on table householdmembers"
+    },
+    {
+      "object": "index idx_sessions_userid",
+      "deptype": "a",
+      "dependency": "column userid of table sessions"
+    },
+    {
+      "object": "index monthlyleaderboard_pkey",
+      "deptype": "i",
+      "dependency": "constraint monthlyleaderboard_pkey on table monthlyleaderboard"
+    },
+    {
+      "object": "index pointsledger_pkey",
+      "deptype": "i",
+      "dependency": "constraint pointsledger_pkey on table pointsleader"
+    },
+    {
+      "object": "index rewards_pkey",
+      "deptype": "i",
+      "dependency": "constraint rewards_pkey on table rewards"
+    },
+    {
+      "object": "index sessions_pkey",
+      "deptype": "i",
+      "dependency": "constraint sessions_pkey on table sessions"
+    },
+    {
+      "object": "index sessions_tokenhash_key",
+      "deptype": "i",
+      "dependency": "constraint sessions_tokenhash_key on table sessions"
+    },
+    {
+      "object": "index tasks_pkey",
+      "deptype": "i",
+      "dependency": "constraint tasks_pkey on table tasks"
+    },
+    {
+      "object": "index tasksubitems_pkey",
+      "deptype": "i",
+      "dependency": "constraint tasksubitems_pkey on table tasksubitems"
+    },
+    {
+      "object": "index users_email_key",
+      "deptype": "i",
+      "dependency": "constraint users_email_key on table users"
+    },
+    {
+      "object": "index users_pkey",
+      "deptype": "i",
+      "dependency": "constraint users_pkey on table users"
+    },
+    {
+      "object": "index ux_pointsleader_task_earn",
+      "deptype": "a",
+      "dependency": "column pointsearned of table pointsleader"
+    },
+    {
+      "object": "index ux_pointsleader_task_earn",
+      "deptype": "a",
+      "dependency": "column taskid of table pointsleader"
+    },
+    {
+      "object": "sequence categories_id_seq",
+      "deptype": "a",
+      "dependency": "column id of table categories"
+    },
+    {
+      "object": "sequence categories_id_seq",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "sequence householdinfo_id_seq",
+      "deptype": "a",
+      "dependency": "column id of table householdinfo"
+    },
+    {
+      "object": "sequence householdinfo_id_seq",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "sequence monthlyleaderboard_id_seq",
+      "deptype": "a",
+      "dependency": "column id of table monthlyleaderboard"
+    },
+    {
+      "object": "sequence monthlyleaderboard_id_seq",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "sequence pointsledger_id_seq",
+      "deptype": "a",
+      "dependency": "column id of table pointsleader"
+    },
+    {
+      "object": "sequence pointsledger_id_seq",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "sequence rewards_id_seq",
+      "deptype": "a",
+      "dependency": "column id of table rewards"
+    },
+    {
+      "object": "sequence rewards_id_seq",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "sequence sessions_id_seq",
+      "deptype": "a",
+      "dependency": "column id of table sessions"
+    },
+    {
+      "object": "sequence sessions_id_seq",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "sequence tasks_id_seq",
+      "deptype": "a",
+      "dependency": "column id of table tasks"
+    },
+    {
+      "object": "sequence tasks_id_seq",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "sequence tasksubitems_id_seq",
+      "deptype": "a",
+      "dependency": "column id of table tasksubitems"
+    },
+    {
+      "object": "sequence tasksubitems_id_seq",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "sequence users_id_seq",
+      "deptype": "a",
+      "dependency": "column id of table users"
+    },
+    {
+      "object": "sequence users_id_seq",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "table categories",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "table householdinfo",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "table householdmembers",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "table monthlyleaderboard",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "table pointsleader",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "table rewards",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "table sessions",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "table tasks",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "table tasksubitems",
+      "deptype": "n",
+      "dependency": "schema public"
+    },
+    {
+      "object": "table users",
+      "deptype": "n",
+      "dependency": "schema public"
+    }
+  ],
+  "triggers": [],
+  "views": [],
+  "policies": [],
+  "tables": [
+    {
+      "kind": "r",
+      "name": "categories",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false
+    },
+    {
+      "kind": "r",
+      "name": "householdinfo",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false
+    },
+    {
+      "kind": "r",
+      "name": "householdmembers",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false
+    },
+    {
+      "kind": "r",
+      "name": "monthlyleaderboard",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false
+    },
+    {
+      "kind": "r",
+      "name": "pointsleader",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false
+    },
+    {
+      "kind": "r",
+      "name": "rewards",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false
+    },
+    {
+      "kind": "r",
+      "name": "sessions",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false
+    },
+    {
+      "kind": "r",
+      "name": "tasks",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false
+    },
+    {
+      "kind": "r",
+      "name": "tasksubitems",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false
+    },
+    {
+      "kind": "r",
+      "name": "users",
+      "relrowsecurity": false,
+      "relforcerowsecurity": false
+    }
+  ],
+  "sequence_states": [
+    {
+      "name": "categories_id_seq",
+      "is_called": true,
+      "last_value": 11
+    },
+    {
+      "name": "householdinfo_id_seq",
+      "is_called": true,
+      "last_value": 27
+    },
+    {
+      "name": "monthlyleaderboard_id_seq",
+      "is_called": false,
+      "last_value": 1
+    },
+    {
+      "name": "pointsledger_id_seq",
+      "is_called": true,
+      "last_value": 18
+    },
+    {
+      "name": "rewards_id_seq",
+      "is_called": true,
+      "last_value": 4
+    },
+    {
+      "name": "sessions_id_seq",
+      "is_called": true,
+      "last_value": 40
+    },
+    {
+      "name": "tasks_id_seq",
+      "is_called": true,
+      "last_value": 25
+    },
+    {
+      "name": "tasksubitems_id_seq",
+      "is_called": true,
+      "last_value": 3
+    },
+    {
+      "name": "users_id_seq",
+      "is_called": true,
+      "last_value": 38
+    }
+  ]
+}

@@ -36,7 +36,7 @@ public class PointsLedgerRepository : IPointsLedgerRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_points_ledger_by_id(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);
@@ -48,7 +48,7 @@ public class PointsLedgerRepository : IPointsLedgerRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_count_points_ledger_for_task(@p_taskid)",
             new { p_taskid = taskId },
             cancellationToken: cancellationToken);
@@ -60,7 +60,7 @@ public class PointsLedgerRepository : IPointsLedgerRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_points_ledger_page(@p_householdid, @p_offset, @p_limit)",
             new { p_householdid = householdId, p_offset = offset, p_limit = limit },
             cancellationToken: cancellationToken);
@@ -73,7 +73,7 @@ public class PointsLedgerRepository : IPointsLedgerRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_count_points_ledger(@p_householdid)",
             new { p_householdid = householdId },
             cancellationToken: cancellationToken);
@@ -85,7 +85,7 @@ public class PointsLedgerRepository : IPointsLedgerRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_get_user_points_total(@p_householdid, @p_userid)",
             new { p_householdid = householdId, p_userid = userId },
             cancellationToken: cancellationToken);
@@ -97,7 +97,7 @@ public class PointsLedgerRepository : IPointsLedgerRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_get_user_points_balance(@p_householdid, @p_userid)",
             new { p_householdid = householdId, p_userid = userId },
             cancellationToken: cancellationToken);
@@ -109,7 +109,7 @@ public class PointsLedgerRepository : IPointsLedgerRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_insert_points_ledger(@p_householdid, @p_userid, @p_taskid, @p_pointsearned)",
             new
             {
@@ -127,7 +127,7 @@ public class PointsLedgerRepository : IPointsLedgerRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_insert_points_spend(@p_householdid, @p_userid, @p_rewardid, @p_points)",
             new
             {

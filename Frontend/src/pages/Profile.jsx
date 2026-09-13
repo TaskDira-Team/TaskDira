@@ -39,7 +39,7 @@ function draftFrom(user) {
     familyRole: user?.familyRole || DEFAULT_FAMILY_ROLE,
     baseIconId: state.baseIconId || DEFAULT_AVATAR_CONFIG.baseIconId,
     ringColorId: state.ringColorId || DEFAULT_AVATAR_CONFIG.ringColorId,
-    profileBadgeId: state.profileBadgeId || DEFAULT_AVATAR_CONFIG.profileBadgeId,
+    profileBadgeId: getProfileBadge(state.profileBadgeId || state.profileBadgeKey || state.profileBadgeLabel).id,
   };
 }
 
@@ -147,7 +147,7 @@ export default function Profile() {
 
           <div className="mt-5 flex justify-center gap-2">
             <span className="anim-pop flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/12 px-3 py-1 text-[11px] font-bold text-gold">
-              {badge.label}
+              {t(badge.labelKey)}
             </span>
           </div>
         </Panel>
@@ -271,7 +271,7 @@ export default function Profile() {
                       }`}
                     >
                       <div className="text-[11px] leading-snug font-bold text-ink-dim">
-                        {b.label}
+                        {t(b.labelKey)}
                       </div>
                     </button>
                   );

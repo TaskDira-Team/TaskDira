@@ -21,7 +21,7 @@ public class HealthRepository : IHealthRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_count_categories()",
             cancellationToken: cancellationToken);
 
