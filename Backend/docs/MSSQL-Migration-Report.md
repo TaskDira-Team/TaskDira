@@ -2,6 +2,31 @@
 
 Local migration completed on 2026-09-13 on `feat/mssql-migration-preparation`. Production remains on its existing PostgreSQL configuration. No push, merge, deployment, or source modification was performed.
 
+## Integration with immersive frontend (2026-09-14)
+
+The migration and five regression fixes were committed as `1670ada` (`feat: add local MSSQL migration and fix household UI regressions`). Fetched `origin/main` at `a505b1b`, the merge of PR #2, and verified that commit is an ancestor of the fetched main branch. Main was merged into `feat/mssql-migration-preparation` without textual conflicts. Manual integration corrections removed a duplicate `useEffect` import and redundant redirect effect in App.jsx while retaining lazy loading, Suspense, registration routing, and the logout-to-landing fix. The test script now runs both the five regression tests and thirteen upstream demo/bookmark tests.
+
+The upstream package lock initially failed `npm ci` because optional `@emnapi` dependencies were missing/inconsistent. Regenerated those lockfile entries without changing declared dependency versions, then verified a successful clean install. Local Vite/API processes were stopped only to release Windows build-file locks and restarted afterward.
+
+### Validation of the merged tree
+
+- Backend solution and migration-tool builds passed. Two existing xUnit2031 analyzer warnings remain in the backend tests.
+- Frontend build passed, including the dynamically loaded ~627 kB houseScene chunk (Vite size advisory remains).
+- All 43 backend tests passed, including eight real SQL Server integration tests, with zero skips/failures.
+- All 18 frontend tests passed with zero skips/failures.
+- Browser review used the existing local test session: Dashboard and Profile displayed one completed task, 25 lifetime XP and five coins; Household showed 25 / 400 monthly XP. Profile retained these values after refresh and translated Home hero / גיבור הבית and Coins / מטבעות correctly.
+- Logout from `/#/profile` changed the route to `/#/landing`. A separate synthetic account completed browser registration, logout, login and authenticated page refresh through the merged frontend and local MSSQL API. Its generated password remained in memory and was not printed or saved to the repository. Existing manual-test rows were retained; the additional browser-review account/household were also left in the local database.
+- Visually reviewed desktop English Profile and mobile Hebrew Profile, plus the immersive house in desktop and 390 x 844 mobile layouts. Both Hebrew RTL and English LTR house layouts rendered without document horizontal overflow. Room selection, night lighting, separated floors, closing/reopening the scene and demo completion worked. Demo points changed from 180 to 210 and persisted into the playground; they were still 210 after page reload. No captured browser console errors were present during the final login/refresh check.
+- API health returned 200. CORS preflight returned 204 and allowed exactly `http://127.0.0.1:3000` for the tested origin. Frontend uses a process-local VITE_API_URL override for `http://localhost:5188`.
+
+### 3D data boundary and remaining issues
+
+The immersive house is **a browser-only public demo**, not the authenticated household. HouseJourney uses usePlayground/createPlaygroundStore, static demo quests and localStorage; it does not call task/ledger/reward APIs. The signed-in dashboard still uses authenticated household API data. Its new saved-chores shelf stores bookmarks locally, scoped by user and household; bookmarks are not synchronized to MSSQL.
+
+Observed remaining frontend issues: a newly registered solo account displayed `Rank 2 of 1` (also after re-login); avatar icon/ring accessibility labels and some onboarding ring text remain Hebrew in English mode even though badge labels translate; the mobile app navigation exposes neither Profile nor Logout. These were recorded rather than bundled into the merge. npm audit reports nanoid (high) and postcss (moderate), both with fixes available; no automatic dependency upgrade was applied. The existing large 3D chunk warning remains. Audio narration and exhaustive device/GPU coverage were not validated.
+
+Running URLs: frontend `http://127.0.0.1:3000/`, immersive house via `/#/landing`, API `http://localhost:5188`, Swagger `/swagger`. The feature branch remains local; no push, deployment, PostgreSQL deletion, or Railway configuration change occurred. Private snapshots remain ignored and no build artifacts or actual test-account credentials were staged.
+
 ## Source capture and local target
 
 Railway PostgreSQL 18.6 accepted a connection with transaction read-only mode verified as `on`. Source session timezone is UTC. A repeatable-read snapshot captured the 10 public application tables, 62 functions, constraints, indexes, sequences and their state, dependency catalog, and 70 data rows. All 59 original routines used by this checkout exist in the live export. The extra three are `neondb_stp_delete_expired_sessions`, `neondb_stp_insert_household`, and `neondb_stp_is_household_member`.

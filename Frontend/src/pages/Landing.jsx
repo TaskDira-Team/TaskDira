@@ -1,464 +1,383 @@
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { ArrowLeft, ArrowRight, Check, Flame, Gift, Globe2, Heart, Home, Menu, Play, Plus, ShieldCheck, Sparkles, Star, Trophy, Users, X, Zap } from 'lucide-react';
 import { useI18n } from '../context/I18nContext';
 import { useRoute } from '../context/RouteContext';
-import {
-  ACCENTS,
-  Aurora,
-  Avatar,
-  CountUp,
-  Eyebrow,
-  GhostButton,
-  LimeButton,
-  Num,
-  Panel,
-  XPBar,
-} from '../components/ui/kit';
+import Playhouse from '../components/landing/Playhouse';
+import HouseExplorer from '../components/landing/HouseExplorer';
+import NarratedTour from '../components/landing/NarratedTour';
+import '../components/landing/landing.css';
+import '../components/landing/houseJourney.css';
 
-const STATS = [
-  { to: 12480, suffix: '+', labelKey: 'landing.stat.families', accent: 'grape' },
-  { to: 3200000, suffix: '', labelKey: 'landing.stat.tasks', accent: 'lime' },
-  { to: 87400000, suffix: '', labelKey: 'landing.stat.points', accent: 'sky' },
-  { to: 96, suffix: '%', labelKey: 'landing.stat.satisfaction', accent: 'gold' },
-];
-
-const FEATURES = [
-  { emoji: '⚔️', key: 'landing.feature1', accent: 'lime' },
-  { emoji: '📈', key: 'landing.feature2', accent: 'grape' },
-  { emoji: '🔥', key: 'landing.feature3', accent: 'coral' },
-  { emoji: '🏆', key: 'landing.feature4', accent: 'gold' },
-  { emoji: '🎁', key: 'landing.feature5', accent: 'sky' },
-  { emoji: '🎖️', key: 'landing.feature6', accent: 'mint' },
-];
-
-const TESTIMONIALS = [
-  { key: 'landing.t1', emoji: '🦊', ring: 'grape', stars: 5 },
-  { key: 'landing.t2', emoji: '🐼', ring: 'sky', stars: 5 },
-  { key: 'landing.t3', emoji: '🐯', ring: 'coral', stars: 4 },
-];
-
-/* ---- hand-built area chart: one lime series over one grape series ---- */
-const SERIES_A = [18, 26, 22, 38, 44, 41, 58, 66, 61, 78, 88, 96];
-const SERIES_B = [12, 15, 19, 21, 28, 26, 33, 38, 36, 44, 49, 57];
-const MONTHS = {
-  he: ['ינו', 'פבר', 'מרץ', 'אפר', 'מאי', 'יונ', 'יול', 'אוג', 'ספט', 'אוק', 'נוב', 'דצמ'],
-  en: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
-};
-
-function AreaChart() {
-  const { t, lang, dir } = useI18n();
-  const [hover, setHover] = useState(null);
-  const W = 640;
-  const H = 240;
-  const x = (i) => (i / (SERIES_A.length - 1)) * W;
-  const y = (v) => H - (v / 100) * H;
-
-  const path = (s) => s.map((v, i) => `${i ? 'L' : 'M'}${x(i)},${y(v)}`).join(' ');
-  const area = (s) => `${path(s)} L${W},${H} L0,${H} Z`;
-
-  const months = MONTHS[lang] ?? MONTHS.he;
-
-  return (
-    <div
-      className="relative"
-      onMouseLeave={() => setHover(null)}
-      // chart reads left-to-right as a time axis even inside the RTL page
-      dir="ltr"
-    >
-      <svg viewBox={`0 0 ${W} ${H}`} className="w-full" role="img" aria-label={t('landing.chartAria')}>
-        <defs>
-          <linearGradient id="gA" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={ACCENTS.lime} stopOpacity="0.55" />
-            <stop offset="100%" stopColor={ACCENTS.lime} stopOpacity="0" />
-          </linearGradient>
-          <linearGradient id="gB" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor={ACCENTS.grape} stopOpacity="0.45" />
-            <stop offset="100%" stopColor={ACCENTS.grape} stopOpacity="0" />
-          </linearGradient>
-        </defs>
-
-        {[0, 0.25, 0.5, 0.75, 1].map((g) => (
-          <line
-            key={g}
-            x1="0"
-            x2={W}
-            y1={g * H}
-            y2={g * H}
-            stroke="#ffffff"
-            strokeOpacity="0.07"
-            strokeDasharray="3 6"
-          />
-        ))}
-
-        <path d={area(SERIES_B)} fill="url(#gB)" />
-        <path d={path(SERIES_B)} fill="none" stroke={ACCENTS.grape} strokeWidth="2.5" />
-        <path d={area(SERIES_A)} fill="url(#gA)" />
-        <path
-          d={path(SERIES_A)}
-          fill="none"
-          stroke={ACCENTS.lime}
-          strokeWidth="3"
-          style={{ filter: `drop-shadow(0 0 8px ${ACCENTS.lime})` }}
-        />
-
-        {hover !== null && (
-          <g>
-            <line
-              x1={x(hover)}
-              x2={x(hover)}
-              y1="0"
-              y2={H}
-              stroke={ACCENTS.lime}
-              strokeOpacity="0.5"
-            />
-            <circle cx={x(hover)} cy={y(SERIES_A[hover])} r="6" fill={ACCENTS.lime} />
-            <circle cx={x(hover)} cy={y(SERIES_B[hover])} r="5" fill={ACCENTS.grape} />
-          </g>
-        )}
-
-        {SERIES_A.map((_, i) => (
-          <rect
-            key={i}
-            x={x(i) - W / 24}
-            y="0"
-            width={W / 12}
-            height={H}
-            fill="transparent"
-            onMouseEnter={() => setHover(i)}
-          />
-        ))}
-      </svg>
-
-      <div className="num mt-2 flex justify-between px-1 text-[10px] text-ink-faint">
-        {months.map((m, i) => (
-          <span key={m} className={hover === i ? 'text-lime' : ''}>
-            {m}
-          </span>
-        ))}
-      </div>
-
-      {hover !== null && (
-        <div className="num mt-3 flex gap-4 text-[12px]" dir={dir}>
-          <span className="text-lime">
-            {t('landing.chartTasks')}: {SERIES_A[hover]}K
-          </span>
-          <span className="text-grape">
-            {t('landing.chartRewards')}: {SERIES_B[hover]}K
-          </span>
-        </div>
-      )}
-    </div>
-  );
-}
-
-function PhoneMock() {
-  const { t } = useI18n();
-  const tasks = [
-    { e: '🧺', label: t('landing.phone.task1'), xp: 40, a: 'sky' },
-    { e: '🐕', label: t('landing.phone.task2'), xp: 25, a: 'coral' },
-    { e: '🍽️', label: t('landing.phone.task3'), xp: 30, a: 'gold' },
-  ];
-  return (
-    <div className="anim-bob relative mx-auto w-[290px]">
-      <div
-        className="relative overflow-hidden rounded-[42px] border-[6px] border-panel bg-abyss p-4"
-        style={{ boxShadow: '0 60px 100px -40px #a06cffaa, inset 0 1px 0 #ffffff22' }}
-      >
-        <div className="num mb-4 flex items-center justify-between text-[10px] text-ink-faint">
-          <span>21:04</span>
-          <span>▮▮▮</span>
-        </div>
-
-        <div className="rounded-2xl border border-white/10 bg-panel/70 p-4">
-          <div className="flex items-center gap-3">
-            <Avatar emoji="🦊" ring="lime" size={46} level={12} />
-            <div className="min-w-0">
-              <div className="truncate text-sm font-extrabold">{t('landing.phone.name')}</div>
-              <div className="num text-[11px] text-ink-faint">1,840 / 2,400 XP</div>
-            </div>
-          </div>
-          <div className="mt-3">
-            <XPBar value={76} />
-          </div>
-        </div>
-
-        <div className="mt-3 space-y-2">
-          {tasks.map((task) => (
-            <div
-              key={task.label}
-              className="flex items-center gap-3 rounded-xl border border-white/8 bg-panel/50 p-2.5"
-            >
-              <span className="text-lg">{task.e}</span>
-              <span className="flex-1 text-[13px] font-bold">{task.label}</span>
-              <span className="num text-[11px] font-extrabold" style={{ color: ACCENTS[task.a] }}>
-                +{task.xp}
-              </span>
-            </div>
-          ))}
-        </div>
-      </div>
-
-      {/* bobbing badges */}
-      <div
-        className="anim-bob-soft absolute -top-5 -left-8 rounded-2xl border border-lime/50 bg-abyss/90 px-3 py-2 backdrop-blur"
-        style={{ boxShadow: '0 0 30px -8px #b8f06a', animationDelay: '-1.2s' }}
-      >
-        <div className="num text-lg font-extrabold text-lime">+120</div>
-        <div className="text-[10px] font-bold text-ink-dim">XP</div>
-      </div>
-      <div
-        className="anim-bob-soft absolute top-1/3 -right-10 rounded-2xl border border-gold/50 bg-abyss/90 px-3 py-2 backdrop-blur"
-        style={{ boxShadow: '0 0 30px -8px #ffcb47', animationDelay: '-2.4s' }}
-      >
-        <div className="num text-lg font-extrabold text-gold">LV 12</div>
-        <div className="text-[10px] font-bold text-ink-dim">{t('landing.phone.level')}</div>
-      </div>
-      <div
-        className="anim-bob-soft absolute -bottom-4 -left-4 rounded-2xl border border-coral/50 bg-abyss/90 px-3 py-2 backdrop-blur"
-        style={{ boxShadow: '0 0 30px -8px #ff7a8a', animationDelay: '-3.1s' }}
-      >
-        <div className="num text-lg font-extrabold text-coral">🔥 18</div>
-        <div className="text-[10px] font-bold text-ink-dim">{t('landing.phone.streak')}</div>
-      </div>
-    </div>
-  );
+export function Brand({ onClick }) {
+  return <button className="td-brand" onClick={onClick} aria-label="TaskDira">
+    <span className="td-brand-mark">
+      <Home size={23} strokeWidth={2.5} />
+      <span />
+    </span>
+    <span dir="ltr">TaskDira<span className="td-brand-dot">.</span>
+    </span>
+  </button>;
 }
 
 export default function Landing() {
-  const { t, lang, dir } = useI18n();
+  const { lang, dir, toggleLang } = useI18n();
   const { navigate } = useRoute();
-  const goToAuth = () => navigate('/login');
-  const quote = (text) => (lang === 'he' ? `״${text}״` : `“${text}”`);
-
-  return (
-    <div dir={dir} className="font-landing relative min-h-screen overflow-hidden bg-void text-ink">
-      <Aurora />
-      <div className="relative px-6 pb-16 pt-6 sm:px-10 lg:px-16">
-        {/* nav */}
-        <nav className="mb-14 flex items-center justify-between">
-          <div className="flex items-center gap-2.5">
-            <span
-              className="grid h-10 w-10 place-items-center rounded-2xl bg-gradient-to-br from-lime to-lime-deep text-xl"
-              style={{ boxShadow: '0 0 24px -6px #b8f06a' }}
-            >
-              🏡
+  const he = lang === 'he';
+  const say = (h, e) => he ? h : e;
+  const [menu, setMenu] = useState(false);
+  const [activeRoom, setActiveRoom] = useState('kitchen');
+  const root = useRef(null);
+  const Arrow = he ? ArrowLeft : ArrowRight;
+  const go = id => {
+    setMenu(false);
+    const target = document.getElementById(id);
+    target?.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'instant' : 'smooth', block: 'start' });
+    target?.focus({ preventScroll: true });
+  };
+  const signup = () => navigate('/register');
+  useEffect(() => {
+    window.scrollTo(0, 0);
+    if (!('IntersectionObserver' in window)) return;
+    const observer = new IntersectionObserver(entries => entries.forEach(entry => {
+      if (entry.isIntersecting) { entry.target.classList.add('td-visible'); observer.unobserve(entry.target); }
+    }), { threshold: 0.08 });
+    root.current.querySelectorAll('[data-reveal]').forEach(node => observer.observe(node));
+    return () => observer.disconnect();
+  }, []);
+  const rooms = {
+    kitchen: { title: say('לפנות את המדיח', 'Empty the dishwasher'), points: 30, emoji: '🍽️', name: say('המטבח', 'Kitchen') },
+    bedroom: { title: say('לסדר את המיטה', 'Make the bed'), points: 20, emoji: '🛏️', name: say('חדר השינה', 'Bedroom') },
+    living: { title: say('להשקות את העציצים', 'Water the plants'), points: 25, emoji: '🪴', name: say('הסלון', 'Living room') },
+  };
+  const room = rooms[activeRoom];
+  const nav = [['how', say('איך זה עובד', 'How it works')], ['play', say('בואו לשחק', 'Try it out')], ['features', say('מה בפנים', 'The good stuff')], ['questions', say('שאלות טובות', 'Good questions')]];
+  return <div className="td-site" dir={dir} ref={root}>
+    <button className="td-skip" onClick={() => go('main')}>{say('דילוג לתוכן', 'Skip to content')}</button>
+    <header className="td-header">
+      <div className="td-container td-nav">
+        <Brand onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} />
+        <nav className="td-nav-links" aria-label={say('ניווט ראשי', 'Main navigation')}>{nav.map(([id, label]) => <button key={id} onClick={() => go(id)}>{label}</button>)}</nav>
+        <div className="td-nav-actions">
+          <button className="td-lang" onClick={toggleLang} aria-label={say('Switch to English', 'מעבר לעברית')}>
+            <Globe2 size={16} />
+            <span>{he ? 'EN' : 'עב'}</span>
+          </button>
+          <button className="td-login" onClick={() => navigate('/login')}>{say('כניסה', 'Log in')}</button>
+          <button className="td-btn td-btn-dark td-nav-cta" onClick={signup}>{say('מתחילים ביחד', 'Get started')}<Arrow size={15} />
+          </button>
+          <button className="td-menu-button" aria-label={say('תפריט ניווט', 'Navigation menu')} aria-expanded={menu} aria-controls="td-mobile-menu" onClick={() => setMenu(!menu)}>{menu ? <X /> : <Menu />}</button>
+        </div>
+      </div>{menu && <nav className="td-mobile-menu" id="td-mobile-menu" aria-label={say('ניווט לנייד', 'Mobile navigation')}>{nav.map(([id, label]) => <button key={id} onClick={() => go(id)}>{label}<Arrow size={18} />
+      </button>)}</nav>}</header>
+    <main id="main" tabIndex={-1}>
+      <section className="td-hero td-container" aria-labelledby="hero-title">
+        <div className="td-hero-copy">
+          <div className="td-eyebrow">
+            <span className="td-live-dot" />{say('קצת סדר. הרבה יותר ביחד.', 'A little tidier. A lot more together.')}</div>
+          <h1 id="hero-title">{say('אותו בית.', 'Same home.')}<br />
+            <span className="td-orange td-hero-underline">{say('משחק חדש.', 'New game.')}<svg viewBox="0 0 440 25" aria-hidden="true">
+              <path d="M5 17 Q 215 -4 431 12 M85 23 Q265 9 402 20" />
+            </svg>
             </span>
-            <span className="text-xl font-black tracking-tight">{t('brandName')}</span>
+            <span className="td-headline-spark" aria-hidden="true">✳</span>
+          </h1>
+          <p className="td-hero-description">{say('מי אמר שמטלות חייבות להיות מטלות?', 'Who said chores have to feel like chores?')}<br />{say('הופכים את הדברים הקטנים של הבית למשימות, נקודות ופרסים שכל המשפחה מרוויחה מהם.', 'Turn the little things around the house into quests, points, and rewards the whole family can get behind.')}</p>
+          <div className="td-hero-actions">
+            <button className="td-btn td-btn-orange" onClick={signup}>{say('בואו נתחיל לשחק', 'Let’s play together')}<Arrow size={20} />
+            </button>
+            <button className="td-demo-button" onClick={() => go('play')}>
+              <span className="td-play-icon">
+                <Play size={14} fill="currentColor" />
+              </span>{say('רגע, תראו לי איך', 'Show me how')}</button>
           </div>
-          <ul className="hidden items-center gap-7 text-sm font-bold text-ink-dim lg:flex">
-            {['landing.nav.how', 'landing.nav.features', 'landing.nav.pricing', 'landing.nav.families'].map(
-              (key) => (
-                <li key={key}>
-                  <a href="#" className="transition hover:text-lime">
-                    {t(key)}
-                  </a>
-                </li>
-              )
-            )}
-          </ul>
-          <div className="flex items-center gap-3">
-            <GhostButton onClick={goToAuth}>{t('login')}</GhostButton>
-            <LimeButton size="sm" onClick={goToAuth}>
-              {t('register')}
-            </LimeButton>
-          </div>
-        </nav>
-
-        {/* hero */}
-        <div className="grid items-center gap-14 lg:grid-cols-[1.05fr_0.95fr]">
-          <div>
-            <Eyebrow>{t('landing.eyebrow')}</Eyebrow>
-            <h1 className="mt-5 text-5xl leading-[1.05] font-black tracking-tight sm:text-6xl lg:text-7xl">
-              {t('landing.hero1')}
-              <br />
-              <span
-                className="bg-gradient-to-l from-lime via-mint to-sky bg-clip-text text-transparent"
-                style={{ filter: 'drop-shadow(0 0 26px #b8f06a55)' }}
-              >
-                {t('landing.hero2')}
-              </span>
-              <br />
-              {t('landing.hero3')}
-            </h1>
-            <p className="mt-6 max-w-xl text-lg leading-relaxed text-ink-dim">{t('landing.heroText')}</p>
-
-            <div className="mt-9 flex flex-wrap items-center gap-4">
-              <LimeButton size="lg" onClick={goToAuth}>
-                {t('landing.ctaStart')}
-              </LimeButton>
-              <GhostButton className="px-6 py-4 text-base" onClick={goToAuth}>
-                ▶︎ {t('landing.ctaDemo')}
-              </GhostButton>
+          <div className="td-hero-fine">
+            <Check size={14} />{say('כל המשפחה במקום אחד', 'One place for the whole family')}<span>·</span>{say('גם הכביסה מקבלת משמעות', 'Even laundry gets a purpose')}</div>
+          <div className="td-hero-family">
+            <div className="td-avatar-stack" aria-hidden="true">
+              <span>👩🏻</span>
+              <span>🧑🏽</span>
+              <span>👧🏻</span>
+              <span>🧒🏽</span>
             </div>
-
-            <div className="mt-10 flex items-center gap-4">
-              <div className="flex flex-row-reverse">
-                {[
-                  ['🦊', 'lime'],
-                  ['🐼', 'sky'],
-                  ['🐯', 'coral'],
-                  ['🐨', 'grape'],
-                  ['🦉', 'gold'],
-                ].map(([e, a], i) => (
-                  <div key={e} style={{ marginRight: i ? -12 : 0 }}>
-                    <Avatar emoji={e} ring={a} size={40} />
-                  </div>
-                ))}
-              </div>
-              <div className="text-sm">
-                <div className="num font-extrabold text-lime">12,480+</div>
-                <div className="text-ink-faint">{t('landing.socialProof')}</div>
-              </div>
+            <div>
+              <strong>{say('קבוצה אחת. הבית שלכם.', 'One team. Your home.')}</strong>
+              <span>{say('להורים, לילדים ולכל מי שחולק בית.', 'For parents, kids, and everyone sharing a home.')}</span>
             </div>
-          </div>
-
-          <PhoneMock />
-        </div>
-
-        {/* stats band */}
-        <Panel className="mt-24 overflow-hidden p-1" glow accent="grape">
-          <div className="grid gap-px overflow-hidden rounded-[22px] bg-white/8 sm:grid-cols-2 lg:grid-cols-4">
-            {STATS.map((s) => (
-              <div key={s.labelKey} className="bg-abyss/85 px-6 py-9 text-center">
-                <div
-                  className="text-4xl font-black lg:text-5xl"
-                  style={{ color: ACCENTS[s.accent], textShadow: `0 0 30px ${ACCENTS[s.accent]}66` }}
-                >
-                  <CountUp to={s.to} suffix={s.suffix} />
-                </div>
-                <div className="mt-2 text-sm font-bold text-ink-dim">{t(s.labelKey)}</div>
-              </div>
-            ))}
-          </div>
-        </Panel>
-
-        {/* features */}
-        <div className="mt-24">
-          <Eyebrow accent="grape">{t('landing.featuresEyebrow')}</Eyebrow>
-          <h2 className="mt-4 max-w-2xl text-4xl leading-tight font-black">
-            {t('landing.featuresTitle1')}
-            <span className="text-lime">{t('landing.featuresTitle2')}</span>
-          </h2>
-          <div className="mt-10 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map((f) => (
-              <Panel
-                key={f.key}
-                className="group p-6 transition-transform duration-300 hover:-translate-y-1.5"
-              >
-                <div
-                  className="grid h-12 w-12 place-items-center rounded-2xl text-2xl transition group-hover:scale-110"
-                  style={{
-                    background: `${ACCENTS[f.accent]}1f`,
-                    border: `1px solid ${ACCENTS[f.accent]}55`,
-                    boxShadow: `0 0 26px -10px ${ACCENTS[f.accent]}`,
-                  }}
-                >
-                  {f.emoji}
-                </div>
-                <h3 className="mt-5 text-lg font-extrabold">{t(`${f.key}.title`)}</h3>
-                <p className="mt-1.5 text-[15px] leading-relaxed text-ink-dim">{t(`${f.key}.line`)}</p>
-              </Panel>
-            ))}
+            <Heart size={23} className="td-family-heart" />
           </div>
         </div>
-
-        {/* chart */}
-        <Panel className="mt-24 grid gap-10 p-8 lg:grid-cols-[1.4fr_1fr] lg:p-12" glow accent="lime">
-          <div>
-            <Eyebrow accent="sky">{t('landing.resultsEyebrow')}</Eyebrow>
-            <h2 className="mt-4 text-3xl leading-tight font-black">{t('landing.chartTitle')}</h2>
-            <p className="mt-2 max-w-md text-[15px] text-ink-dim">{t('landing.chartText')}</p>
-            <div className="mt-8">
-              <AreaChart />
-            </div>
-          </div>
-
-          <div className="flex flex-col gap-4 lg:border-r lg:border-white/10 lg:pr-10">
-            {[
-              { n: '340%', key: 'landing.kpi1', a: 'lime' },
-              { n: '71%', key: 'landing.kpi2', a: 'grape' },
-              { n: '96%', key: 'landing.kpi3', a: 'sky' },
-            ].map((k) => (
-              <div
-                key={k.n}
-                className="rounded-2xl border p-6"
-                style={{ borderColor: `${ACCENTS[k.a]}33`, background: `${ACCENTS[k.a]}0f` }}
-              >
-                <div
-                  className="text-4xl font-black"
-                  style={{ color: ACCENTS[k.a], textShadow: `0 0 24px ${ACCENTS[k.a]}55` }}
-                >
-                  <Num>{k.n}</Num>
-                </div>
-                <div className="mt-1 font-extrabold">{t(`${k.key}.label`)}</div>
-                <div className="mt-0.5 text-[13px] text-ink-faint">{t(`${k.key}.sub`)}</div>
-              </div>
-            ))}
-          </div>
-        </Panel>
-
-        {/* testimonials */}
-        <div className="mt-24">
-          <Eyebrow accent="gold">{t('landing.testimonialsEyebrow')}</Eyebrow>
-          <h2 className="mt-4 text-4xl font-black">{t('landing.testimonialsTitle')}</h2>
-          <div className="mt-10 grid gap-5 lg:grid-cols-3">
-            {TESTIMONIALS.map((tm) => (
-              <Panel key={tm.key} className="flex flex-col p-7">
-                <div className="num flex gap-0.5 text-lg text-gold">
-                  {'★'.repeat(tm.stars)}
-                  <span className="text-white/15">{'★'.repeat(5 - tm.stars)}</span>
-                </div>
-                <p className="mt-4 flex-1 text-[15px] leading-relaxed text-ink">
-                  {quote(t(`${tm.key}.quote`))}
-                </p>
-                <div className="mt-6 flex items-center gap-3 border-t border-white/10 pt-5">
-                  <Avatar emoji={tm.emoji} ring={tm.ring} size={44} />
-                  <div>
-                    <div className="font-extrabold">{t(`${tm.key}.name`)}</div>
-                    <div className="num text-[12px] text-ink-faint">{t(`${tm.key}.role`)}</div>
-                  </div>
-                </div>
-              </Panel>
-            ))}
-          </div>
-        </div>
-
-        {/* footer CTA */}
-        <div
-          className="relative mt-24 overflow-hidden rounded-[36px] border border-lime/25 px-8 py-16 text-center lg:px-16"
-          style={{
-            background:
-              'radial-gradient(120% 140% at 50% 0%, #8fd53a2e 0%, transparent 55%), linear-gradient(180deg,#221459,#0a0620)',
-          }}
-        >
-          <h2 className="mx-auto max-w-3xl text-4xl leading-tight font-black lg:text-5xl">
-            {t('landing.cta1')}
-            <span className="bg-gradient-to-l from-lime to-mint bg-clip-text text-transparent">
-              {t('landing.cta2')}
+        <div className="td-house-scene">
+          <div className="td-scene-orbit" aria-hidden="true" />
+          <span className="td-scene-label" dir="ltr">A LITTLE WORLD. A BIG DIFFERENCE.</span>
+          <HouseExplorer he={he} activeRoom={activeRoom} onRoomChange={setActiveRoom} />
+          <div className="td-float td-float-streak">
+            <span className="td-streak-icon">
+              <Flame fill="currentColor" size={24} />
             </span>
-            {t('landing.cta3')}
-          </h2>
-          <p className="mx-auto mt-5 max-w-xl text-lg text-ink-dim">{t('landing.ctaText')}</p>
-          <div className="mt-9 flex justify-center">
-            <LimeButton size="lg" onClick={goToAuth}>
-              {t('landing.ctaButton')}
-            </LimeButton>
+            <div>
+              <strong>{say('7 ימים של ביחד', '7 days of teamwork')}</strong>
+              <span>{say('ככה נולד הרגל טוב', 'That’s how a good habit starts')}</span>
+            </div>
+            <span className="td-tiny-spark">✦</span>
           </div>
-          <div className="num mt-5 text-[12px] text-ink-faint">{t('landing.ctaFine')}</div>
+          <div className="td-room-pins" aria-label={say('גלו משימות לפי חדר', 'Explore room quests')}>{Object.entries(rooms).map(([id, item]) => <button key={id} className={`td-room-pin td-pin-${id} ${activeRoom === id ? 'is-active' : ''}`} aria-label={item.name} aria-pressed={activeRoom === id} onClick={() => setActiveRoom(id)}>
+            <Plus size={17} />
+          </button>)}</div>
+          <button className="td-float td-quest-card" onClick={() => go('play')} aria-label={say('נסו להשלים משימה בהדגמה', 'Try completing a demo quest')}>
+            <span className="td-quest-emoji">{room.emoji}</span>
+            <div>
+              <small>{say('המשימה הבאה שלכם', 'Your next little win')}</small>
+              <strong key={activeRoom}>{room.title}</strong>
+            </div>
+            <span className="td-points" dir="ltr">+{room.points}<small>XP</small>
+            </span>
+            <span className="td-quest-check">
+              <Check size={15} />
+            </span>
+          </button>
+          <div className="td-level-sticker">
+            <Star fill="currentColor" size={19} />
+            <span>{say('בית ברמה אחרת', 'HOME, LEVELED UP')}</span>
+          </div>
+          <div className="td-scene-caption">
+            <span className="td-caption-line" />{say('כל חדר הוא התחלה של משהו טוב', 'A little good in every room')}<span aria-hidden="true">↗</span>
+          </div>
         </div>
-
-        <footer className="mt-16 flex flex-wrap items-center justify-between gap-4 border-t border-white/10 pt-8 text-[13px] text-ink-faint">
-          <span className="num">{t('landing.footerCopy')}</span>
-          <div className="flex gap-6">
-            {['landing.footer.privacy', 'landing.footer.terms', 'accessibility', 'landing.footer.contact'].map(
-              (key) => (
-                <a key={key} href="#" className="transition hover:text-lime">
-                  {t(key)}
-                </a>
-              )
-            )}
-          </div>
-        </footer>
+      </section>
+      <div className="td-values-strip">
+        <div className="td-container">{[[Users, say('כולם חלק מהמשחק', 'Everyone gets to play')], [Zap, say('כל משימה היא ניצחון קטן', 'Every task is a little win')], [Gift, say('פרסים שאתם בוחרים', 'Rewards you actually want')], [Heart, say('יותר זמן לדברים החשובים', 'More time for what matters')]].map(([Icon, text]) => <div key={text}>
+          <Icon size={20} />
+          <span>{text}</span>
+          <span className="td-strip-star" aria-hidden="true">✳</span>
+        </div>)}</div>
       </div>
-    </div>
-  );
+      <section className="td-section td-container" id="how" tabIndex={-1}>
+        <div className="td-section-heading" data-reveal>
+          <div>
+            <span className="td-kicker">01 / {say('פשוט להיכנס למשחק', 'A SIMPLE START')}</span>
+            <h2>{say('פחות ״מי עושה?״.', 'Less “whose turn?”')}<br />
+              <span className="td-muted-heading">{say('יותר ״אני על זה״.', 'More “I’ve got this.”')}</span>
+            </h2>
+          </div>
+          <p>{say('לא עוד רשימה על המקרר. דרך חדשה לעשות את זה ביחד — בשלושה צעדים קטנים.', 'More than a list on the fridge. A new way to do life together, in three small steps.')}</p>
+        </div>
+        <div className="td-steps">{[
+          {
+            n: '01', icon: <Home />, title: say('מקימים את הבית', 'Make yourself at home'), text: say('נותנים לו שם, בוחרים אווטאר ומזמינים את האנשים שהופכים אותו לבית.', 'Give it a name, choose an avatar, and invite the people who make it home.'), art: <div className="td-step-family">
+              <span>👩🏻</span>
+              <span>👧🏻</span>
+              <span>🧑🏽</span>
+              <span>+</span>
+            </div>
+          },
+          {
+            n: '02', icon: <Check />, title: say('הופכים מטלות למשימות', 'Give chores a plot twist'), text: say('משייכים משימות, קובעים ניקוד ונותנים לכל אחד הזדמנות לקחת חלק.', 'Assign quests, set the points, and give everyone a chance to contribute.'), art: <div className="td-step-task">
+              <span className="td-mini-check">
+                <Check size={13} />
+              </span>
+              <span>{say('להוציא את הכלב', 'Walk the dog')}</span>
+              <b dir="ltr">+25 XP</b>
+            </div>
+          },
+          {
+            n: '03', icon: <Gift />, title: say('מרוויחים רגעים ביחד', 'Earn more of the good stuff'), text: say('צוברים נקודות ופותחים פרסים שבאמת רוצים. ערב פיצה, למשל.', 'Collect points and unlock things you actually look forward to. Pizza night, anyone?'), art: <div className="td-step-reward">
+              <span>🍕</span>
+              <div>
+                <b>{say('ערב פיצה משפחתי', 'Family pizza night')}</b>
+                <span className="td-mini-track">
+                  <i />
+                </span>
+              </div>
+              <Sparkles size={19} />
+            </div>
+          },
+        ].map(step => <article className="td-step" key={step.n} data-reveal>
+          <div className="td-step-top">
+            <span className="td-step-icon">{step.icon}</span>
+            <span>{step.n}</span>
+          </div>{step.art}<h3>{step.title}</h3>
+          <p>{step.text}</p>
+        </article>)}</div>
+      </section>
+      <section className="td-play-section" id="play" tabIndex={-1}>
+        <div className="td-container">
+          <div className="td-section-heading td-play-heading" data-reveal>
+            <div>
+              <span className="td-kicker">02 / {say('מספיק לדבר. בואו לשחק.', 'LESS TALK. MORE PLAY.')}</span>
+              <h2>{say('הבית שלכם.', 'Your home.')} <span>{say('אבל בכיף.', 'With a little more fun.')}</span>
+              </h2>
+            </div>
+            <p>{say('קחו את זה לסיבוב. השלימו משימה, הרוויחו נקודות וגלו מה מחכה לכם בחנות.', 'Take it for a spin. Complete a quest, earn points, and see what’s waiting in the reward shop.')}</p>
+          </div>
+          <Playhouse he={he} />
+          <div className="td-demo-footnote">
+            <ShieldCheck size={15} />{say('סביבת משחק לדוגמה · בלי הרשמה · ההתקדמות נשמרת רק בדפדפן הזה', 'A demo playground · No sign-up · Progress stays in this browser')}</div>
+        </div>
+      </section>
+      <section className="td-section td-container" id="features" tabIndex={-1}>
+        <div className="td-section-heading" data-reveal>
+          <div>
+            <span className="td-kicker">03 / {say('דברים קטנים. הבדל גדול.', 'SMALL THINGS. BIG DIFFERENCE.')}</span>
+            <h2>{say('קצת קסם', 'A little magic')}<br />
+              <span className="td-muted-heading">{say('ביום־יום שלכם.', 'in your everyday.')}</span>
+            </h2>
+          </div>
+          <p>{say('כל מה שצריך כדי להפוך את ״צריך לעשות״ ל״כבר עשיתי״.', 'Everything you need to turn “someone should” into “already done.”')}</p>
+        </div>
+        <div className="td-bento">
+          <article className="td-bento-card td-bento-rewards" data-reveal>
+            <div>
+              <span className="td-feature-icon">
+                <Gift />
+              </span>
+              <h3>{say('הפרס? אתם מחליטים.', 'The reward? You decide.')}</h3>
+              <p>{say('זמן מסך, בילוי משותף או הזכות לבחור את הסרט. בונים חנות קטנה של דברים שעושים לכם טוב.', 'Screen time, a day out, or picking the movie. Make your own little shop of things worth doing chores for.')}</p>
+              <button className="td-text-link" onClick={() => go('play')}>{say('תנו לי להציץ', 'Let me have a look')}<Arrow size={17} />
+              </button>
+            </div>
+            <div className="td-reward-illustration" aria-hidden="true">
+              <span className="td-orbit-star">✦</span>
+              <div className="td-reward-ticket">
+                <span className="td-ticket-small">GOOD TIMES CLUB</span>
+                <span className="td-ticket-emoji">🍕</span>
+                <strong>{say('ערב פיצה!', 'Pizza night!')}</strong>
+                <div className="td-ticket-rule" />
+                <span dir="ltr">250 <Star size={13} fill="currentColor" />
+                </span>
+              </div>
+              <div className="td-reward-ticket td-ticket-back">
+                <span>🎬</span>
+              </div>
+              <span className="td-illustration-spark">✳</span>
+            </div>
+          </article>
+          <article className="td-bento-card td-bento-streak" data-reveal>
+            <span className="td-feature-icon">
+              <Flame />
+            </span>
+            <h3>{say('יום ועוד יום. ופתאום, הרגל.', 'Day by day. Then, a habit.')}</h3>
+            <p>{say('רצפים קטנים ששומרים על המומנטום. כי התמדה ראויה לרגע של גאווה.', 'A little streak to keep the momentum going. Showing up deserves its own little celebration.')}</p>
+            <div className="td-streak-art">
+              <Flame size={64} strokeWidth={1.4} fill="currentColor" />
+              <strong>7<span>{say('ימים ברצף', 'day streak')}</span>
+              </strong>
+            </div>
+            <div className="td-week">{(he ? ['א׳', 'ב׳', 'ג׳', 'ד׳', 'ה׳', 'ו׳', 'ש׳'] : ['S', 'M', 'T', 'W', 'T', 'F', 'S']).map((day, i) => <div key={i}>
+              <span>{day}</span>
+              <i>{i === 6 ? <Flame size={16} fill="currentColor" /> : <Check size={14} />}</i>
+            </div>)}</div>
+          </article>
+          <article className="td-bento-card td-bento-team" data-reveal>
+            <div>
+              <span className="td-feature-icon">
+                <Users />
+              </span>
+              <h3>{say('קצת תחרות. המון אהבה.', 'A little rivalry. A lot of love.')}</h3>
+              <p>{say('לוח משפחתי שמפרגן למאמץ של כולם. כל אחד מתקדם בקצב שלו, והבית מרוויח.', 'A family board that gives everyone’s effort a moment in the spotlight.')}</p>
+            </div>
+            <div className="td-podium" aria-label={say('דוגמה ללוח מנצחים משפחתי', 'Example family leaderboard')}>
+              <div>
+                <span>👧🏻</span>
+                <i>2</i>
+              </div>
+              <div>
+                <Trophy size={20} />
+                <span>🧑🏽</span>
+                <i>1</i>
+              </div>
+              <div>
+                <span>👩🏻</span>
+                <i>3</i>
+              </div>
+            </div>
+          </article>
+          <article className="td-bento-card td-bento-progress" data-reveal>
+            <div>
+              <span className="td-feature-icon">
+                <Sparkles />
+              </span>
+              <h3>{say('רואים את הדרך שעשיתם.', 'Look how far you’ve come.')}</h3>
+              <p>{say('נקודות, רמות והישגים. כל משימה קטנה הופכת לחלק מסיפור גדול יותר.', 'Points, levels, and achievements. Every small task becomes part of something bigger.')}</p>
+            </div>
+            <div className="td-progress-art">
+              <span className="td-medal">
+                <Star size={32} fill="currentColor" />
+              </span>
+              <div>
+                <small>{say('השלב הבא כבר קרוב', 'Your next level is close')}</small>
+                <strong>{say('אלופי הבית', 'Home heroes')} <span>LV. 08</span>
+                </strong>
+                <div className="td-progress-line">
+                  <i />
+                </div>
+                <span className="td-progress-numbers" dir="ltr">840 / 1,000 XP</span>
+              </div>
+            </div>
+          </article>
+        </div>
+      </section>
+      <section className="td-manifesto">
+        <div className="td-container" data-reveal>
+          <span className="td-kicker">{say('הבית הוא לא רשימת משימות', 'HOME IS MORE THAN A TO-DO LIST')}</span>
+          <h2>{say('בסוף, זה לא רק בית מסודר.', 'In the end, it’s more than a tidy home.')}<br />{say('זה יותר מקום', 'It’s more room')} <span>{say('להיות ביחד.', 'to be together.')}</span>
+            <Heart aria-hidden="true" />
+          </h2>
+          <p>{say('פחות להזכיר. יותר להעריך. פחות לנהל את כולם. יותר להיות משפחה.', 'Less reminding. More appreciating. Less managing everyone. More being a family.')}</p>
+          <div className="td-manifesto-avatars" aria-hidden="true">
+            <span>👩🏻</span>
+            <span>🧒🏽</span>
+            <span>👧🏻</span>
+            <span>🧑🏽</span>
+            <span>🐶</span>
+          </div>
+        </div>
+      </section>
+      <section className="td-section td-container td-faq" id="questions" tabIndex={-1}>
+        <div data-reveal>
+          <span className="td-kicker">04 / {say('טוב ששאלתם', 'GLAD YOU ASKED')}</span>
+          <h2>{say('עוד משהו', 'A few things')}<br />
+            <span className="td-muted-heading">{say('קטן לפני?', 'before you start?')}</span>
+          </h2>
+          <p>{say('כל הדברים שאולי עברו לכם בראש.', 'The things you might be wondering.')}</p>
+        </div>
+        <div className="td-faq-list" data-reveal>{[
+          [say('זה מתאים גם לילדים קטנים?', 'Can younger kids take part?'), say('כן. אפשר ליצור משימות קטנות שמתאימות לגיל, לבחור יחד אווטאר ולהגדיר פרסים שהילדים אוהבים. המבוגרים מנהלים את המשימות ואת הבית.', 'Yes. Create age-appropriate tasks, choose an avatar together, and set rewards your kids love. Adults manage the household and its quests.')],
+          [say('ומה אם אנחנו שותפים ולא משפחה?', 'What if we’re roommates?'), say('גם שותפים, זוגות וכל מי שחולק בית יכולים לשחק. מקימים בית, מזמינים את האנשים שלכם ומחלקים את המשימות בדרך שמתאימה לכם.', 'Roommates, couples, and anyone sharing a home can play. Create a household, invite your people, and share the tasks your way.')],
+          [say('מי קובע את המשימות והפרסים?', 'Who chooses the quests and rewards?'), say('אתם. מנהלי הבית יוצרים משימות, קובעים ניקוד ומוסיפים פרסים. כל בית יכול לבנות משחק שמתאים להרגלים ולשגרה שלו.', 'You do. Household admins create tasks, assign points, and add rewards. Every home can build a game that fits its routine.')],
+          [say('צריך להוריד אפליקציה?', 'Do I need to download an app?'), say('לא צריך. נכנסים דרך הדפדפן בטלפון, בטאבלט או במחשב. אפשר להתחיל עם ההדגמה כאן בעמוד, בלי להירשם.', 'No download needed. Open TaskDira in your phone, tablet, or desktop browser. Try the playground here without signing up.')],
+          [say('הדמו משנה משהו בבית שלי?', 'Does the demo affect my household?'), say('לא. ההדגמה משתמשת במשפחה ובמשימות לדוגמה. הנקודות והפרסים שלה נשמרים רק בדפדפן הזה ואינם מחוברים לחשבון שלכם.', 'No. The playground uses an example family and quests. Its points and rewards stay in this browser and aren’t connected to your account.')],
+        ].map(([question, answer]) => <details key={question}>
+          <summary>{question}<Plus size={19} />
+          </summary>
+          <p>{answer}</p>
+        </details>)}</div>
+      </section>
+      <section className="td-final-wrap td-container">
+        <div className="td-final-cta" data-reveal>
+          <div className="td-final-spark" aria-hidden="true">✳</div>
+          <span className="td-kicker">{say('המשימה הראשונה? פשוט להתחיל.', 'YOUR FIRST QUEST? JUST GET STARTED.')}</span>
+          <h2>{say('הבית נשאר שלכם.', 'Still your home.')}<br />{say('הכיף מתחיל עכשיו.', 'The fun starts now.')}</h2>
+          <button className="td-btn td-btn-cream" onClick={signup}>{say('בואו נבנה את הבית שלנו', 'Let’s build our home')}<Arrow size={20} />
+          </button>
+          <span className="td-final-fine">{say('המשימות קטנות. ההבדל מורגש.', 'Small quests. A real difference.')}</span>
+          <div className="td-final-orbit" aria-hidden="true" />
+        </div>
+      </section>
+    </main>
+    <footer className="td-footer td-container">
+      <div>
+        <Brand onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} />
+        <p>{say('עושים מקום לדברים הטובים.', 'Make room for the good stuff.')}</p>
+      </div>
+      <div className="td-footer-links">
+        <button onClick={() => go('how')}>{say('איך זה עובד', 'How it works')}</button>
+        <button onClick={() => go('play')}>{say('נסו בעצמכם', 'Try it out')}</button>
+        <button onClick={() => go('questions')}>{say('שאלות ותשובות', 'Questions & answers')}</button>
+      </div>
+      <span className="td-copyright" dir="ltr">© {new Date().getFullYear()} TaskDira.<br />
+        <span>Made for real life. With <Heart size={12} />.</span>
+      </span>
+    </footer>
+    <NarratedTour he={he} />
+  </div>;
 }
