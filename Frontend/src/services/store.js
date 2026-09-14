@@ -8,7 +8,7 @@ import {
   INITIAL_CATEGORIES,
   INITIAL_REWARDS,
   INITIAL_NOTIFICATIONS,
-} from '../data/mockData';
+} from '../data/mockData.js';
 
 export const store = {
   households: [structuredClone(HOUSEHOLD)],
@@ -88,9 +88,10 @@ export function recalculateRanks(householdId = getActiveHouseholdId()) {
   const now = new Date();
   const month = now.getMonth() + 1;
   const year = now.getFullYear();
+  const participants = new Set(store.members.filter(m => m.householdId === householdId).map(m => m.userId));
   const rows = store.pointsLedger
-    .filter((l) => l.householdId === householdId && l.month === month && l.year === year)
-    .sort((a, b) => b.totalPoints - a.totalPoints);
+    .filter((l) => l.householdId === householdId && participants.has(l.userId) && l.month === month && l.year === year)
+    .sort((a, b) => b.totalPoints - a.totalPoints || String(a.userId).localeCompare(String(b.userId), 'en', { numeric: true }));
   rows.forEach((row, i) => {
     row.rank = i + 1;
   });
@@ -172,6 +173,9 @@ export function hydrateAuthenticatedUser({ id, fullName, email, avatarState, cre
  */
 export function hydrateHouseholdMembers(entries) {
   const householdId = getActiveHouseholdId();
+  const participantIds = new Set(entries.map(entry => entry.user.id));
+  store.members = store.members.filter(m => m.householdId !== householdId);
+  store.pointsLedger = store.pointsLedger.filter(l => l.householdId !== householdId || participantIds.has(l.userId));
 
   const hydrated = entries.map(({ user, role, joinedAt, points, balance }) => {
     const existing = getRawUser(user.id);

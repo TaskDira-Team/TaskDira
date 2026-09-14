@@ -46,10 +46,13 @@ function NewUiRouter() {
   const { user, loading } = useAuth();
   const { path, navigate } = useRoute();
   const route = findRoute(path);
-  const redirectHome = !!user && (!route || route.access === 'public');
+
   useEffect(() => {
-    if (!loading && redirectHome && path !== '/') navigate('/');
-  }, [loading, redirectHome, path, navigate]);
+    if (loading) return;
+    const current = findRoute(path);
+    if (!user && current?.access !== 'public') navigate('/landing');
+    else if (user && (!current || current.access === 'public')) navigate('/');
+  }, [user, loading, path, navigate]);
 
   if (loading) return <LoadingScreen dark />;
 

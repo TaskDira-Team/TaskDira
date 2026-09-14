@@ -105,7 +105,7 @@ export async function deductPoints(userId, amount) {
 export async function getLeaderboard() {
   if (USE_REAL_API.users) {
     const users = await fetchUsers();
-    return [...users].sort((a, b) => b.points - a.points);
+    return [...users].sort((a, b) => a.rank - b.rank);
   }
   await delay();
   const hid = getActiveHouseholdId();

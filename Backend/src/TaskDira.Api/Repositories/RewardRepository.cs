@@ -6,6 +6,10 @@ namespace TaskDira.Api.Repositories;
 
 public interface IRewardRepository
 {
+    bool SupportsAtomicClaims => false;
+
+    Task<bool> ClaimAndSpendAsync(int rewardId, int userId, int householdId, CancellationToken cancellationToken) => throw new NotSupportedException();
+
     Task<Reward?> GetByIdAsync(int id, CancellationToken cancellationToken);
 
     Task<IReadOnlyList<Reward>> GetPageAsync(int householdId, int offset, int limit, CancellationToken cancellationToken);
@@ -25,6 +29,17 @@ public class RewardRepository : IRewardRepository
 {
     private readonly IDbConnectionFactory _connections;
 
+    public bool SupportsAtomicClaims => _connections.IsSqlServer;
+
+    public async Task<bool> ClaimAndSpendAsync(int rewardId, int userId, int householdId, CancellationToken cancellationToken)
+    {
+        await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
+        var command = new CommandDefinition("dbo.neondb_stp_claim_reward_atomic",
+            new { p_id = rewardId, p_userid = userId, p_householdid = householdId },
+            commandType: System.Data.CommandType.StoredProcedure, cancellationToken: cancellationToken);
+        return await connection.ExecuteScalarAsync<int>(command) == 1;
+    }
+
     public RewardRepository(IDbConnectionFactory connections)
     {
         _connections = connections;
@@ -34,7 +49,7 @@ public class RewardRepository : IRewardRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_reward_by_id(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);
@@ -46,7 +61,7 @@ public class RewardRepository : IRewardRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_household_rewards_page(@p_householdid, @p_offset, @p_limit)",
             new { p_householdid = householdId, p_offset = offset, p_limit = limit },
             cancellationToken: cancellationToken);
@@ -59,7 +74,7 @@ public class RewardRepository : IRewardRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_count_household_rewards(@p_householdid)",
             new { p_householdid = householdId },
             cancellationToken: cancellationToken);
@@ -71,7 +86,7 @@ public class RewardRepository : IRewardRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_insert_reward(@p_title, @p_requiredpoints, @p_householdid, @p_emoji, @p_description, @p_cost, @p_category)",
             new
             {
@@ -92,7 +107,7 @@ public class RewardRepository : IRewardRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_update_reward(@p_id, @p_title, @p_requiredpoints, @p_emoji, @p_description, @p_cost, @p_category)",
             new
             {
@@ -113,7 +128,7 @@ public class RewardRepository : IRewardRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_claim_reward(@p_id, @p_userid)",
             new { p_id = rewardId, p_userid = userId },
             cancellationToken: cancellationToken);
@@ -125,7 +140,7 @@ public class RewardRepository : IRewardRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_delete_reward(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);

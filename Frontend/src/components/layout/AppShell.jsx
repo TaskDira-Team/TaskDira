@@ -5,6 +5,7 @@ import { useRoute } from '../../context/RouteContext';
 import { NAV_ROUTES } from '../../routes';
 import { Aurora, Avatar } from '../ui/kit';
 import CoinStreakWidget, { CoinStreakDefs } from '../ui/CoinStreakWidget';
+import MobileAccountNav from './MobileAccountNav';
 
 function NavButton({ route, active, onClick, compact }) {
   const { t } = useI18n();
@@ -63,13 +64,6 @@ export default function AppShell({ children }) {
       <Aurora />
       <CoinStreakDefs />
 
-      {/* The sidebar is display:none below lg, so the mobile readout is its own
-          instance in the free top corner — clear of the bottom tab bar and the
-          accessibility button. */}
-      <div className="pointer-events-none fixed top-4 end-4 z-40 lg:hidden">
-        <CoinStreakWidget />
-      </div>
-
       <div className="relative flex min-h-screen">
         <aside className="sticky top-0 hidden h-screen w-64 shrink-0 flex-col border-e border-white/8 bg-abyss/60 px-4 py-6 backdrop-blur-sm lg:flex">
           <button
@@ -124,6 +118,10 @@ export default function AppShell({ children }) {
         </aside>
 
         <div className="flex min-w-0 flex-1 flex-col">
+          <header className="flex flex-wrap items-center justify-between gap-2 border-b border-white/10 bg-abyss/90 px-4 py-3 lg:hidden">
+            <MobileAccountNav path={path} onNavigate={navigate} onLogout={logout} profileLabel={t('profile')} logoutLabel={t('logout')} />
+            <CoinStreakWidget />
+          </header>
           <main className="flex-1 pb-24 lg:pb-8">
             <div className="mx-auto w-full max-w-7xl px-4 sm:px-6 lg:px-8">{children}</div>
           </main>

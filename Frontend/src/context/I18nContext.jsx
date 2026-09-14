@@ -1,5 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { translateContent } from '../data/contentI18n';
+import { AVATAR_TRANSLATIONS } from '../data/avatars';
 
 const STORAGE_KEY = 'taskdira_lang';
 
@@ -382,7 +383,7 @@ const TRANSLATIONS = {
     'profile.ringAria': 'טבעת בצבע {n}',
     'profile.badges': 'תגים',
     'profile.stat1': 'מטלות שהושלמו החודש',
-    'profile.stat2': 'נקודות מצטברות',
+    'profile.stat2': 'מטבעות',
     'profile.stat3': 'רצף נוכחי',
     'profile.stat4': 'דירוג משפחתי',
     'profile.displayName': 'שם תצוגה',
@@ -820,7 +821,7 @@ const TRANSLATIONS = {
     'profile.ringAria': '{n} ring',
     'profile.badges': 'Badges',
     'profile.stat1': 'Chores completed this month',
-    'profile.stat2': 'Lifetime points',
+    'profile.stat2': 'Coins',
     'profile.stat3': 'Current streak',
     'profile.stat4': 'Family rank',
     'profile.displayName': 'Display name',
@@ -922,7 +923,7 @@ export function I18nProvider({ children }) {
 
   const value = useMemo(() => {
     const dict = TRANSLATIONS[lang];
-    const t = (key) => dict[key] ?? TRANSLATIONS.he[key] ?? key;
+    const t = (key) => dict[key] ?? AVATAR_TRANSLATIONS[lang]?.[key] ?? TRANSLATIONS.he[key] ?? key;
     const p = (n) => `${n ?? 0} ${dict.pointsShort}`;
     const householdName = (name) => {
       if (!name) return dict.defaultHousehold;

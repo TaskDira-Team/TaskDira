@@ -132,9 +132,9 @@ export default function AvatarCreator({ config, onChange, variant = 'light' }) {
     <div className="space-y-5">
       <div className="flex flex-col items-center gap-2 py-4">
         <AvatarFrame avatar={preview} size="xl" showGlow />
-        <p className={at.badgeLabel}>{preview.profileBadgeLabel}</p>
+        <p className={at.badgeLabel}>{t(preview.profileBadgeKey)}</p>
         <p className={at.hint}>
-          {preview.iconLabel} · {t('avatar.ring')}: {preview.ringLabel}
+          {t(preview.iconLabelKey)} · {t('avatar.ring')}: {t(preview.ringLabelKey)}
           {preview.isAnimated && ` · 🎬 ${t('avatar.animated')}`}
         </p>
       </div>
@@ -169,7 +169,8 @@ export default function AvatarCreator({ config, onChange, variant = 'light' }) {
                 key={icon.id}
                 type="button"
                 onClick={() => selectEmoji(icon.id)}
-                title={icon.label}
+                title={t(icon.labelKey)}
+                aria-label={t(icon.labelKey)}
                 className={`text-2xl p-2 rounded-xl transition-all ${
                   local.avatarType === AVATAR_TYPES.EMOJI && local.baseIconId === icon.id
                     ? at.iconOn
@@ -194,7 +195,8 @@ export default function AvatarCreator({ config, onChange, variant = 'light' }) {
                 key={sticker.id}
                 type="button"
                 onClick={() => selectSticker(sticker.id)}
-                title={sticker.label}
+                title={t(sticker.labelKey)}
+                aria-label={t(sticker.labelKey)}
                 className={`flex flex-col items-center gap-1.5 p-2 rounded-2xl border-2 transition-all ${
                   local.avatarType === AVATAR_TYPES.STICKER && local.stickerId === sticker.id
                     ? at.stickerOn
@@ -205,7 +207,7 @@ export default function AvatarCreator({ config, onChange, variant = 'light' }) {
                   {sticker.type === 'gif' ? (
                     <img
                       src={sticker.url}
-                      alt={sticker.label}
+                      alt={t(sticker.labelKey)}
                       className="w-full h-full object-cover"
                       loading="lazy"
                     />
@@ -214,7 +216,7 @@ export default function AvatarCreator({ config, onChange, variant = 'light' }) {
                   )}
                 </div>
                 <span className={at.tileLabel}>
-                  {sticker.label}
+                  {t(sticker.labelKey)}
                 </span>
               </button>
             ))}
@@ -282,7 +284,7 @@ export default function AvatarCreator({ config, onChange, variant = 'light' }) {
               }`}
             >
               <div className={`w-8 h-8 rounded-full ${ring.bg} ${ring.ring.split(' ').slice(0, 2).join(' ')} shrink-0`} />
-              <span className={at.ringLabel}>{ring.labelHe}</span>
+              <span className={at.ringLabel}>{t(ring.labelKey)}</span>
             </button>
           ))}
         </div>
@@ -302,7 +304,7 @@ export default function AvatarCreator({ config, onChange, variant = 'light' }) {
                   : at.badgeOff
               }`}
             >
-              {badge.label}
+              {t(badge.labelKey)}
             </button>
           ))}
         </div>

@@ -39,7 +39,7 @@ function draftFrom(user) {
     familyRole: user?.familyRole || DEFAULT_FAMILY_ROLE,
     baseIconId: state.baseIconId || DEFAULT_AVATAR_CONFIG.baseIconId,
     ringColorId: state.ringColorId || DEFAULT_AVATAR_CONFIG.ringColorId,
-    profileBadgeId: state.profileBadgeId || DEFAULT_AVATAR_CONFIG.profileBadgeId,
+    profileBadgeId: getProfileBadge(state.profileBadgeId || state.profileBadgeKey || state.profileBadgeLabel).id,
   };
 }
 
@@ -147,7 +147,7 @@ export default function Profile() {
 
           <div className="mt-5 flex justify-center gap-2">
             <span className="anim-pop flex items-center gap-1.5 rounded-full border border-gold/40 bg-gold/12 px-3 py-1 text-[11px] font-bold text-gold">
-              {badge.label}
+              {t(badge.labelKey)}
             </span>
           </div>
         </Panel>
@@ -210,7 +210,7 @@ export default function Profile() {
                     key={icon.id}
                     onClick={() => set({ baseIconId: icon.id })}
                     aria-pressed={icon.id === draft.baseIconId}
-                    aria-label={icon.label}
+                    aria-label={t(icon.labelKey)}
                     className={`grid aspect-square w-full place-items-center rounded-xl border text-xl transition ${
                       icon.id === draft.baseIconId
                         ? 'border-lime bg-lime/15'
@@ -233,7 +233,7 @@ export default function Profile() {
                     <button
                       key={r.id}
                       onClick={() => set({ ringColorId: r.id })}
-                      aria-label={t('profile.ringAria').replace('{n}', r.labelHe || r.label)}
+                      aria-label={t('profile.ringAria').replace('{n}', t(r.labelKey))}
                       aria-pressed={active}
                       className="relative h-10 w-10 rounded-full transition hover:scale-110"
                       style={{
@@ -271,7 +271,7 @@ export default function Profile() {
                       }`}
                     >
                       <div className="text-[11px] leading-snug font-bold text-ink-dim">
-                        {b.label}
+                        {t(b.labelKey)}
                       </div>
                     </button>
                   );

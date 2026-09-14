@@ -1,3 +1,6 @@
+import { useI18n } from '../../context/I18nContext';
+import { getProfileBadge } from '../../data/avatars';
+
 const SIZE_MAP = {
   sm: { box: 'w-9 h-9', emoji: 'text-lg' },
   md: { box: 'w-11 h-11', emoji: 'text-xl' },
@@ -12,6 +15,7 @@ export default function AvatarFrame({
   glowClass,
   className = '',
 }) {
+  const { t } = useI18n();
   const s = SIZE_MAP[size] || SIZE_MAP.md;
   const ringClass = showGlow
     ? [glowClass, avatar?.ringClass || 'ring-2 ring-slate-200'].filter(Boolean).join(' ')
@@ -23,12 +27,12 @@ export default function AvatarFrame({
   return (
     <div
       className={`${s.box} ${avatar?.bg ?? 'bg-indigo-500'} rounded-2xl flex items-center justify-center overflow-hidden ${ringClass} transition-all duration-300 ${className}`}
-      title={avatar?.profileBadgeLabel || avatar?.iconLabel}
+      title={t(getProfileBadge(avatar?.profileBadgeId || avatar?.profileBadgeKey || avatar?.profileBadgeLabel).labelKey)}
     >
       {isImage ? (
         <img
           src={avatar.imageUrl}
-          alt={avatar.iconLabel || 'avatar'}
+          alt={t(avatar.iconLabelKey || 'avatar.customLabel')}
           className="w-full h-full object-cover"
           loading="lazy"
         />

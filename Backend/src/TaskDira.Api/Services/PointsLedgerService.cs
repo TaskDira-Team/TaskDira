@@ -20,11 +20,13 @@ public class PointsLedgerService : IPointsLedgerService
 {
     private readonly IPointsLedgerRepository _ledger;
     private readonly IHouseholdMemberRepository _members;
+    private readonly IChoreTaskRepository? _tasks;
 
-    public PointsLedgerService(IPointsLedgerRepository ledger, IHouseholdMemberRepository members)
+    public PointsLedgerService(IPointsLedgerRepository ledger, IHouseholdMemberRepository members, IChoreTaskRepository? tasks = null)
     {
         _ledger = ledger;
         _members = members;
+        _tasks = tasks;
     }
 
     public async Task<PagedResult<PointsLedgerEntryResponse>?> GetPageAsync(int householdId, int callerUserId, PaginationQuery query, CancellationToken cancellationToken)
@@ -81,6 +83,13 @@ public class PointsLedgerService : IPointsLedgerService
 
         if (!await EnsureAdminAsync(householdId, callerUserId, cancellationToken))
             return null;
+
+        if (_tasks is not null)
+        {
+            var task = await _tasks.GetByIdAsync(taskId, cancellationToken);
+            if (task is null || task.Householdid != householdId)
+                return null;
+        }
 
         if (!await IsMemberAsync(householdId, request.UserId, cancellationToken))
             throw new ArgumentException("That user is not a member of this household.", nameof(request));

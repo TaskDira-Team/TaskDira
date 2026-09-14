@@ -34,7 +34,7 @@ public class ChoreTaskRepository : IChoreTaskRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_task_by_id(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);
@@ -46,7 +46,7 @@ public class ChoreTaskRepository : IChoreTaskRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_household_tasks_page(@p_householdid, @p_offset, @p_limit)",
             new { p_householdid = householdId, p_offset = offset, p_limit = limit },
             cancellationToken: cancellationToken);
@@ -59,7 +59,7 @@ public class ChoreTaskRepository : IChoreTaskRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_count_household_tasks(@p_householdid)",
             new { p_householdid = householdId },
             cancellationToken: cancellationToken);
@@ -71,7 +71,7 @@ public class ChoreTaskRepository : IChoreTaskRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_insert_task(@p_householdid, @p_title, @p_description, @p_categoryid, @p_pointsvalue, @p_assigneduserid, @p_duedate, @p_createdbyid)",
             new
             {
@@ -93,7 +93,7 @@ public class ChoreTaskRepository : IChoreTaskRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_update_task(@p_id, @p_title, @p_description, @p_categoryid, @p_pointsvalue, @p_assigneduserid, @p_duedate)",
             new
             {
@@ -114,7 +114,7 @@ public class ChoreTaskRepository : IChoreTaskRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_update_task_status(@p_id, @p_status, @p_completedat)",
             new { p_id = id, p_status = status, p_completedat = ToTimestamp(completedAt) },
             cancellationToken: cancellationToken);
@@ -126,7 +126,7 @@ public class ChoreTaskRepository : IChoreTaskRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_delete_task(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);

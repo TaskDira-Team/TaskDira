@@ -34,7 +34,7 @@ public class UserRepository : IUserRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_user_by_id(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);
@@ -46,7 +46,7 @@ public class UserRepository : IUserRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_user_by_email(@p_email)",
             new { p_email = email },
             cancellationToken: cancellationToken);
@@ -58,7 +58,7 @@ public class UserRepository : IUserRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_get_users_page(@p_offset, @p_limit)",
             new { p_offset = offset, p_limit = limit },
             cancellationToken: cancellationToken);
@@ -71,7 +71,7 @@ public class UserRepository : IUserRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_count_users()",
             cancellationToken: cancellationToken);
 
@@ -82,7 +82,7 @@ public class UserRepository : IUserRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT * FROM neondb_stp_insert_user(@p_fullname, @p_email, @p_passwordhash, @p_familyrole, @p_avatarstate)",
             new
             {
@@ -101,7 +101,7 @@ public class UserRepository : IUserRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_update_user(@p_id, @p_fullname, @p_avatarstate, @p_familyrole)",
             new
             {
@@ -119,7 +119,7 @@ public class UserRepository : IUserRepository
     {
         await using var connection = await _connections.CreateOpenConnectionAsync(cancellationToken);
 
-        var command = new CommandDefinition(
+        var command = RoutineCommand.Create(connection,
             "SELECT neondb_stp_delete_user(@p_id)",
             new { p_id = id },
             cancellationToken: cancellationToken);
