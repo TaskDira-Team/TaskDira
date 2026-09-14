@@ -1,4 +1,4 @@
-import { DEFAULT_AVATAR_CONFIG } from './avatars';
+import { DEFAULT_AVATAR_CONFIG } from './avatars.js';
 
 export const ROLES = {
   ADMIN: 'Admin',

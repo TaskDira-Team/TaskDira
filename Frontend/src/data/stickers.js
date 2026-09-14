@@ -57,7 +57,7 @@ export const STICKER_PRESETS = [
   },
   {
     id: 'gif-cool',
-    label: 'Cool 😎',
+    label: 'מגניב 😎',
     type: 'gif',
     url: 'https://media.giphy.com/media/ICOgHjpOYWYo0/giphy.gif',
     preview: '😎',
@@ -69,7 +69,7 @@ export const STICKER_PRESETS = [
     url: 'https://media.giphy.com/media/l0MYt5jPR6QX5pnqM/giphy.gif',
     preview: '❤️',
   },
-];
+].map(sticker => ({ ...sticker, labelKey: `avatar.sticker.${sticker.id}` }));
 
 export const AVATAR_TYPES = {
   EMOJI: 'emoji',

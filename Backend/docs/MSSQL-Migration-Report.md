@@ -1,5 +1,46 @@
 # TaskDira local MSSQL migration
 
+## Follow-up review fixes (2026-09-14)
+
+Resolved the ranking, avatar localization, mobile account navigation, dependency advisories and bundle warning recorded in the merge review below.
+
+- Ranking now uses the authoritative household roster, removes stale cached memberships/ledger participants, and assigns contiguous ordinal ranks with deterministic user-ID ordering for ties. The leaderboard uses that same ordering. Regression tests cover a zero-XP solo member, stale cached members, other-household isolation, ties, reordered rosters, removal and an empty roster.
+- Emoji, sticker, custom-image, ring and badge labels now resolve through stable Hebrew/English keys, including image alternatives and accessible button names. Existing avatar IDs and legacy JSON remain compatible. Catalog/resolver coverage includes every preset and both languages.
+- Mobile has visible Profile and Logout buttons with native keyboard activation, focus indicators, current-page semantics and 44px minimum height. The coin widget now sits in the header instead of overlapping page content. Component regression coverage verifies both languages and navigation/logout callbacks.
+- Updated transitive nanoid 3.3.16 -> 3.3.19 and postcss 8.5.20 -> 8.5.28 within compatible ranges. The audited advisories were nanoid GHSA-2v37-7h3g-55p8 (high, zero-size custom-generator loop) and postcss GHSA-fxqj-rqcc-2cmp (moderate, source-map file access). Regenerated the lockfile, completed a clean `npm ci`, checked the installed dependency tree, and ran full `npm audit`: **zero vulnerabilities**. No forced major upgrades or declared dependency changes.
+- Split Three.js core and renderer into separate chunks while retaining the asynchronous scene import. The generated manifest confirms the initial static import graph excludes Three.js and houseScene. The build emits no large-chunk warning; this reduces individual chunk sizes, not the total 3D download.
+
+### Validation
+
+- Backend solution build passed (two existing xUnit2031 warnings); migration-tool build passed without warnings; frontend production build passed.
+- All **43 backend tests**, including eight real MSSQL integration tests, passed with zero skips. All **22 frontend tests** passed, including four new regression tests.
+- Focused browser checks ran against the production frontend build and local SqlServer API: existing zero-XP solo account logged in and showed **Rank 1 of 1** on the dashboard and rank 1 with one participant on the leaderboard. Profile also showed family rank #1.
+- English Profile exposed translated character/ring/badge labels; switching to Hebrew exposed their Hebrew equivalents and RTL layout. At 390 x 844, Profile and Logout were visible, Profile accepted Enter, and Logout accepted Enter and navigated from `/#/profile` to `/#/landing`. Neither language produced document horizontal overflow. Existing bottom-tab labels remain crowded at this width; this follow-up does not redesign that navigation.
+- The split 3D scene rendered on mobile and desktop. Night mode, room selection and separated floors worked. Existing demo progress remained 210 XP with the previously completed quest. No captured browser console errors occurred during these checks. These are focused checks, not exhaustive device/GPU or screen-reader coverage.
+
+| Production asset | Minified kB | gzip kB |
+|---|---:|---:|
+| Main index | 381.37 | 121.47 |
+| houseScene | 101.10 | 36.61 |
+| Three.js core | 183.68 | 49.77 |
+| Three.js renderer | 343.83 | 83.35 |
+| CSS | 172.10 | 32.57 |
+
+The former ~627.25 kB scene is now three chunks totaling ~628.61 kB; the largest 3D chunk is 343.83 kB. The immersive house remains a browser-only demo, as documented below.
+
+Local review servers: production frontend preview at `http://127.0.0.1:3000/` and API at `http://localhost:5188`, using `TaskDira_MigrationDev` on `.\SQLEXPRESS`. Restart commands, in separate terminals from the repository root:
+
+```powershell
+dotnet run --project Backend/src/TaskDira.Api --no-build --no-launch-profile -- --environment Development --Database:Provider SqlServer --urls http://localhost:5188
+```
+
+```powershell
+cd Frontend
+npm run preview -- --host 127.0.0.1 --port 3000 --strictPort
+```
+
+Reviewed the complete change set and checked ignored private exports/build outputs. No credentials, private data, generated build assets or test-account secrets are included. Existing local test data is retained. Production, PostgreSQL and Railway remain unchanged; nothing was pushed or deployed.
+
 Local migration completed on 2026-09-13 on `feat/mssql-migration-preparation`. Production remains on its existing PostgreSQL configuration. No push, merge, deployment, or source modification was performed.
 
 ## Integration with immersive frontend (2026-09-14)

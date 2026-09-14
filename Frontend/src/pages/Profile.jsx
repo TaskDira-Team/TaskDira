@@ -210,7 +210,7 @@ export default function Profile() {
                     key={icon.id}
                     onClick={() => set({ baseIconId: icon.id })}
                     aria-pressed={icon.id === draft.baseIconId}
-                    aria-label={icon.label}
+                    aria-label={t(icon.labelKey)}
                     className={`grid aspect-square w-full place-items-center rounded-xl border text-xl transition ${
                       icon.id === draft.baseIconId
                         ? 'border-lime bg-lime/15'
@@ -233,7 +233,7 @@ export default function Profile() {
                     <button
                       key={r.id}
                       onClick={() => set({ ringColorId: r.id })}
-                      aria-label={t('profile.ringAria').replace('{n}', r.labelHe || r.label)}
+                      aria-label={t('profile.ringAria').replace('{n}', t(r.labelKey))}
                       aria-pressed={active}
                       className="relative h-10 w-10 rounded-full transition hover:scale-110"
                       style={{

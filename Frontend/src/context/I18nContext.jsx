@@ -1,6 +1,6 @@
 import { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { translateContent } from '../data/contentI18n';
-import { BADGE_TRANSLATIONS } from '../data/avatars';
+import { AVATAR_TRANSLATIONS } from '../data/avatars';
 
 const STORAGE_KEY = 'taskdira_lang';
 
@@ -923,7 +923,7 @@ export function I18nProvider({ children }) {
 
   const value = useMemo(() => {
     const dict = TRANSLATIONS[lang];
-    const t = (key) => dict[key] ?? BADGE_TRANSLATIONS[lang]?.[key] ?? TRANSLATIONS.he[key] ?? key;
+    const t = (key) => dict[key] ?? AVATAR_TRANSLATIONS[lang]?.[key] ?? TRANSLATIONS.he[key] ?? key;
     const p = (n) => `${n ?? 0} ${dict.pointsShort}`;
     const householdName = (name) => {
       if (!name) return dict.defaultHousehold;

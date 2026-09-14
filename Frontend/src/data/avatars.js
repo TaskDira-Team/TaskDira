@@ -1,4 +1,5 @@
-import { AVATAR_TYPES, getStickerById } from './stickers.js';
+import { AVATAR_TYPES, getStickerById, STICKER_PRESETS } from './stickers.js';
+import { AVATAR_LABELS_EN } from './avatarLabels.js';
 
 export const AVATAR_ICONS = [
   { id: 'lion', emoji: '🦁', label: 'אריה' },
@@ -17,7 +18,7 @@ export const AVATAR_ICONS = [
   { id: 'rainbow', emoji: '🌈', label: 'קשת' },
   { id: 'dragon', emoji: '🐉', label: 'דרקון' },
   { id: 'robot', emoji: '🤖', label: 'רובוט' },
-];
+].map(icon => ({ ...icon, labelKey: `avatar.icon.${icon.id}` }));
 
 export const RING_COLORS = [
   {
@@ -62,7 +63,7 @@ export const RING_COLORS = [
     ring: 'ring-3 ring-slate-400 shadow-md',
     bg: 'bg-gradient-to-br from-slate-400 to-slate-600',
   },
-];
+].map(ring => ({ ...ring, labelKey: `avatar.ring.${ring.id}` }));
 
 export const PROFILE_BADGES = [
   { id: 'kitchen-champ', label: 'אלוף המטבח 🍳', labelEn: 'Kitchen champion 🍳' },
@@ -78,6 +79,12 @@ export const PROFILE_BADGES = [
 export const BADGE_TRANSLATIONS = {
   he: Object.fromEntries(PROFILE_BADGES.map(b => [b.labelKey, b.label])),
   en: Object.fromEntries(PROFILE_BADGES.map(b => [b.labelKey, b.labelEn])),
+};
+
+export const AVATAR_TRANSLATIONS = {
+  he: { ...BADGE_TRANSLATIONS.he, ...Object.fromEntries([...AVATAR_ICONS, ...STICKER_PRESETS].map(item => [item.labelKey, item.label])),
+    ...Object.fromEntries(RING_COLORS.map(item => [item.labelKey, item.labelHe])), 'avatar.customLabel': 'אווטאר מותאם' },
+  en: { ...BADGE_TRANSLATIONS.en, ...AVATAR_LABELS_EN, ...Object.fromEntries(RING_COLORS.map(item => [item.labelKey, item.label])) },
 };
 
 /**
@@ -132,6 +139,7 @@ export function resolveAvatarConfig(config) {
     bg: ring.bg,
     ringClass: ring.ring,
     ringLabel: ring.labelHe,
+    ringLabelKey: ring.labelKey,
     profileBadgeLabel: profileBadge.label,
     profileBadgeId: profileBadge.id,
     profileBadgeKey: profileBadge.labelKey,
@@ -145,6 +153,7 @@ export function resolveAvatarConfig(config) {
       isAnimated: base.customImageMime === 'image/gif',
       emoji: null,
       iconLabel: 'מדבקה מותאמת',
+      iconLabelKey: 'avatar.customLabel',
     };
   }
 
@@ -158,6 +167,7 @@ export function resolveAvatarConfig(config) {
         isAnimated: true,
         emoji: sticker.preview,
         iconLabel: sticker.label,
+        iconLabelKey: sticker.labelKey,
         stickerAnimationClass: null,
       };
     }
@@ -169,6 +179,7 @@ export function resolveAvatarConfig(config) {
         isAnimated: true,
         emoji: sticker.emoji,
         iconLabel: sticker.label,
+        iconLabelKey: sticker.labelKey,
         stickerAnimationClass: sticker.animationClass,
       };
     }
@@ -182,6 +193,7 @@ export function resolveAvatarConfig(config) {
     isAnimated: false,
     emoji: icon.emoji,
     iconLabel: icon.label,
+    iconLabelKey: icon.labelKey,
     stickerAnimationClass: null,
   };
 }

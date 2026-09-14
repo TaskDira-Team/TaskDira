@@ -32,7 +32,7 @@ export default function AvatarFrame({
       {isImage ? (
         <img
           src={avatar.imageUrl}
-          alt={avatar.iconLabel || 'avatar'}
+          alt={t(avatar.iconLabelKey || 'avatar.customLabel')}
           className="w-full h-full object-cover"
           loading="lazy"
         />
