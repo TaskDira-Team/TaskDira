@@ -20,10 +20,12 @@ public interface IHouseholdMemberService
 public class HouseholdMemberService : IHouseholdMemberService
 {
     private readonly IHouseholdMemberRepository _members;
+    private readonly IFamilyService? _family;
 
-    public HouseholdMemberService(IHouseholdMemberRepository members)
+    public HouseholdMemberService(IHouseholdMemberRepository members, IFamilyService? family = null)
     {
         _members = members;
+        _family = family;
     }
 
     public async Task<PagedResult<HouseholdMemberResponse>?> GetPageAsync(int householdId, int callerUserId, PaginationQuery query, CancellationToken cancellationToken)
@@ -91,6 +93,8 @@ public class HouseholdMemberService : IHouseholdMemberService
         if (userId == callerUserId && !HouseholdRoles.IsAdmin(request.Role))
             throw new InvalidOperationException("An admin cannot remove their own admin role.");
 
+        if (_family is not null && (await _family.ContextAsync(callerUserId, userId, cancellationToken)).GetProperty("isManagedProfile").GetBoolean())
+            throw new InvalidOperationException("Child profiles always stay members. Invite an adult for parent controls.");
         return await _members.UpdateRoleAsync(householdId, userId, request.Role, cancellationToken);
     }
 

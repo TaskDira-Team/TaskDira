@@ -96,7 +96,7 @@ export async function request(path, { method = 'GET', body, auth = true, signal 
   const parsed = await parseBody(response);
 
   if (!response.ok) {
-    if (response.status === 401) {
+    if (auth && response.status === 401) {
       clearStoredSession();
       if (unauthorizedHandler) unauthorizedHandler();
     }

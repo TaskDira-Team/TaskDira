@@ -144,7 +144,7 @@ export function ensureLedgerEntry(userId, householdId = getActiveHouseholdId()) 
  * Bridges a real backend user into the in-memory cache so the domains still on
  * mock (tasks, rewards, leaderboard) keep resolving membership, role and points.
  */
-export function hydrateAuthenticatedUser({ id, fullName, email, avatarState, createdAt, role, familyRole }) {
+export function hydrateAuthenticatedUser({ id, fullName, email, avatarState, createdAt, role, familyRole, isManagedProfile }) {
   const householdId = getActiveHouseholdId();
   const existing = getRawUser(id);
 
@@ -153,6 +153,7 @@ export function hydrateAuthenticatedUser({ id, fullName, email, avatarState, cre
     id,
     fullName,
     email,
+    isManagedProfile: isManagedProfile === true,
     avatarState: avatarState ?? existing?.avatarState ?? DEFAULT_AVATAR_STATE,
     createdAt: createdAt ?? existing?.createdAt ?? new Date().toISOString(),
     familyRole: familyRole ?? existing?.familyRole ?? null,
@@ -161,7 +162,7 @@ export function hydrateAuthenticatedUser({ id, fullName, email, avatarState, cre
     onboarded: true,
   });
 
-  ensureMembership(id, householdId, role ?? 'Admin');
+  ensureMembership(id, householdId, role ?? store.members.find(m => m.userId === id && m.householdId === householdId)?.role ?? 'Member');
   ensureLedgerEntry(id, householdId);
 
   return user;
@@ -184,6 +185,7 @@ export function hydrateHouseholdMembers(entries) {
       id: user.id,
       fullName: user.fullName,
       email: user.email,
+      isManagedProfile: user.isManagedProfile === true,
       avatarState: user.avatarState ?? existing?.avatarState ?? DEFAULT_AVATAR_STATE,
       createdAt: user.createdAt ?? existing?.createdAt ?? new Date().toISOString(),
       familyRole: user.familyRole ?? existing?.familyRole ?? null,

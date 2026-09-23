@@ -246,13 +246,15 @@ export default function AuthRoute() {
                     </>
                   )}
                 </button>
-                <span className="td-auth-secure">
-                  <LockKeyhole size={12} />
-                  {say(
-                    "הפינה הקטנה שלכם באינטרנט",
-                    "Your own little corner of the internet",
-                  )}
-                </span>
+                <button
+                  type="button"
+                  className="td-auth-demo-button"
+                  onClick={() => navigate("/pair")}
+                >
+                  {he
+                    ? "\u05d0\u05e0\u05d9 \u05d2\u05d9\u05d1\u05d5\u05e8 \u05e7\u05d8\u05df"
+                    : "I’m a little hero"}
+                </button>
               </form>
             )}
           </div>

@@ -1,3 +1,4 @@
+import GrowCrew from "../components/household/GrowCrew";
 import { useMemo, useState } from "react";
 import { Home, Plus, ShieldCheck, Users } from "lucide-react";
 import "../components/ui/community.css";
@@ -10,12 +11,8 @@ import {
   ACCENTS,
   Avatar,
   ConfirmDialog,
-  Dialog,
-  Field,
-  GhostButton,
   LimeButton,
   ScreenShell,
-  fieldClass,
 } from "../components/ui/kit";
 
 const FALLBACK_ACCENTS = ["grape", "mint", "sky", "lime", "coral", "gold"];
@@ -52,7 +49,6 @@ export default function Household() {
     tasks,
     monthlyXp,
     permissions,
-    inviteMember,
     changeMemberRole,
     removeMember,
   } = useApp();
@@ -60,7 +56,6 @@ export default function Household() {
   const [editing, setEditing] = useState(null);
   const [busy, setBusy] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState("");
   const [removing, setRemoving] = useState(null);
 
   const isAdmin = permissions?.isAdmin === true;
@@ -79,6 +74,7 @@ export default function Household() {
           xp: profile.points ?? 0,
           level: profile.level?.level,
           familyRole: profile.familyRole,
+          managed: profile.isManagedProfile,
           admin: isAdminRole(m.role),
           joinedAt: m.joinedAt,
           isSelf: m.userId === user?.id,
@@ -121,16 +117,6 @@ export default function Household() {
     }
   };
 
-  const handleInviteSubmit = async (e) => {
-    e.preventDefault();
-    const email = inviteEmail.trim();
-    if (!email) return;
-    if (await run(() => inviteMember(email))) {
-      setInviteOpen(false);
-      setInviteEmail("");
-    }
-  };
-
   const handleConfirmRemove = async () => {
     if (!removing) return;
     if (await run(() => removeMember(removing.userId))) setRemoving(null);
@@ -151,7 +137,7 @@ export default function Household() {
           <LimeButton onClick={() => setInviteOpen(true)} disabled={busy}>
             <span className="inline-flex items-center gap-2">
               <Plus size={18} />
-              {t("household.invite")}
+              {en ? "Grow your crew" : "\u05d4\u05e0\u05d1\u05d7\u05e8\u05ea \u05e9\u05dc\u05e0\u05d5 \u05d2\u05d3\u05dc\u05d4"}
             </span>
           </LimeButton>
         )}
@@ -287,9 +273,9 @@ export default function Household() {
                     {m.xp.toLocaleString()} XP
                   </strong>
                 </div>
-                {(isAdmin || m.isSelf) && (
+                {(isAdmin || (m.isSelf && !user?.isManagedProfile)) && (
                   <div className="community-member-actions">
-                    {isAdmin && !m.isSelf && (
+                    {isAdmin && !m.isSelf && !m.managed && (
                       <button
                         type="button"
                         onClick={() =>
@@ -370,46 +356,7 @@ export default function Household() {
         </span>
       </section>
 
-      <Dialog
-        open={inviteOpen}
-        onClose={() => setInviteOpen(false)}
-        title={t("dialog.inviteTitle")}
-        size="sm"
-        footer={
-          <div className="flex gap-3">
-            <GhostButton
-              onClick={() => setInviteOpen(false)}
-              className="flex-1"
-            >
-              {t("cancel")}
-            </GhostButton>
-            <LimeButton
-              type="submit"
-              form="invite-form"
-              disabled={busy || !inviteEmail.trim()}
-              className="flex-1"
-            >
-              {t("dialog.inviteCta")}
-            </LimeButton>
-          </div>
-        }
-      >
-        <form id="invite-form" onSubmit={handleInviteSubmit}>
-          <Field label={t("emailLabel")} htmlFor="invite-email">
-            <input
-              id="invite-email"
-              type="email"
-              value={inviteEmail}
-              onChange={(e) => setInviteEmail(e.target.value)}
-              required
-              placeholder="name@example.com"
-              dir="ltr"
-              autoComplete="email"
-              className={fieldClass}
-            />
-          </Field>
-        </form>
-      </Dialog>
+      <GrowCrew open={inviteOpen} onClose={() => setInviteOpen(false)} />
 
       <ConfirmDialog
         open={!!removing}

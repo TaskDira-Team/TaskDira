@@ -1,3 +1,4 @@
+import { reloadDemoFamily, persistDemoFamily, passwordDigest } from "./familyDemo";
 import {
   DEFAULT_AVATAR_CONFIG,
   TASK_STATUSES,
@@ -50,8 +51,6 @@ import {
 import { setRealHouseholdId, clearRealHouseholdId } from "./householdContext";
 import {
   fetchHousehold,
-  findUserByEmail,
-  addMember,
   updateMemberRole,
   removeMember as removeMemberRemote,
 } from "./householdsRemote";
@@ -217,11 +216,10 @@ export const auth = {
       return adoptRealUser(session);
     }
     await delay();
-    const user = store.users.find(
-      (u) =>
-        u.email.toLowerCase() === email.toLowerCase() &&
-        u.passwordHash === password,
-    );
+    reloadDemoFamily();
+    const digest = await passwordDigest(password);
+    const user = store.users.find(u => !u.isManagedProfile && u.email.toLowerCase() === email.toLowerCase()
+      && (u.passwordHash === password || u.passwordHash === digest));
     if (!user) throw new Error("אימייל או סיסמה שגויים");
     activateHouseholdForUser(user.id);
     const token = saveSession(user.id, getActiveHouseholdId());
@@ -283,7 +281,7 @@ export const auth = {
       id: generateId("user"),
       fullName: (data.fullName || data.name || "").trim(),
       email: data.email.trim(),
-      passwordHash: data.password || data.passwordHash,
+      passwordHash: await passwordDigest(data.password || data.passwordHash),
       avatarState,
       createdAt: now,
       familyRole: data.familyRole || data.role || "roommate",
@@ -313,6 +311,7 @@ export const auth = {
     });
     recalculateRanks(householdId);
 
+    persistDemoFamily();
     const token = saveSession(newUser.id, householdId);
     store.currentUser = enrichUser(newUser);
     store.currentUser.token = token;
@@ -337,7 +336,7 @@ export const auth = {
         }
         return adoptRealUser(
           { ...session, fullName: me.fullName, email: me.email },
-          { avatarState: me.avatarState, createdAt: me.createdAt },
+          { avatarState: me.avatarState, createdAt: me.createdAt, isManagedProfile: me.isManagedProfile },
         );
       } catch {
         store.currentUser = null;
@@ -346,13 +345,14 @@ export const auth = {
       }
     }
     await delay(100);
+    reloadDemoFamily();
     const session = readSession();
     if (!session?.userId) {
       store.currentUser = null;
       return null;
     }
     const raw = getRawUser(session.userId);
-    if (!raw) {
+    if (!raw || (raw.isManagedProfile && (!store.members.some(m => m.userId === raw.id && m.householdId === session.householdId) || Date.parse(session.expiresAt) <= Date.now()))) {
       clearSession();
       return null;
     }
@@ -439,73 +439,6 @@ export const household = {
       });
   },
 
-  async inviteUser({ email, role = ROLES.MEMBER }) {
-    if (USE_REAL_API.households) {
-      if (!store.currentUser) throw new Error("יש להתחבר למערכת");
-      if (!isAdmin(store.currentUser))
-        throw new Error("רק מנהל יכול להזמין משתמשים");
-
-      const found = await findUserByEmail(email);
-      if (!found) {
-        throw new Error("הזמנת משתמש חדש – יש להירשם תחילה עם אותו אימייל");
-      }
-
-      const roster = await fetchHouseholdRoster();
-      if (roster.some((entry) => entry.user.id === found.id)) {
-        throw new Error("המשתמש כבר חבר בבית");
-      }
-
-      await addMember(found.id, role);
-
-      const refreshed = await fetchHouseholdRoster();
-      hydrateHouseholdMembers(refreshed);
-      const raw = getRawUser(found.id);
-      return raw ? enrichUser(raw) : null;
-    }
-    await delay(500);
-    assertCurrentUser();
-    if (!isAdmin(store.currentUser))
-      throw new Error("רק מנהל יכול להזמין משתמשים");
-    const hid = getActiveHouseholdId();
-    const existing = store.users.find(
-      (u) => u.email.toLowerCase() === email.toLowerCase(),
-    );
-    if (existing) {
-      if (
-        store.members.some(
-          (m) => m.userId === existing.id && m.householdId === hid,
-        )
-      ) {
-        throw new Error("המשתמש כבר חבר בבית");
-      }
-      store.members.push({
-        householdId: hid,
-        userId: existing.id,
-        role,
-        joinedAt: new Date().toISOString(),
-      });
-      const d = new Date();
-      if (
-        !store.pointsLedger.some(
-          (l) => l.userId === existing.id && l.householdId === hid,
-        )
-      ) {
-        store.pointsLedger.push({
-          id: `ledger-${existing.id}-${hid}`,
-          householdId: hid,
-          userId: existing.id,
-          totalPoints: 0,
-          rank: 99,
-          month: d.getMonth() + 1,
-          year: d.getFullYear(),
-        });
-        recalculateRanks(hid);
-      }
-      return enrichUser(existing);
-    }
-    throw new Error("הזמנת משתמש חדש – יש להירשם תחילה עם אותו אימייל");
-  },
-
   async changeMemberRole(userId, role) {
     if (USE_REAL_API.households) {
       if (!store.currentUser) throw new Error("יש להתחבר למערכת");
@@ -528,7 +461,9 @@ export const household = {
       (m) => m.userId === userId && m.householdId === hid,
     );
     if (!membership) throw new Error("המשתמש אינו חבר בבית");
+    if (!isAdmin(store.currentUser) || getRawUser(userId)?.isManagedProfile) throw new Error("Child profiles always stay members. Ask a parent to manage roles.");
     membership.role = role;
+    persistDemoFamily();
     return store.members.filter((m) => m.householdId === hid);
   },
 
@@ -556,9 +491,11 @@ export const household = {
     }
     await delay(200);
     const hid = getActiveHouseholdId();
+    if (store.currentUser?.isManagedProfile || (!isAdmin(store.currentUser) && store.currentUser?.id !== userId)) throw new Error("Ask a parent to manage your home.");
     store.members = store.members.filter(
       (m) => !(m.userId === userId && m.householdId === hid),
     );
+    persistDemoFamily();
     return store.members.filter((m) => m.householdId === hid);
   },
 
@@ -842,7 +779,6 @@ export const api = {
     return { id: h.id, name: h.displayName };
   },
   getMembers: () => household.getMembers(),
-  inviteUser: (payload) => household.inviteUser(payload),
   changeMemberRole: (userId, role) => household.changeMemberRole(userId, role),
   removeMember: (userId) => household.removeMember(userId),
   resetMonthlyScores: () => household.resetMonthlyScore(),
@@ -902,6 +838,7 @@ export const api = {
       user.fullName = updates.fullName || updates.name;
     }
     if (store.currentUser?.id === userId) store.currentUser = enrichUser(user);
+    persistDemoFamily();
     return enrichUser(user);
   },
 
@@ -917,6 +854,7 @@ export const api = {
       user.avatarState?.profileBadgeId,
     );
     if (store.currentUser?.id === userId) store.currentUser = enrichUser(user);
+    persistDemoFamily();
     return enrichUser(user);
   },
 
@@ -969,7 +907,7 @@ export const api = {
       canMove: task ? canMoveTask(user, task) : true,
       canClaim: task
         ? canClaimTask(user, task) ||
-          (!assignee && task.status === TASK_STATUSES.TODO)
+          (!user.isManagedProfile && !assignee && task.status === TASK_STATUSES.TODO)
         : false,
       canApprove: task ? canApproveTask(user, task) : false,
       canSubmitProof: task ? canSubmitProof(user, task) : false,

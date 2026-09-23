@@ -1,5 +1,11 @@
-import { createContext, useContext, useState, useEffect, useCallback } from 'react';
-import { api } from '../services/api';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+} from "react";
+import { api } from "../services/api";
 
 const AuthContext = createContext(null);
 
@@ -13,6 +19,21 @@ export function AuthProvider({ children }) {
       setUser(u);
       setLoading(false);
     });
+  }, []);
+
+  useEffect(() => {
+    const changed = (event) => {
+      if (event.key !== "taskdira_session_v1") return;
+      try {
+        const oldSession = JSON.parse(event.oldValue || "null");
+        const newSession = JSON.parse(event.newValue || "null");
+        if (oldSession?.userId !== newSession?.userId) window.location.reload();
+      } catch {
+        window.location.reload();
+      }
+    };
+    window.addEventListener("storage", changed);
+    return () => window.removeEventListener("storage", changed);
   }, []);
 
   const login = useCallback(async (email, password) => {
@@ -43,19 +64,25 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const updateProfile = useCallback(async (updates) => {
-    if (!user) return;
-    const updated = await api.updateProfile(user.id, updates);
-    setUser(updated);
-    return updated;
-  }, [user]);
+  const updateProfile = useCallback(
+    async (updates) => {
+      if (!user) return;
+      const updated = await api.updateProfile(user.id, updates);
+      setUser(updated);
+      return updated;
+    },
+    [user],
+  );
 
-  const uploadAvatarImage = useCallback(async (file) => {
-    if (!user) return;
-    const updated = await api.uploadAvatarImage(user.id, file);
-    setUser(updated);
-    return updated;
-  }, [user]);
+  const uploadAvatarImage = useCallback(
+    async (file) => {
+      if (!user) return;
+      const updated = await api.uploadAvatarImage(user.id, file);
+      setUser(updated);
+      return updated;
+    },
+    [user],
+  );
 
   const syncUser = useCallback(async () => {
     const refreshed = await api.refreshCurrentUser();
@@ -70,7 +97,20 @@ export function AuthProvider({ children }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, loading, error, login, register, updateProfile, uploadAvatarImage, syncUser, logout, setError }}>
+    <AuthContext.Provider
+      value={{
+        user,
+        loading,
+        error,
+        login,
+        register,
+        updateProfile,
+        uploadAvatarImage,
+        syncUser,
+        logout,
+        setError,
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
@@ -78,6 +118,6 @@ export function AuthProvider({ children }) {
 
 export function useAuth() {
   const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error('useAuth must be used within AuthProvider');
+  if (!ctx) throw new Error("useAuth must be used within AuthProvider");
   return ctx;
 }

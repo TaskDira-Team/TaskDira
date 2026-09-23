@@ -54,11 +54,11 @@ export function AppProvider({ children }) {
     () => ({
       isAdmin: user?.userRole === "Admin" || user?.isAdmin === true,
       userRole: user?.userRole ?? (user?.isAdmin ? "Admin" : "Member"),
-      canCreateTask: !!user,
+      canCreateTask: !!user && !user.isManagedProfile,
       canDeleteTask: user?.userRole === "Admin" || user?.isAdmin === true,
-      canChangePoints: !!user,
-      canSetDueDate: !!user,
-      canReassign: !!user,
+      canChangePoints: !!user && !user.isManagedProfile,
+      canSetDueDate: !!user && !user.isManagedProfile,
+      canReassign: !!user && !user.isManagedProfile,
     }),
     [user],
   );
@@ -441,21 +441,6 @@ export function AppProvider({ children }) {
     [refreshData, addToast, he, tx],
   );
 
-  const inviteMember = useCallback(
-    async (email) => {
-      try {
-        const invited = await api.inviteUser({ email });
-        await refreshData();
-        addToast(he ? "ההזמנה נשלחה בהצלחה" : "Invitation sent");
-        return invited;
-      } catch (err) {
-        addToast(err.message, "warning");
-        throw err;
-      }
-    },
-    [refreshData, addToast, he, tx],
-  );
-
   const changeMemberRole = useCallback(
     async (userId, role) => {
       try {
@@ -506,7 +491,6 @@ export function AppProvider({ children }) {
         leaderboard,
         rewards,
         members,
-        inviteMember,
         changeMemberRole,
         removeMember,
         loading,

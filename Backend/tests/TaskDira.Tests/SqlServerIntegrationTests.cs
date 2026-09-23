@@ -28,7 +28,7 @@ public sealed class SqlServerFactAttribute : FactAttribute
 public class SqlServerCollection;
 
 [Collection("SQL Server migration")]
-public class SqlServerIntegrationTests : IAsyncLifetime
+public partial class SqlServerIntegrationTests : IAsyncLifetime
 {
     private Process? _api;
     private HttpClient _http = null!;
@@ -49,6 +49,13 @@ public class SqlServerIntegrationTests : IAsyncLifetime
         var root = new DirectoryInfo(AppContext.BaseDirectory);
         while (root is not null && !Directory.Exists(Path.Combine(root.FullName, "Backend", "src"))) root = root.Parent;
         Assert.NotNull(root);
+        await using (var migration = new SqlConnection(SqlConnectionString))
+        {
+            await migration.OpenAsync();
+            var script = await File.ReadAllTextAsync(Path.Combine(root.FullName, "Backend", "db", "sqlserver", "003_family_access.sql"));
+            foreach (var batch in System.Text.RegularExpressions.Regex.Split(script, @"^GO\s*$", System.Text.RegularExpressions.RegexOptions.Multiline | System.Text.RegularExpressions.RegexOptions.IgnoreCase))
+                if (!string.IsNullOrWhiteSpace(batch)) await migration.ExecuteAsync(batch);
+        }
         using var listener = new TcpListener(IPAddress.Loopback, 0);
         listener.Start();
         var port = ((IPEndPoint)listener.LocalEndpoint).Port;
@@ -97,6 +104,9 @@ public class SqlServerIntegrationTests : IAsyncLifetime
         await connection.OpenAsync();
         await using var transaction = await connection.BeginTransactionAsync();
         await connection.ExecuteAsync("""
+            DELETE FROM dbo.familypairings WHERE childid IN @Users OR approvedby IN @Users;
+            DELETE FROM dbo.familyinvitations WHERE householdid IN @Households OR creatorid IN @Users OR acceptedby IN @Users;
+            DELETE FROM dbo.managedprofiles WHERE householdid IN @Households OR userid IN @Users;
             DELETE FROM dbo.pointsleader WHERE householdid IN @Households;
             DELETE FROM dbo.tasksubitems WHERE taskid IN (SELECT id FROM dbo.tasks WHERE householdid IN @Households);
             DELETE FROM dbo.tasks WHERE householdid IN @Households;
@@ -160,7 +170,9 @@ public class SqlServerIntegrationTests : IAsyncLifetime
 
     private async Task AddMember(Account admin, Account member)
     {
-        Assert.Equal(HttpStatusCode.Created, (await Request(HttpMethod.Post, $"/api/households/{admin.Household}/members", new { userId = member.User, role = "member" }, admin.Token)).Status);
+        var invite = await Request(HttpMethod.Post, $"/api/family/{admin.Household}/invitations", token: admin.Token);
+        Assert.Equal(HttpStatusCode.OK, invite.Status);
+        Assert.Equal(HttpStatusCode.OK, (await Request(HttpMethod.Post, "/api/family/invitations/accept", new { token = invite.Body.GetProperty("token").GetString() }, member.Token)).Status);
     }
 
     [SqlServerFact]

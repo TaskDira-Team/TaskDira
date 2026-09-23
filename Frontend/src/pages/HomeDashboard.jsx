@@ -80,7 +80,7 @@ export default function HomeDashboard() {
   const { path, navigate } = useRoute();
   const he = lang === "he";
   const tasksPage = path === "/tasks";
-  const [filter, setFilter] = useState("open");
+  const [filter, setFilter] = useState(user?.isManagedProfile ? "mine" : "open");
   const [room, setRoom] = useState("home");
   const [search, setSearch] = useState("");
   const [view, setView] = useState("path");

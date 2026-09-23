@@ -19,6 +19,7 @@ function toUser(dto) {
     avatarState: parseAvatarState(dto.avatarState),
     familyRole: dto.familyRole || null,
     createdAt: dto.createdAt,
+    isManagedProfile: dto.isManagedProfile === true,
   };
 }
 

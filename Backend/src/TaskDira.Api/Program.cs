@@ -1,3 +1,5 @@
+using System.Threading.RateLimiting;
+using Microsoft.AspNetCore.RateLimiting;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Data.SqlClient;
@@ -27,6 +29,13 @@ builder.Services.AddCors(options =>
         .AllowAnyMethod());
 });
 
+builder.Services.AddRateLimiter(options =>
+{
+    options.RejectionStatusCode = 429;
+    options.AddPolicy("family", context => RateLimitPartition.GetFixedWindowLimiter(
+        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
+        _ => new FixedWindowRateLimiterOptions { PermitLimit = 90, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
+});
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
 builder.Services.AddProblemDetails();
@@ -86,6 +95,9 @@ builder.Services.AddScoped<IHealthService, HealthService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
 
+builder.Services.AddScoped<IFamilyRepository, FamilyRepository>();
+builder.Services.AddScoped<IFamilyService, FamilyService>();
+
 var app = builder.Build();
 
 AppDomain.CurrentDomain.UnhandledException += (sender, e) =>
@@ -105,6 +117,7 @@ app.UseHttpsRedirection();
 
 app.UseCors(FrontendCorsPolicy);
 
+app.UseRateLimiter();
 app.UseMiddleware<SessionAuthenticationMiddleware>();
 
 app.UseAuthorization();

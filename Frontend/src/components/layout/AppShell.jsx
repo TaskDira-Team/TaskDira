@@ -1,3 +1,4 @@
+import GrowCrew from "../household/GrowCrew";
 import { useEffect, useState } from "react";
 import {
   Home,
@@ -57,6 +58,7 @@ export default function AppShell({ children }) {
     xpBursts,
     dismissXpBurst,
   } = useApp();
+  const [playersOpen, setPlayersOpen] = useState(false);
   const [menu, setMenu] = useState(false);
   const [compact, setCompact] = useState(
     () => window.matchMedia("(max-width: 1023px)").matches,
@@ -196,6 +198,11 @@ export default function AppShell({ children }) {
         </div>
       </aside>
       <div className="world-workspace" inert={compact && menu}>
+        <GrowCrew
+          open={playersOpen}
+          onClose={() => setPlayersOpen(false)}
+          initialMode="play"
+        />
         <header className="world-topbar">
           <div>
             <button
@@ -214,6 +221,39 @@ export default function AppShell({ children }) {
             </strong>
           </div>
           <div>
+            {(me?.isAdmin || me?.isManagedProfile) && (
+              <button
+                className="family-shell-player"
+                disabled={!me.isManagedProfile && (loading || !household?.id)}
+                aria-label={
+                  me.isManagedProfile
+                    ? he
+                      ? "\u05db\u05e0\u05d9\u05e1\u05ea \u05d4\u05d5\u05e8\u05d4"
+                      : "Parent sign in"
+                    : he
+                      ? "\u05de\u05d9 \u05de\u05e9\u05d7\u05e7?"
+                      : "Who is playing?"
+                }
+                onClick={async () => {
+                  if (me.isManagedProfile) {
+                    await logout();
+                    window.location.hash = "/login";
+                    window.location.reload();
+                  } else setPlayersOpen(true);
+                }}
+              >
+                <Users size={17} />
+                <span>
+                  {me.isManagedProfile
+                    ? he
+                      ? "\u05db\u05e0\u05d9\u05e1\u05ea \u05d4\u05d5\u05e8\u05d4"
+                      : "Parent sign in"
+                    : he
+                      ? "\u05de\u05d9 \u05de\u05e9\u05d7\u05e7?"
+                      : "Who’s playing?"}
+                </span>
+              </button>
+            )}
             <div
               className="game-wallet"
               aria-label={he ? "הארנק שלי" : "My game wallet"}
@@ -261,7 +301,7 @@ export default function AppShell({ children }) {
           <div className="world-preview-banner">
             {he
               ? "בית לדוגמה · נתונים להמחשה בלבד · שינויים מתאפסים ברענון"
-              : "Sample household · Illustrative data only · Changes reset on refresh"}
+              : "Sample household · Family setup stays in this browser; other demo changes reset on refresh"}
           </div>
         )}
         <main id="workspace" className="world-main" tabIndex={-1}>

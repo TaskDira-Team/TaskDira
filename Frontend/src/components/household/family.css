@@ -1,0 +1,369 @@
+.family-flow {
+  color: #214c47;
+  font-family: "Nunito Variable", sans-serif;
+}
+.family-flow h2 {
+  font:
+    600 1.65rem/1.15 "Fredoka Variable",
+    sans-serif;
+  margin: 0 0 12px;
+  text-wrap: balance;
+}
+.family-flow p {
+  line-height: 1.55;
+  margin: 0 0 18px;
+  max-width: 64ch;
+}
+.family-tabs {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+.family-tabs button {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  padding: 10px 12px;
+  border-radius: 22px;
+  font-weight: 800;
+  font-size: 0.84rem;
+  background: #edf3f1;
+  min-height: 44px;
+}
+.family-tabs button[aria-pressed="true"] {
+  background: #bdeedc;
+  color: #163f33;
+}
+.family-flow button:disabled {
+  opacity: 0.55;
+  cursor: wait;
+}
+.family-flow button:focus-visible,
+.family-flow input:focus-visible,
+.family-flow select:focus-visible,
+.family-flow summary:focus-visible {
+  outline: 3px solid #8350c7;
+  outline-offset: 3px;
+}
+.family-intro {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+  margin-bottom: 22px;
+}
+.family-intro img {
+  width: 108px;
+  height: 108px;
+  object-fit: contain;
+  animation: family-arrive 600ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.family-intro p {
+  margin: 0;
+}
+.family-symbol {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 74px;
+  flex: 0 0 auto;
+  background: #e9dbff;
+  border-radius: 44% 56% 58% 42%;
+  color: #604091;
+}
+.family-flow form > div,
+.family-flow form > fieldset {
+  margin-bottom: 20px;
+}
+.family-avatars {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+}
+.family-avatars legend {
+  font-size: 0.9rem;
+  font-weight: 800;
+  margin-bottom: 12px;
+}
+.family-avatars button {
+  width: 48px;
+  height: 48px;
+  font-size: 1.8rem;
+  border-radius: 50%;
+  background: #edf3f1;
+  transition: transform 0.18s;
+}
+.family-avatars button[aria-pressed="true"] {
+  background: #ffdc89;
+  outline: 2px solid #8d650f;
+  outline-offset: 3px;
+  transform: rotate(-8deg);
+}
+.family-flow .family-hint {
+  font-size: 0.81rem;
+  margin: 16px 0 0;
+  color: #456661;
+}
+.family-demo {
+  padding-top: 16px;
+  border-top: 1px solid #d9e4df;
+}
+.family-ticket {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+  background: #e5f3fa;
+  padding: 18px;
+  border-radius: 20px 40px 20px 40px;
+}
+.family-ticket > div {
+  min-width: 0;
+  flex: 1;
+}
+.family-ticket > img {
+  width: 150px;
+  height: 150px;
+  border-radius: 12px;
+}
+.family-ticket strong {
+  font-size: 1.2rem;
+}
+.family-ticket p {
+  font-size: 0.85rem;
+  margin: 5px 0 12px;
+}
+.family-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.family-flow button {
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
+.family-text-button {
+  display: inline-flex;
+  min-height: 44px;
+  text-decoration: underline;
+  text-underline-offset: 4px;
+  font-size: 0.9rem;
+  font-weight: 800;
+}
+.family-players {
+  display: flex;
+  gap: 24px;
+  flex-wrap: wrap;
+  padding: 14px 0 24px;
+}
+.family-players button {
+  display: flex;
+  flex-direction: column;
+  width: 115px;
+  padding: 12px 5px;
+}
+.family-players button > span {
+  width: 84px;
+  height: 84px;
+  display: grid;
+  place-items: center;
+  background: #eadcfc;
+  border-radius: 44% 56% 47% 53%;
+  font-size: 2.8rem;
+  box-shadow: 0 9px 17px #71548c20;
+  transition: transform 0.2s;
+}
+.family-players button:nth-child(even) > span {
+  background: #c9efde;
+}
+.family-players button:hover > span {
+  transform: translateY(-5px) rotate(-5deg);
+}
+.family-players small {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-weight: 800;
+}
+.family-invitations {
+  margin-top: 24px;
+}
+.family-invitations summary {
+  cursor: pointer;
+  min-height: 44px;
+  font-weight: 800;
+}
+.family-invitations li {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #d9e4df;
+}
+.family-invitations small {
+  display: block;
+  color: #456661;
+}
+.family-invitations button {
+  font-size: 0.8rem;
+  font-weight: 800;
+  min-height: 44px;
+  text-decoration: underline;
+}
+.family-flow .family-error {
+  color: #962d36;
+  background: #ffe7e5;
+  padding: 12px;
+  border-radius: 12px;
+  margin-top: 18px;
+}
+.family-flow .family-success {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: #235440;
+  background: #dff6e7;
+  padding: 14px;
+  border-radius: 12px;
+  margin-top: 18px;
+}
+.family-entry {
+  min-height: 100dvh;
+  background:
+    radial-gradient(ellipse at 15% 20%, #d8f7e7, transparent 52%), #e8effc;
+  padding: 28px 24px 40px;
+  display: grid;
+  place-items: center;
+  color: #214c47;
+}
+.family-entry-inner {
+  width: min(100%, 580px);
+}
+.family-entry-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 28px;
+}
+.family-entry-header button {
+  min-height: 44px;
+  padding: 8px;
+  font-weight: 800;
+}
+.family-entry .family-entry-mascot {
+  height: 100px;
+  width: 100px;
+  object-fit: contain;
+  margin: 0 auto 12px;
+}
+.family-entry h1 {
+  font:
+    600 clamp(2rem, 5vw, 3rem)/1.1 "Fredoka Variable",
+    sans-serif;
+  text-wrap: balance;
+  text-align: center;
+  margin-bottom: 14px;
+}
+.family-entry .family-lead {
+  text-align: center;
+  margin: 0 auto 24px;
+}
+.family-entry form {
+  max-width: 400px;
+  margin: 0 auto;
+}
+.family-entry form > div {
+  margin-bottom: 14px;
+}
+.family-entry form > button[type="submit"] {
+  width: 100%;
+}
+.family-entry .family-join-actions {
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  gap: 12px;
+  text-align: center;
+}
+.family-code {
+  display: block;
+  text-align: center;
+  font-size: clamp(1.8rem, 8vw, 3rem);
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  background: #fff;
+  padding: 20px 10px;
+  border-radius: 22px;
+  margin: 24px 0;
+  font-variant-numeric: tabular-nums;
+}
+.family-shell-player {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  padding: 9px 12px;
+  border-radius: 20px;
+  background: #e6dafb;
+  color: #563783;
+  font-size: 0.8rem;
+  font-weight: 800;
+  min-height: 44px;
+}
+@keyframes family-arrive {
+  from {
+    transform: translateY(12px) rotate(-7deg);
+  }
+  to {
+    transform: translateY(0) rotate(0);
+  }
+}
+@media (max-width: 600px) {
+  .family-intro {
+    gap: 12px;
+  }
+  .family-intro img {
+    width: 70px;
+    height: 80px;
+  }
+  .family-flow h2 {
+    font-size: 1.4rem;
+  }
+  .family-tabs {
+    gap: 5px;
+  }
+  .family-tabs button {
+    flex: 1 0 42%;
+  }
+  .family-ticket {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .family-shell-player span {
+    display: none;
+  }
+  .family-shell-player {
+    padding: 8px;
+  }
+  .family-entry {
+    padding: 18px 20px 30px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .family-flow *,
+  .family-flow *::before,
+  .family-flow *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+
+.family-flow .family-actions > button,
+.family-flow form > button[type="submit"],
+.family-join-actions > button,
+.family-entry-header button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+}
