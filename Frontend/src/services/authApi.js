@@ -62,6 +62,7 @@ export async function fetchCurrentUser() {
     email: user.email,
     avatarState: parseAvatarState(user.avatarState),
     createdAt: user.createdAt,
+    isManagedProfile: user.isManagedProfile === true,
     session,
   };
 }

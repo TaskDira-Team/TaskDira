@@ -6,6 +6,10 @@ This is the shared source of truth for how the TaskDira backend is built. When a
 
 ---
 
+## Family access (2026-09-23)
+
+The user explicitly authorized the family invitation and child-profile feature across backend and frontend, extending the older scope exclusions below. See `../FAMILY-SETUP.md` for the current behavior, provider migrations and tests. The new family access routine is defined by PostgreSQL migration 006 and SQL Server migration 003. The preview is local; hosted deployment remains a separate task.
+
 ## Local MSSQL migration (2026-09-13)
 
 The user authorized SQL Server migration on `feat/mssql-migration-preparation`, superseding PostgreSQL-only guidance below for this work. Runtime Dapper supports both providers: PostgreSQL remains the default; `Database:Provider=SqlServer` enables local SQL Server. SQL Server calls use `RoutineCommand` and stored procedures, with atomic registration and reward claims. Original PostgreSQL migrations and scaffolding context remain reference/source-provider tooling. See `docs/MSSQL-Migration-Report.md` for the authoritative migration status and run commands. Migration tests target only local `TaskDira_MigrationDev`.

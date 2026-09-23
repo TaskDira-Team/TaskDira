@@ -54,11 +54,17 @@ function NewUiRouter() {
   useEffect(() => {
     if (loading) return;
     const current = findRoute(path);
-    if (!user && current?.access !== "public") navigate("/landing");
+    if (!user && current?.access !== "public" && current?.access !== "shared")
+      navigate("/landing");
     else if (user && (!current || current.access === "public")) navigate("/");
   }, [user, loading, path, navigate]);
 
   if (loading) return <LoadingScreen dark />;
+
+  if (route?.access === "shared") {
+    const SharedScreen = route.component;
+    return <SharedScreen />;
+  }
 
   if (!user) {
     const publicRoute =
@@ -71,7 +77,7 @@ function NewUiRouter() {
   if (!route || route.access === "public") {
     const Home = findRoute("/").component;
     return (
-      <HouseholdProvider>
+      <HouseholdProvider key={user.id}>
         <AppShell>
           <Home />
         </AppShell>
@@ -81,7 +87,7 @@ function NewUiRouter() {
 
   const Screen = route.component;
   return (
-    <HouseholdProvider>
+    <HouseholdProvider key={user.id}>
       <AppShell>
         <Screen />
       </AppShell>
@@ -104,7 +110,7 @@ function LegacyRouter() {
   }
 
   return (
-    <HouseholdProvider>
+    <HouseholdProvider key={user.id}>
       <Dashboard />
     </HouseholdProvider>
   );

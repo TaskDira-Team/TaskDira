@@ -2,6 +2,8 @@ namespace TaskDira.Api.Models.Dtos;
 
 public class UserResponse
 {
+    public bool IsManagedProfile { get; set; }
+
     public int Id { get; set; }
 
     public string FullName { get; set; } = string.Empty;

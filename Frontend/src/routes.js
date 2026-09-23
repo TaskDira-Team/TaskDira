@@ -7,6 +7,7 @@ const Achievements = lazy(() => import("./pages/Achievements"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Household = lazy(() => import("./pages/Household"));
 const AuthRoute = lazy(() => import("./pages/AuthRoute"));
+const FamilyEntry = lazy(() => import("./pages/FamilyEntry"));
 const Insights = lazy(() => import("./pages/Insights"));
 
 /**
@@ -17,6 +18,20 @@ const Insights = lazy(() => import("./pages/Insights"));
  * but the shell labels them so nobody mistakes the fixtures for live records.
  */
 export const ROUTES = [
+  {
+    key: "join",
+    path: "/join",
+    component: FamilyEntry,
+    access: "shared",
+    wired: true,
+  },
+  {
+    key: "pair",
+    path: "/pair",
+    component: FamilyEntry,
+    access: "shared",
+    wired: true,
+  },
   {
     key: "landing",
     path: "/landing",
@@ -119,5 +134,5 @@ export const ROUTES = [
 export const NAV_ROUTES = ROUTES.filter((r) => r.nav);
 
 export function findRoute(path) {
-  return ROUTES.find((r) => r.path === path) ?? null;
+  return ROUTES.find((r) => r.path === path.split("?")[0]) ?? null;
 }

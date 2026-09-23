@@ -47,8 +47,8 @@ public class HouseholdMembersController : ApiControllerBase
             return Unauthorized();
         }
 
-        var created = await _members.AddAsync(householdId, request, callerUserId, cancellationToken);
-        return created is null ? NotFound() : CreatedAtAction(nameof(GetById), new { householdId, userId = created.UserId }, created);
+        await Task.CompletedTask;
+        return Conflict(new { detail = "Create an invitation so the person can choose to join your home." });
     }
 
     [HttpPut("{userId:int}/role", Name = "UpdateHouseholdMemberRole")]

@@ -47,6 +47,7 @@ export function enrichUser(user) {
 
   return {
     id: user.id,
+    isManagedProfile: user.isManagedProfile === true,
     fullName: user.fullName,
     email: user.email,
     avatarState,

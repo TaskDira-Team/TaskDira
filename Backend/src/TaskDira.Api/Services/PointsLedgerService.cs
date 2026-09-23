@@ -81,15 +81,14 @@ public class PointsLedgerService : IPointsLedgerService
         if (request.TaskId is not int taskId || taskId <= 0)
             throw new ArgumentException("A task id is required for a points award.", nameof(request));
 
-        if (!await EnsureAdminAsync(householdId, callerUserId, cancellationToken))
-            return null;
-
-        if (_tasks is not null)
-        {
-            var task = await _tasks.GetByIdAsync(taskId, cancellationToken);
-            if (task is null || task.Householdid != householdId)
-                return null;
-        }
+        var membership = await _members.GetAsync(householdId, callerUserId, cancellationToken);
+        if (membership is null) return null;
+        var task = _tasks is null ? null : await _tasks.GetByIdAsync(taskId, cancellationToken);
+        if (_tasks is not null && (task is null || task.Householdid != householdId)) return null;
+        if (!HouseholdRoles.IsAdmin(membership.Role)
+            && (task is null || task.Assigneduserid != callerUserId || request.UserId != callerUserId
+                || task.Status != ChoreTaskStatus.Done || request.PointsEarned != task.Pointsvalue || task.Pointsvalue <= 0))
+            throw new UnauthorizedAccessException("You can only earn the configured points for your own completed quest.");
 
         if (!await IsMemberAsync(householdId, request.UserId, cancellationToken))
             throw new ArgumentException("That user is not a member of this household.", nameof(request));

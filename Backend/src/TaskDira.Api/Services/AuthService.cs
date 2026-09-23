@@ -131,6 +131,7 @@ public class AuthService : IAuthService
             return null;
 
         var email = request.Email.Trim().ToLowerInvariant();
+        if (email.EndsWith("@children.taskdira.invalid", StringComparison.Ordinal)) return null;
         var user = await _users.GetByEmailAsync(email, cancellationToken);
 
         if (user is null)

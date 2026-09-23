@@ -46,18 +46,6 @@ export async function fetchHouseholds() {
   return getAllPages('/api/households');
 }
 
-export async function findUserByEmail(email) {
-  const target = email.trim().toLowerCase();
-  const users = await getAllPages('/api/users', { pageSize: 100 });
-  return users.find((u) => (u.email || '').toLowerCase() === target) ?? null;
-}
-
-export async function addMember(userId, role) {
-  const householdId = await getRealHouseholdId();
-  if (!householdId) throw new Error('לא נמצאה דירה פעילה');
-  return http.post(`/api/households/${householdId}/members`, { userId, role });
-}
-
 export async function updateMemberRole(userId, role) {
   const householdId = await getRealHouseholdId();
   if (!householdId) throw new Error('לא נמצאה דירה פעילה');

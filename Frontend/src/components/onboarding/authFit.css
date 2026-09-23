@@ -516,3 +516,5 @@
     padding-bottom: 8px;
   }
 }
+
+.td-fit-auth .td-login-form > .td-auth-demo-button { width: 100%; max-width: none; justify-content: center; white-space: nowrap; font-size: 14px; }

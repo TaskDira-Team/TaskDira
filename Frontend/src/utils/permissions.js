@@ -11,7 +11,7 @@ export const PERMISSION_LABELS = {
 };
 
 export function isAdmin(user) {
-  if (!user) return false;
+  if (!user || user.isManagedProfile) return false;
   return (
     user.userRole === ROLES.ADMIN ||
     user.role === ROLES.ADMIN ||
@@ -25,7 +25,7 @@ export function isHouseholdMember(user) {
 }
 
 export function canCreateTask(user) {
-  return isHouseholdMember(user);
+  return isHouseholdMember(user) && !user.isManagedProfile;
 }
 
 export function canDeleteTask(user) {
@@ -33,23 +33,24 @@ export function canDeleteTask(user) {
 }
 
 export function canEditTaskFully(user) {
-  return isHouseholdMember(user);
+  return isHouseholdMember(user) && !user.isManagedProfile;
 }
 
 export function canChangePoints(user) {
-  return isHouseholdMember(user);
+  return isHouseholdMember(user) && !user.isManagedProfile;
 }
 
 export function canSetDueDate(user) {
-  return isHouseholdMember(user);
+  return isHouseholdMember(user) && !user.isManagedProfile;
 }
 
 export function canReassign(user) {
-  return isHouseholdMember(user);
+  return isHouseholdMember(user) && !user.isManagedProfile;
 }
 
 export function canMoveTask(user, task) {
   if (!user || !task) return false;
+  if (user.isManagedProfile && (task.assignedUserId ?? task.assigneeId) !== user.id) return false;
   if (task.status === TASK_STATUSES.PENDING_APPROVAL || task.status === 'pending_approval') return false;
   if (isHouseholdMember(user)) {
     if (task.status === TASK_STATUSES.DONE || task.status === 'done') return isAdmin(user);
@@ -67,6 +68,7 @@ export function canApproveTask(user, task) {
 
 export function canSubmitProof(user, task) {
   if (!user || !task) return false;
+  if (user.isManagedProfile && (task.assignedUserId ?? task.assigneeId) !== user.id) return false;
   const okStatus = [
     TASK_STATUSES.IN_PROGRESS,
     TASK_STATUSES.TODO,
@@ -79,7 +81,9 @@ export function canSubmitProof(user, task) {
 }
 
 export function canClaimTask(user, task) {
+  if (user?.isManagedProfile) return false;
   if (!user || !task) return false;
+  if (user.isManagedProfile && (task.assignedUserId ?? task.assigneeId) !== user.id) return false;
   const assignee = task.assignedUserId ?? task.assigneeId;
   if (assignee) return false;
   return (
