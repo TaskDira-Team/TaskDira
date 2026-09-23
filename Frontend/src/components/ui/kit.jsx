@@ -1,27 +1,28 @@
-import { useEffect, useId, useRef, useState } from 'react';
-import { X } from 'lucide-react';
-import { AnimatePresence, motion } from 'framer-motion';
-import { modalVariants, overlayVariants } from '../../utils/motion';
+import { useEffect, useId, useRef, useState } from "react";
+import { X } from "lucide-react";
+import { AnimatePresence, motion } from "framer-motion";
+import { modalVariants, overlayVariants } from "../../utils/motion";
+import useDialogFocus from "../../hooks/useDialogFocus";
 
 /* ---------------- accent system ---------------- */
 
 export const ACCENTS = {
-  lime: '#b8f06a',
-  grape: '#a06cff',
-  sky: '#59c8ff',
-  coral: '#ff7a8a',
-  gold: '#ffcb47',
-  mint: '#4fe0c0',
+  lime: "#17675c",
+  grape: "#7560a6",
+  sky: "#276c9a",
+  coral: "#c65035",
+  gold: "#976500",
+  mint: "#297462",
 };
 
 /* ---------------- surfaces ---------------- */
 
-export function Panel({ children, className = '', accent, glow = false }) {
-  const c = accent ? ACCENTS[accent] : '#a06cff';
+export function Panel({ children, className = "", accent, glow = false }) {
+  const c = accent ? ACCENTS[accent] : "#7560a6";
   return (
     <div
-      className={`relative rounded-3xl border border-white/8 bg-gradient-to-b from-panel-2/90 to-abyss/80 backdrop-blur-sm ${className}`}
-      style={glow ? { boxShadow: `0 0 0 1px ${c}22, 0 24px 60px -30px ${c}66` } : undefined}
+      className={`world-kit-panel relative rounded-2xl border border-hairline bg-white ${className}`}
+      style={undefined}
     >
       {children}
     </div>
@@ -29,52 +30,30 @@ export function Panel({ children, className = '', accent, glow = false }) {
 }
 
 /** Soft moving radial blooms — the shared ground for every screen. */
-export function Aurora({ seed = 0 }) {
-  const spots = [
-    { c: '#5b21b6', x: '12%', y: '8%', s: 620, d: '0s' },
-    { c: '#8fd53a', x: '82%', y: '18%', s: 460, d: '-4s' },
-    { c: '#2563eb', x: '70%', y: '78%', s: 560, d: '-8s' },
-    { c: '#c026d3', x: '20%', y: '86%', s: 420, d: '-12s' },
-  ];
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      {spots.map((s, i) => (
-        <div
-          key={i}
-          className="anim-drift absolute rounded-full"
-          style={{
-            left: s.x,
-            top: s.y,
-            width: s.s,
-            height: s.s,
-            transform: 'translate(-50%,-50%)',
-            background: `radial-gradient(circle, ${s.c}55 0%, ${s.c}18 45%, transparent 70%)`,
-            filter: 'blur(30px)',
-            animationDelay: `${parseFloat(s.d) - seed}s`,
-          }}
-        />
-      ))}
-      <div
-        className="absolute inset-0 opacity-[0.5]"
-        style={{
-          backgroundImage:
-            'radial-gradient(circle at center, rgba(255,255,255,0.10) 1px, transparent 1.2px)',
-          backgroundSize: '34px 34px',
-          maskImage: 'radial-gradient(120% 80% at 50% 0%, #000 20%, transparent 75%)',
-        }}
-      />
-    </div>
-  );
+export function Aurora() {
+  return null;
 }
 
 /* ---------------- screen scaffold ---------------- */
 
 /** Full-page dark scaffold for the rebuilt screens: ground color, aurora, centered column. */
-export function ScreenShell({ dir, width = 'max-w-xl', className = '', children }) {
+export function ScreenShell({
+  dir,
+  width = "max-w-xl",
+  className = "",
+  children,
+}) {
   return (
-    <div dir={dir} className="font-landing relative min-h-screen overflow-hidden bg-void text-ink">
+    <div
+      dir={dir}
+      className="world-screen font-landing relative bg-void text-ink"
+    >
       <Aurora />
-      <div className={`relative mx-auto w-full ${width} px-5 pb-16 pt-8 ${className}`}>{children}</div>
+      <div
+        className={`relative mx-auto w-full ${width} px-5 pb-16 pt-8 ${className}`}
+      >
+        {children}
+      </div>
     </div>
   );
 }
@@ -85,26 +64,31 @@ export function ScreenShell({ dir, width = 'max-w-xl', className = '', children 
  * and `placeholder:text-ink-faint` matter: without them an input inherits the
  * near-white shell colour and renders invisible on a pale background. */
 export const fieldClass =
-  'w-full min-w-0 rounded-xl border border-white/12 bg-black/30 px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint outline-none transition focus:border-lime/60 disabled:cursor-not-allowed disabled:opacity-50';
+  "world-kit-input w-full min-w-0 rounded-xl border border-hairline bg-white px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint outline-none transition focus:border-lime/60 disabled:cursor-not-allowed disabled:opacity-50";
 
 /** Native pickers (date, select popups) follow color-scheme, not our CSS —
  * without this the calendar and dropdown render as white system widgets. */
-export const darkControlStyle = { colorScheme: 'dark' };
+export const darkControlStyle = { colorScheme: "light" };
 
 /** Windows renders <option> with the OS background regardless of the parent,
  * so each option needs its colours set directly. */
-export const darkOptionStyle = { background: '#120a33', color: '#f4f0ff' };
+export const darkOptionStyle = { background: "#fffefa", color: "#173e3b" };
 
-export function Field({ label, hint, htmlFor, className = '', children }) {
+export function Field({ label, hint, htmlFor, className = "", children }) {
   return (
     <div className={className}>
       {label && (
-        <label htmlFor={htmlFor} className="mb-1.5 block text-sm font-bold text-ink-dim">
+        <label
+          htmlFor={htmlFor}
+          className="mb-1.5 block text-sm font-bold text-ink-dim"
+        >
           {label}
         </label>
       )}
       {children}
-      {hint && <p className="mt-1 text-[11px] leading-snug text-ink-faint">{hint}</p>}
+      {hint && (
+        <p className="mt-1 text-[11px] leading-snug text-ink-faint">{hint}</p>
+      )}
     </div>
   );
 }
@@ -123,42 +107,20 @@ export function Dialog({
   title,
   subtitle,
   footer,
-  accent = 'lime',
-  size = 'md',
+  accent = "lime",
+  size = "md",
   children,
 }) {
-  const panelRef = useRef(null);
-  const restoreRef = useRef(null);
+  const panelRef = useDialogFocus(open, onClose);
   const titleId = useId();
   const c = ACCENTS[accent] ?? ACCENTS.lime;
 
-  useEffect(() => {
-    if (!open) return undefined;
-    restoreRef.current = document.activeElement;
-
-    const onKey = (e) => {
-      if (e.key === 'Escape') onClose?.();
-    };
-    document.addEventListener('keydown', onKey);
-
-    // Deferred so the panel exists before we reach into it.
-    const focusTimer = setTimeout(() => {
-      const panel = panelRef.current;
-      if (!panel) return;
-      const first = panel.querySelector(
-        'input:not([type="hidden"]), textarea, select, button:not([data-dialog-close])'
-      );
-      (first ?? panel).focus?.();
-    }, 0);
-
-    return () => {
-      document.removeEventListener('keydown', onKey);
-      clearTimeout(focusTimer);
-      restoreRef.current?.focus?.();
-    };
-  }, [open, onClose]);
-
-  const width = size === 'sm' ? 'sm:max-w-sm' : size === 'lg' ? 'sm:max-w-2xl' : 'sm:max-w-lg';
+  const width =
+    size === "sm"
+      ? "sm:max-w-sm"
+      : size === "lg"
+        ? "sm:max-w-2xl"
+        : "sm:max-w-lg";
 
   return (
     <AnimatePresence>
@@ -193,12 +155,15 @@ export function Dialog({
                       {title}
                     </h2>
                   )}
-                  {subtitle && <p className="mt-0.5 text-xs text-ink-dim">{subtitle}</p>}
+                  {subtitle && (
+                    <p className="mt-0.5 text-xs text-ink-dim">{subtitle}</p>
+                  )}
                 </div>
                 {onClose && (
                   <button
                     type="button"
                     data-dialog-close
+                    aria-label="Close"
                     onClick={onClose}
                     className="shrink-0 rounded-lg p-1.5 text-ink-faint transition hover:bg-white/8 hover:text-ink"
                   >
@@ -208,9 +173,13 @@ export function Dialog({
               </div>
             )}
 
-            <div className="dialog-scroll min-h-0 flex-1 overflow-y-auto px-5 py-4">{children}</div>
+            <div className="dialog-scroll min-h-0 flex-1 overflow-y-auto px-5 py-4">
+              {children}
+            </div>
 
-            {footer && <div className="border-t border-white/8 px-5 py-4">{footer}</div>}
+            {footer && (
+              <div className="border-t border-white/8 px-5 py-4">{footer}</div>
+            )}
           </motion.div>
         </div>
       )}
@@ -225,14 +194,19 @@ export function ConfirmDialog({
   message,
   confirmLabel,
   cancelLabel,
-  tone = 'coral',
+  tone = "coral",
   busy = false,
   onConfirm,
   onCancel,
 }) {
   const c = ACCENTS[tone] ?? ACCENTS.coral;
   return (
-    <Dialog open={open} onClose={onCancel} title={title} accent={tone} size="sm"
+    <Dialog
+      open={open}
+      onClose={onCancel}
+      title={title}
+      accent={tone}
+      size="sm"
       footer={
         <div className="flex gap-3">
           <GhostButton onClick={onCancel} className="flex-1">
@@ -250,28 +224,36 @@ export function ConfirmDialog({
         </div>
       }
     >
-      <p className="text-sm leading-relaxed break-words text-ink-dim">{message}</p>
+      <p className="text-sm leading-relaxed break-words text-ink-dim">
+        {message}
+      </p>
     </Dialog>
   );
 }
 
 /* ---------------- controls ---------------- */
 
-export function SegmentedTabs({ items, value, onChange, accent = 'lime' }) {
+export function SegmentedTabs({ items, value, onChange, accent = "lime" }) {
   const c = ACCENTS[accent];
-  const darkText = accent === 'grape' || accent === 'coral' ? 'text-white' : 'text-[#152007]';
+  const darkText =
+    accent === "grape" || accent === "coral" ? "text-white" : "text-[#152007]";
   return (
-    <div className="flex items-center gap-2 rounded-full border border-white/10 bg-abyss/70 p-1">
+    <div className="world-kit-tabs flex items-center gap-2 rounded-xl border border-hairline bg-abyss p-1">
       {items.map((it) => {
         const on = it.key === value;
         return (
           <button
             key={it.key}
             onClick={() => onChange(it.key)}
+            aria-pressed={on}
             className={`flex-1 rounded-full py-2 text-[13px] font-extrabold transition ${
-              on ? darkText : 'text-ink-dim hover:text-ink'
+              on ? darkText : "text-ink-dim hover:text-ink"
             }`}
-            style={on ? { background: c, boxShadow: `0 0 20px -6px ${c}` } : undefined}
+            style={
+              on
+                ? { background: c, boxShadow: `0 0 20px -6px ${c}` }
+                : undefined
+            }
           >
             {it.label}
           </button>
@@ -281,7 +263,13 @@ export function SegmentedTabs({ items, value, onChange, accent = 'lime' }) {
   );
 }
 
-export function StatTile({ emoji, value, label, accent = 'lime', className = '' }) {
+export function StatTile({
+  emoji,
+  value,
+  label,
+  accent = "lime",
+  className = "",
+}) {
   const c = ACCENTS[accent];
   return (
     <div
@@ -305,7 +293,7 @@ export function Switch({ checked, onChange, label }) {
       aria-checked={checked}
       aria-label={label}
       className={`relative h-7 rounded-full border transition ${
-        checked ? 'border-lime/60 bg-lime/25' : 'border-white/15 bg-black/40'
+        checked ? "border-lime/60 bg-lime/25" : "border-white/15 bg-black/40"
       }`}
       style={{ width: 52 }}
     >
@@ -315,8 +303,8 @@ export function Switch({ checked, onChange, label }) {
           width: 22,
           height: 22,
           insetInlineStart: checked ? 26 : 3,
-          background: checked ? ACCENTS.lime : '#6b5da3',
-          boxShadow: checked ? `0 0 14px -2px ${ACCENTS.lime}` : 'none',
+          background: checked ? ACCENTS.lime : "#6b5da3",
+          boxShadow: checked ? `0 0 14px -2px ${ACCENTS.lime}` : "none",
         }}
       />
     </button>
@@ -325,11 +313,11 @@ export function Switch({ checked, onChange, label }) {
 
 /* ---------------- type helpers ---------------- */
 
-export function Num({ children, className = '' }) {
+export function Num({ children, className = "" }) {
   return <span className={`num ${className}`}>{children}</span>;
 }
 
-export function Eyebrow({ children, accent = 'lime' }) {
+export function Eyebrow({ children, accent = "lime" }) {
   return (
     <span
       className="num inline-flex items-center gap-2 rounded-full border px-3 py-1 text-[11px] font-bold uppercase"
@@ -348,32 +336,33 @@ export function Eyebrow({ children, accent = 'lime' }) {
 
 export function LimeButton({
   children,
-  size = 'md',
-  className = '',
+  size = "md",
+  className = "",
   onClick,
-  type = 'button',
+  type = "button",
   disabled = false,
   form,
 }) {
   const pad =
-    size === 'lg'
-      ? 'px-9 py-4 text-lg'
-      : size === 'sm'
-        ? 'px-4 py-1.5 text-[13px]'
-        : 'px-6 py-2.5 text-[15px]';
+    size === "lg"
+      ? "px-9 py-4 text-lg"
+      : size === "sm"
+        ? "px-4 py-1.5 text-[13px]"
+        : "px-6 py-2.5 text-[15px]";
   return (
     <button
       type={type}
       form={form}
       onClick={onClick}
       disabled={disabled}
-      className={`group relative overflow-hidden rounded-full bg-gradient-to-b from-lime to-lime-deep font-extrabold text-[#152007] transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${pad} ${className}`}
-      style={disabled ? undefined : { boxShadow: '0 0 0 1px #d6ff9a, 0 14px 38px -12px #8fd53acc' }}
+      className={`world-kit-primary group relative overflow-hidden rounded-xl bg-lime font-extrabold text-[#152007] transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${pad} ${className}`}
+      style={
+        disabled
+          ? undefined
+          : { boxShadow: "0 0 0 1px #d6ff9a, 0 14px 38px -12px #104f46cc" }
+      }
     >
       <span className="relative z-10">{children}</span>
-      {!disabled && (
-        <span className="anim-sheen absolute inset-y-0 -left-1/3 z-0 w-1/3 bg-white/45 blur-md" />
-      )}
     </button>
   );
 }
@@ -382,8 +371,8 @@ export function GhostButton({
   children,
   active = false,
   onClick,
-  className = '',
-  type = 'button',
+  className = "",
+  type = "button",
   disabled = false,
 }) {
   return (
@@ -391,10 +380,10 @@ export function GhostButton({
       type={type}
       onClick={onClick}
       disabled={disabled}
-      className={`rounded-full border px-4 py-1.5 text-[13px] font-bold transition disabled:cursor-not-allowed disabled:opacity-50 ${
+      className={`world-kit-ghost rounded-xl border px-4 py-1.5 text-[13px] font-bold transition disabled:cursor-not-allowed disabled:opacity-50 ${
         active
-          ? 'border-lime/60 bg-lime/15 text-lime'
-          : 'border-white/10 text-ink-dim hover:border-white/25 hover:text-ink'
+          ? "border-lime/60 bg-lime/15 text-lime"
+          : "border-white/10 text-ink-dim hover:border-white/25 hover:text-ink"
       } ${className}`}
     >
       {children}
@@ -406,23 +395,23 @@ export function GhostButton({
 
 export function Avatar({
   emoji,
-  ring = 'grape',
+  ring = "grape",
   size = 48,
   level,
   float = false,
   badge,
-  className = '',
+  className = "",
 }) {
   const c = ACCENTS[ring];
   return (
     <div
-      className={`relative shrink-0 ${float ? 'anim-bob-soft' : ''} ${className}`}
+      className={`world-kit-avatar relative shrink-0 ${float ? "anim-bob-soft" : ""} ${className}`}
       style={{ width: size, height: size }}
     >
       <div
         className="grid h-full w-full place-items-center rounded-full"
         style={{
-          background: `linear-gradient(160deg, ${c}44, #1a1046)`,
+          background: `linear-gradient(160deg, ${c}44, #ffffff)`,
           border: `2px solid ${c}`,
           boxShadow: `0 0 22px -4px ${c}aa, inset 0 0 18px -6px ${c}88`,
           fontSize: size * 0.46,
@@ -434,7 +423,10 @@ export function Avatar({
       {level !== undefined && (
         <span
           className="num absolute -bottom-1 -left-1 rounded-full px-1.5 py-px text-[10px] font-extrabold text-[#152007]"
-          style={{ background: ACCENTS.lime, boxShadow: '0 0 12px -2px #b8f06a' }}
+          style={{
+            background: ACCENTS.lime,
+            boxShadow: "0 0 12px -2px #17675c",
+          }}
         >
           {level}
         </span>
@@ -458,40 +450,53 @@ export function Avatar({
 
 /* ---------------- meters ---------------- */
 
-export function XPBar({ value, accent = 'lime', height = 10, label }) {
+export function XPBar({ value, accent = "lime", height = 10, label }) {
   const c = ACCENTS[accent];
   const ref = useRef(null);
   const shown = useReveal(ref);
   return (
     <div ref={ref} className="w-full">
       <div
-        className="relative w-full overflow-hidden rounded-full bg-black/45 ring-1 ring-white/10"
+        className="world-kit-progress relative w-full overflow-hidden rounded-full bg-hairline"
         style={{ height }}
       >
         <div
           className="h-full rounded-full transition-[width] duration-[1400ms] ease-out"
           style={{
-            width: `${shown ? value : 0}%`,
+            width: `${Math.max(0, Math.min(100, shown ? value : 0))}%`,
             background: `linear-gradient(90deg, ${c}88, ${c})`,
             boxShadow: `0 0 16px -2px ${c}`,
           }}
         />
       </div>
-      {label && <div className="num mt-1.5 text-[11px] text-ink-faint">{label}</div>}
+      {label && (
+        <div className="num mt-1.5 text-[11px] text-ink-faint">{label}</div>
+      )}
     </div>
   );
 }
 
-export function XPRing({ value, size = 176, accent = 'lime', children }) {
+export function XPRing({ value, size = 176, accent = "lime", children }) {
   const c = ACCENTS[accent];
   const r = size / 2 - 8;
   const circ = 2 * Math.PI * r;
   const ref = useRef(null);
   const shown = useReveal(ref);
   return (
-    <div ref={ref} className="relative grid place-items-center" style={{ width: size, height: size }}>
+    <div
+      ref={ref}
+      className="relative grid place-items-center"
+      style={{ width: size, height: size }}
+    >
       <svg width={size} height={size} className="absolute -rotate-90">
-        <circle cx={size / 2} cy={size / 2} r={r} fill="none" stroke="#ffffff14" strokeWidth={8} />
+        <circle
+          cx={size / 2}
+          cy={size / 2}
+          r={r}
+          fill="none"
+          stroke="#ffffff14"
+          strokeWidth={8}
+        />
         <circle
           cx={size / 2}
           cy={size / 2}
@@ -503,7 +508,7 @@ export function XPRing({ value, size = 176, accent = 'lime', children }) {
           strokeDasharray={circ}
           strokeDashoffset={circ * (1 - (shown ? value : 0) / 100)}
           style={{
-            transition: 'stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1)',
+            transition: "stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1)",
             filter: `drop-shadow(0 0 10px ${c})`,
           }}
         />
@@ -520,22 +525,36 @@ export function useReveal(ref) {
   useEffect(() => {
     const el = ref.current;
     if (!el) return;
-    const io = new IntersectionObserver(([e]) => e.isIntersecting && setShown(true), {
-      threshold: 0.25,
-    });
+    const io = new IntersectionObserver(
+      ([e]) => e.isIntersecting && setShown(true),
+      {
+        threshold: 0.25,
+      },
+    );
     io.observe(el);
     return () => io.disconnect();
   }, [ref]);
   return shown;
 }
 
-export function CountUp({ to, duration = 1600, decimals = 0, suffix = '', prefix = '', className = '' }) {
+export function CountUp({
+  to,
+  duration = 1600,
+  decimals = 0,
+  suffix = "",
+  prefix = "",
+  className = "",
+}) {
   const ref = useRef(null);
   const shown = useReveal(ref);
   const [n, setN] = useState(0);
 
   useEffect(() => {
     if (!shown) return;
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+      setN(to);
+      return;
+    }
     let raf = 0;
     const t0 = performance.now();
     const tick = (t) => {
@@ -550,7 +569,7 @@ export function CountUp({ to, duration = 1600, decimals = 0, suffix = '', prefix
   return (
     <span ref={ref} className={`num ${className}`}>
       {prefix}
-      {n.toLocaleString('en-US', {
+      {n.toLocaleString("en-US", {
         minimumFractionDigits: decimals,
         maximumFractionDigits: decimals,
       })}

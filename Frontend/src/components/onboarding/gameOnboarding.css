@@ -1,0 +1,1077 @@
+/* Shared game-style authentication and onboarding. API fields remain native. */
+.td-game-auth,
+.game-onboarding {
+  --go-paper: #fff9e9;
+  --go-ink: #244942;
+  --go-muted: #506b58;
+  --go-teal: #087963;
+  --go-purple: #8150b5;
+  --go-coral: #d3483e;
+  --go-yellow: #ffe568;
+  color: var(--go-ink);
+  font-family: "Nunito Variable", "Heebo", sans-serif;
+  line-height: 1.5;
+}
+.td-game-auth {
+  background: var(--go-paper);
+  min-height: 100dvh;
+  overflow-x: clip;
+}
+.td-game-auth :is(h1, h2, h3),
+.game-onboarding :is(h1, h2, h3) {
+  font-family: "Fredoka Variable", "Fredoka", "Heebo", sans-serif;
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.td-game-auth ::selection,
+.game-onboarding ::selection {
+  color: #513672;
+  background: #e9d6ff;
+}
+.td-game-auth :is(button, input, select):focus-visible,
+.game-onboarding :is(button, input, select):focus-visible {
+  outline: 3px solid #8150b5;
+  outline-offset: 4px;
+}
+.td-game-auth .td-auth-header {
+  border: 0;
+  height: 91px;
+  padding-inline: 5.5%;
+}
+.td-game-auth .td-brand {
+  font-family: "Fredoka Variable", "Heebo", sans-serif !important;
+  font-size: 31px !important;
+  font-weight: 650 !important;
+  letter-spacing: -0.04em;
+}
+.td-game-auth .td-brand-mark {
+  background: #087963;
+  border-radius: 16px 16px 16px 6px;
+  border-bottom: 3px solid #055646;
+  box-shadow: inset 0 3px 0 #ffffff60;
+  height: 42px;
+  width: 39px;
+}
+.td-game-auth .td-brand-mark > span {
+  background: #ffe568;
+}
+.td-game-auth .td-brand-dot {
+  color: #d3483e;
+}
+.td-game-auth .td-lang {
+  min-height: 44px;
+  min-width: 55px;
+  justify-content: center;
+  background: #eddef9;
+  color: #67448c;
+  border-bottom: 3px solid #cbb0df;
+  border-radius: 16px;
+  font-size: 12px !important;
+  font-weight: 800;
+}
+.td-game-auth .td-auth-layout {
+  grid-template-columns: 1.05fr 0.95fr;
+  min-height: calc(100dvh - 91px);
+  max-width: 1450px;
+  margin-inline: auto;
+  gap: 30px;
+}
+.td-game-auth .td-auth-form-side {
+  padding: 18px 45px 55px;
+}
+.td-game-auth .td-auth-back {
+  min-height: 44px;
+  font-size: 13px !important;
+  color: var(--go-muted);
+  font-weight: 800;
+  gap: 8px;
+}
+.td-game-auth .td-auth-form-inner {
+  max-width: 465px;
+  margin: 27px auto 10px;
+}
+.td-game-auth h1 {
+  font-size: clamp(38px, 4vw, 57px);
+  line-height: 1.02;
+  letter-spacing: -0.025em;
+}
+.td-game-auth h1 > span {
+  color: #8150b5;
+}
+.td-game-auth .td-auth-intro {
+  font-size: 15px;
+  color: var(--go-muted);
+  margin-top: 21px;
+  max-width: 400px;
+  line-height: 1.7;
+}
+.td-game-auth .td-auth-tabs {
+  display: flex;
+  background: none;
+  padding: 0;
+  gap: 15px;
+  border-radius: 0;
+  margin-top: 25px;
+}
+.td-game-auth .td-auth-tabs button {
+  flex: 1;
+  padding: 13px 18px;
+  min-height: 51px;
+  border: 0;
+  border-bottom: 4px solid #d4c7a9;
+  background: #eee4cd;
+  color: #686047;
+  border-radius: 20px;
+  font-family: "Fredoka Variable", "Heebo", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  box-shadow: none;
+}
+.td-game-auth .td-auth-tabs button.is-active {
+  background: var(--go-teal);
+  border-color: #025441;
+  color: white;
+  box-shadow: inset 0 3px 0 #ffffff25;
+}
+.td-game-auth .td-login-form {
+  gap: 22px;
+  margin-top: 29px;
+}
+.td-game-auth .td-login-form label {
+  font-size: 14px;
+  font-weight: 850;
+  color: var(--go-ink);
+  margin-bottom: 9px;
+}
+.td-game-auth .td-login-form input {
+  height: 56px;
+  border: 2px solid #d7dac2;
+  border-radius: 16px;
+  background: #fffef9;
+  padding-inline: 17px;
+  font-family: "Nunito Variable", "Heebo", sans-serif;
+  font-size: 16px;
+  box-shadow: inset 0 3px 0 #edf1e133;
+  color: var(--go-ink);
+}
+.td-game-auth .td-login-form input::placeholder {
+  color: #75826a;
+}
+.td-game-auth .td-login-form input:focus {
+  border-color: var(--go-teal);
+}
+.td-game-auth .td-password-field input {
+  padding-right: 58px;
+}
+.td-game-auth .td-password-field button {
+  width: 44px;
+  height: 44px;
+  right: 7px;
+  color: #5a725c;
+}
+.td-game-auth .td-btn {
+  font-family: "Fredoka Variable", "Heebo", sans-serif !important;
+  font-size: 20px !important;
+  font-weight: 550 !important;
+  min-height: 59px;
+  padding: 14px 23px;
+  border: 0;
+  border-top: 2px solid #ffffff50;
+  border-bottom: 5px solid #992c25;
+  border-radius: 21px;
+  background: var(--go-coral);
+  color: white;
+  box-shadow:
+    inset 0 4px 0 #ffffff15,
+    0 5px 12px #b94a2c14;
+  gap: 15px;
+  transition: transform 170ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.td-game-auth .td-btn:hover {
+  transform: translateY(-2px);
+  background: #dc4e42;
+}
+.td-game-auth .td-btn:active {
+  transform: translateY(3px);
+}
+.td-game-auth .td-btn:disabled {
+  opacity: 0.6;
+  transform: none;
+}
+.td-game-auth .td-btn-dark {
+  background: var(--go-teal);
+  border-bottom-color: #025441;
+}
+.td-game-auth .td-btn-dark:hover {
+  background: #07896f;
+}
+.td-game-auth .td-login-form .td-btn {
+  font-size: 20px !important;
+  min-height: 61px;
+}
+.td-game-auth .td-auth-secure {
+  color: var(--go-muted);
+  font-size: 12px;
+}
+.td-game-auth .td-auth-secure svg {
+  width: 15px;
+  height: 15px;
+}
+.td-game-auth .td-auth-error {
+  background: #ffe4d9;
+  color: #8c3029;
+  border: 1px solid #dc9e8d;
+  padding: 13px 16px;
+  border-radius: 14px;
+  font-size: 14px;
+}
+.td-game-auth .td-demo-entry {
+  margin-top: 22px;
+  padding: 17px 0;
+  border-block: 2px dashed #d9dbba;
+}
+.td-game-auth .td-demo-entry > p {
+  font-size: 13px;
+  color: var(--go-muted);
+  margin-bottom: 11px;
+}
+.td-game-auth .td-demo-entry .td-btn {
+  font-size: 17px !important;
+  min-height: 50px;
+}
+.td-game-auth .td-auth-art {
+  border: 0;
+  background: none;
+  position: relative;
+  padding: 50px 38px;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  isolation: isolate;
+}
+.td-game-auth .td-auth-art > div {
+  max-width: 500px;
+  position: relative;
+}
+.td-auth-companion::before {
+  content: "";
+  position: absolute;
+  inset: 2% -1% 25%;
+  background: #d5edd0;
+  border-radius: 48% 47% 45% 46%;
+  box-shadow: inset 0 -18px 0 #bedbb3;
+  transform: rotate(-7deg);
+  z-index: -1;
+}
+.td-game-auth .td-auth-art img {
+  width: 90%;
+  max-width: 365px;
+  height: auto;
+  display: block;
+  margin: 0 auto 26px;
+  mix-blend-mode: normal;
+  mask-image: none;
+  filter: drop-shadow(0 14px 9px #42612615);
+  transform: rotate(-6deg);
+}
+.td-game-auth .td-auth-art h2 {
+  font-size: clamp(39px, 4.1vw, 58px);
+  font-weight: 600;
+  letter-spacing: -0.025em;
+  line-height: 1.04;
+  margin: 0 0 21px;
+}
+.td-game-auth .td-auth-art h2 > span {
+  color: var(--go-coral);
+}
+.td-game-auth .td-auth-art p {
+  font-size: 15px;
+  color: var(--go-muted);
+  line-height: 1.7;
+}
+.td-game-auth .td-auth-art-fine {
+  font-size: 13px;
+  gap: 9px;
+  color: #526741;
+  font-weight: 800;
+  margin-top: 19px;
+}
+.td-game-auth .td-auth-art-fine svg {
+  color: #aa7a14;
+}
+.td-game-auth .td-auth-art-fine svg:nth-of-type(2) {
+  margin-inline-start: 15px;
+}
+.td-auth-coin {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  width: 77px;
+  height: 77px;
+  border: 4px solid #ffec7a;
+  border-radius: 50%;
+  background: linear-gradient(140deg, #fff29b, #ffcf36 55%, #e6a516);
+  color: #b97c0b;
+  box-shadow:
+    inset 0 3px 0 #fffbc5,
+    inset 0 -5px 0 #d39510,
+    3px 6px 0 #c38e19,
+    4px 10px 15px #96702816;
+  z-index: 2;
+}
+.td-auth-coin svg {
+  width: 44px;
+  height: 44px;
+  filter: drop-shadow(0 2px 0 #fff693);
+}
+.td-auth-coin > span {
+  font:
+    650 25px "Fredoka Variable",
+    sans-serif;
+}
+.td-auth-coin-one {
+  inset-inline-start: 0;
+  top: 20%;
+  transform: rotate(-19deg);
+}
+.td-auth-coin-two {
+  width: 62px;
+  height: 62px;
+  inset-inline-end: 2%;
+  top: 3%;
+  transform: rotate(15deg);
+}
+/* The registration path uses unlocked round checkpoints; previous checkpoints are revisitable. */
+.game-onboarding {
+  width: 100%;
+  max-width: 100%;
+  background: transparent;
+}
+.game-onboarding * {
+  box-sizing: border-box;
+}
+.game-onboarding .go-brand-title {
+  font-size: 32px;
+  color: var(--go-ink);
+}
+.go-checkpoint-path {
+  list-style: none;
+  padding: 13px 10px 8px;
+  margin: 0 0 30px;
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  position: relative;
+}
+.go-checkpoint-path::before {
+  content: "";
+  position: absolute;
+  inset-inline: 13%;
+  top: 41px;
+  border-top: 4px dashed #bdcda8;
+  z-index: 0;
+  transform: rotate(-3deg);
+}
+.go-checkpoint-path > li {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  flex: 1;
+}
+.go-checkpoint-path > li:nth-child(2) {
+  padding-top: 13px;
+}
+.game-onboarding .go-checkpoint {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 65px;
+  height: 65px;
+  border: 4px solid #fff9e9;
+  border-radius: 50%;
+  color: #5b7251;
+  background: #e3e9d5;
+  box-shadow:
+    inset 0 4px 0 #ffffff55,
+    0 4px 0 #becaae44;
+  cursor: pointer;
+  transition: transform 160ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+.game-onboarding .is-current .go-checkpoint {
+  background: #8150b5;
+  color: white;
+  box-shadow:
+    inset 0 4px 0 #ffffff38,
+    0 5px 0 #d3b9e1;
+}
+.game-onboarding .is-done .go-checkpoint {
+  background: var(--go-teal);
+  color: white;
+}
+.game-onboarding .go-checkpoint:not(:disabled):hover {
+  transform: translateY(-3px);
+}
+.game-onboarding .go-checkpoint:disabled {
+  cursor: default;
+  opacity: 1;
+}
+.go-checkpoint-number {
+  position: absolute;
+  bottom: -10px;
+  inset-inline-end: -4px;
+  display: grid;
+  place-items: center;
+  width: 27px;
+  height: 27px;
+  border: 3px solid var(--go-paper);
+  border-radius: 50%;
+  background: #ffdf64;
+  color: #725116;
+  font:
+    600 14px "Fredoka Variable",
+    sans-serif;
+}
+.go-checkpoint-label {
+  font-family: "Fredoka Variable", "Heebo", sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--go-muted);
+  text-align: center;
+}
+.is-current .go-checkpoint-label {
+  color: #7545a4;
+}
+.is-done .go-checkpoint-label {
+  color: var(--go-teal);
+}
+.game-onboarding .go-heading {
+  color: var(--go-ink);
+  font-size: 28px;
+  line-height: 1.2;
+  margin: 0 0 9px;
+  font-weight: 550;
+}
+.game-onboarding .go-hint {
+  color: var(--go-muted);
+  font-size: 14px;
+  line-height: 1.65;
+  margin: 0 0 22px;
+}
+.game-onboarding .go-label {
+  display: block;
+  font-size: 14px;
+  font-weight: 850;
+  color: var(--go-ink);
+  margin-bottom: 8px;
+}
+.game-onboarding .go-optional {
+  color: var(--go-muted);
+  font-weight: 500;
+}
+.game-onboarding .go-input {
+  display: block;
+  width: 100%;
+  min-width: 0;
+  min-height: 53px;
+  padding: 12px 15px;
+  border: 2px solid #d7dac2;
+  border-radius: 15px;
+  background: #fffef9;
+  color: var(--go-ink);
+  font-family: "Nunito Variable", "Heebo", sans-serif;
+  font-size: 16px;
+  line-height: 1.4;
+  outline-offset: 3px;
+}
+.game-onboarding .go-input::placeholder {
+  color: #74816b;
+}
+.game-onboarding .go-input:focus {
+  border-color: #087963;
+}
+.game-onboarding select.go-input {
+  padding-block: 10px;
+}
+.game-onboarding .go-home-preview {
+  position: relative;
+  padding: 17px 0;
+  margin-top: 20px;
+  background: none;
+  border-block: 2px dashed #cbdcb5;
+}
+.game-onboarding .go-preview-label {
+  font-size: 12px;
+  color: var(--go-muted);
+  margin-bottom: 5px;
+}
+.game-onboarding .go-preview-name {
+  font:
+    550 24px "Fredoka Variable",
+    "Heebo",
+    sans-serif;
+  color: var(--go-teal);
+  overflow-wrap: anywhere;
+}
+.game-onboarding .go-preview-note {
+  font-size: 12px;
+  color: var(--go-muted);
+  margin-top: 6px;
+}
+.game-onboarding .go-error {
+  margin-top: 18px;
+  padding: 12px 15px;
+  border: 1px solid #dca393;
+  border-radius: 13px;
+  background: #ffe4d9;
+  color: #8c3029;
+  font-size: 14px;
+}
+.game-onboarding .go-footer {
+  display: flex;
+  align-items: stretch;
+  gap: 14px;
+  margin-top: 29px;
+  padding-top: 20px;
+  border-top: 2px dashed #d7ddc3;
+}
+.game-onboarding .go-back,
+.game-onboarding .go-next {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 52px;
+  padding: 12px 20px;
+  border-radius: 19px;
+  border: 0;
+  border-bottom: 4px solid #c6b694;
+  font-family: "Fredoka Variable", "Heebo", sans-serif;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.2;
+  transition: transform 160ms ease-out;
+}
+.game-onboarding .go-back {
+  background: #eee4cd;
+  color: #635a41;
+}
+.game-onboarding .go-next {
+  flex: 1;
+  background: var(--go-teal);
+  color: white;
+  border-bottom-color: #025441;
+  box-shadow: inset 0 3px 0 #ffffff25;
+}
+.game-onboarding .go-next:hover:not(:disabled),
+.game-onboarding .go-back:hover {
+  transform: translateY(-2px);
+}
+.game-onboarding .go-next:active:not(:disabled),
+.game-onboarding .go-back:active {
+  transform: translateY(2px);
+}
+.game-onboarding .go-next:disabled {
+  opacity: 0.48;
+  cursor: not-allowed;
+}
+.game-onboarding .go-footer svg {
+  flex-shrink: 0;
+}
+/* Keep the existing avatar chooser fully functional and warm in all entry points. */
+.game-onboarding :is(.bg-slate-100, .bg-slate-50) {
+  background: #efe8d4;
+}
+.game-onboarding
+  :is(.bg-indigo-100, .bg-indigo-50, [class~="bg-indigo-50/50"]) {
+  background: #eadcf7;
+}
+.game-onboarding .bg-white {
+  background: #fffef6;
+}
+.game-onboarding :is(.text-slate-900, .text-slate-800, .text-slate-700) {
+  color: #244942;
+}
+.game-onboarding :is(.text-slate-600, .text-slate-500, .text-slate-400) {
+  color: #546b57;
+}
+.game-onboarding
+  :is(.text-indigo-800, .text-indigo-700, .text-indigo-600, .text-indigo-500) {
+  color: #7545a4;
+}
+.game-onboarding
+  :is(.border-indigo-300, .border-indigo-500, .border-indigo-100) {
+  border-color: #bc99d8;
+}
+.game-onboarding .border-slate-200 {
+  border-color: #d7dbc4;
+}
+.game-onboarding .ring-indigo-500 {
+  --tw-ring-color: #9460b7;
+}
+.game-onboarding button:focus-visible {
+  outline: 3px solid #8150b5;
+  outline-offset: 3px;
+}
+.td-game-auth .td-onboarding {
+  padding-top: 15px;
+}
+.td-game-auth .td-onboarding .go-next {
+  box-shadow: inset 0 3px 0 #ffffff25;
+}
+.td-game-auth .td-onboarding .go-checkpoint {
+  box-shadow:
+    inset 0 4px 0 #ffffff55,
+    0 4px 0 #becaae44;
+}
+@media (max-width: 1050px) {
+  .td-game-auth .td-auth-layout {
+    gap: 0;
+  }
+  .td-game-auth .td-auth-form-side {
+    padding-inline: 30px;
+  }
+  .td-game-auth .td-auth-art {
+    padding-inline: 24px;
+  }
+  .td-game-auth .td-auth-art img {
+    max-width: 315px;
+  }
+  .td-auth-coin-one {
+    width: 60px;
+    height: 60px;
+    inset-inline-start: -9px;
+  }
+  .td-auth-coin-one svg {
+    width: 33px;
+  }
+  .td-auth-coin-two {
+    width: 51px;
+    height: 51px;
+    inset-inline-end: 0;
+  }
+  .td-auth-coin > span {
+    font-size: 20px;
+  }
+  .td-game-auth .td-auth-art h2 {
+    font-size: 47px;
+  }
+  .td-game-auth .td-auth-art p {
+    font-size: 14px;
+  }
+}
+@media (max-width: 750px) {
+  .td-game-auth .td-auth-layout {
+    grid-template-columns: 1fr;
+  }
+  .td-game-auth .td-auth-header {
+    height: 76px;
+    padding-inline: 24px;
+  }
+  .td-game-auth .td-auth-form-side {
+    padding: 12px 24px 50px;
+  }
+  .td-game-auth .td-auth-form-inner {
+    max-width: 470px;
+    margin-top: 20px;
+  }
+  .td-game-auth h1 {
+    font-size: 45px;
+  }
+  .td-game-auth .td-auth-art {
+    display: none;
+  }
+  .td-game-auth .td-brand {
+    font-size: 27px !important;
+  }
+  .td-game-auth .td-auth-intro {
+    font-size: 15px;
+  }
+  .td-game-auth .td-auth-tabs button {
+    font-size: 18px;
+  }
+  .td-game-auth .td-auth-form-inner::before {
+    content: "";
+    display: block;
+    background: url("/images/dira-mascot.png") center/contain no-repeat;
+    width: 88px;
+    height: 94px;
+    float: inline-end;
+    margin-inline-start: 8px;
+    margin-top: -5px;
+    transform: rotate(8deg);
+  }
+  .td-game-auth .td-auth-tabs {
+    clear: both;
+    margin-top: 26px;
+  }
+  .td-game-auth .td-auth-intro {
+    max-width: 380px;
+  }
+  .td-game-auth .td-demo-entry {
+    clear: both;
+  }
+  .game-onboarding .go-heading {
+    font-size: 28px;
+  }
+  .game-onboarding .go-footer {
+    gap: 10px;
+  }
+  .game-onboarding .go-back,
+  .game-onboarding .go-next {
+    font-size: 17px;
+    padding-inline: 15px;
+  }
+  .go-checkpoint-path {
+    padding-inline: 0;
+    margin-bottom: 25px;
+    gap: 10px;
+  }
+  .game-onboarding .go-checkpoint {
+    width: 62px;
+    height: 62px;
+  }
+  .go-checkpoint-label {
+    font-size: 14px;
+  }
+}
+@media (max-width: 390px) {
+  .td-game-auth h1 {
+    font-size: 39px;
+  }
+  .td-game-auth .td-auth-form-side {
+    padding-inline: 20px;
+  }
+  .td-game-auth .td-auth-form-inner::before {
+    width: 68px;
+    height: 73px;
+  }
+  .td-game-auth .td-auth-tabs button {
+    font-size: 17px;
+    padding-inline: 12px;
+  }
+  .game-onboarding .go-back,
+  .game-onboarding .go-next {
+    font-size: 16px;
+    padding-inline: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .td-game-auth *,
+  .game-onboarding * {
+    animation: none !important;
+    transition: none !important;
+    scroll-behavior: auto !important;
+  }
+}
+/* The companion reacts to actual form progress; decorative loops pause out of view. */
+.td-game-auth {
+  --go-paper: #f1f7fc;
+  background:
+    radial-gradient(ellipse at 90% 20%, #e5def9, transparent 48%),
+    radial-gradient(ellipse at 3% 90%, #d9f1eb, transparent 45%), #f1f7fc;
+}
+.td-game-auth .td-auth-tabs button:not(.is-active),
+.td-game-auth .go-back {
+  background: #e4eaf3;
+  border-bottom-color: #c7d2e2;
+  color: #526176;
+}
+.td-game-auth :is(.go-input, .td-login-form input) {
+  background: #fcfdff;
+  border-color: #cfdee5;
+}
+.td-game-auth :is(.td-demo-entry, .go-footer, .go-home-preview) {
+  border-color: #ccdae4;
+}
+.td-game-auth .td-auth-art {
+  align-items: flex-start;
+  padding-top: 65px;
+}
+.td-game-auth .td-auth-art > .auth-pal {
+  position: sticky;
+  top: 32px;
+  width: 100%;
+  max-width: 460px;
+}
+.auth-pal {
+  position: relative;
+  text-align: center;
+}
+.auth-pal-speech {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  width: fit-content;
+  max-width: 100%;
+  min-height: 72px;
+  margin: 0 auto 14px;
+  padding: 17px 25px;
+  border-radius: 27px 27px 27px 7px;
+  background: #fff;
+  color: #5f4283;
+  box-shadow: 0 5px 0 #d8cce929;
+  font:
+    550 21px/1.35 "Fredoka Variable",
+    "Heebo",
+    sans-serif;
+  animation: pal-speech-in 350ms ease-out;
+  overflow-wrap: anywhere;
+}
+.auth-pal-speech svg {
+  flex-shrink: 0;
+  color: #e98198;
+  width: 18px;
+}
+.auth-pal-scene {
+  position: relative;
+  width: 100%;
+  max-width: 410px;
+  margin: auto;
+  isolation: isolate;
+}
+.auth-pal-scene::before {
+  content: "";
+  position: absolute;
+  inset: 12% 5% 5%;
+  border-radius: 48% 52% 41% 59%;
+  background: #dbd1f3;
+  transform: rotate(-9deg);
+  z-index: -1;
+}
+.td-game-auth .auth-pal-scene img {
+  display: block;
+  width: 83%;
+  max-width: 345px;
+  height: auto;
+  margin: auto;
+  transform: none;
+  filter: drop-shadow(0 17px 8px #6b558916);
+}
+.auth-pal-bob {
+  animation: pal-bob 5s ease-in-out infinite;
+}
+.auth-pal-pose {
+  position: relative;
+  transition: transform 450ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.auth-pal[data-mood="email"] .auth-pal-pose {
+  transform: rotate(-7deg) translateX(-9px);
+}
+.auth-pal[data-mood="shy"] .auth-pal-pose {
+  transform: rotate(6deg) translateY(8px);
+}
+.auth-pal[data-mood="ready"] .auth-pal-pose,
+.auth-pal[data-mood="step-2"] .auth-pal-pose {
+  transform: rotate(-6deg) scale(1.04);
+}
+.auth-pal[data-mood="opening"] .auth-pal-pose {
+  transform: translateY(-14px) rotate(7deg);
+}
+.auth-pal-mask {
+  position: absolute;
+  top: 33%;
+  left: 34%;
+  width: 32%;
+  height: 16%;
+  border-radius: 45%;
+  background: #8f71cb;
+  border: 3px solid #cbb7f3;
+  box-shadow: 0 4px 0 #654ca0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 17%;
+  opacity: 0;
+  transform: translateY(-18px) rotate(-4deg);
+  transition:
+    opacity 220ms ease,
+    transform 350ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.auth-pal-mask i {
+  width: 19%;
+  height: 25%;
+  border-bottom: 3px solid #fff;
+  border-radius: 0 0 50% 50%;
+  transform: rotate(-5deg);
+}
+.auth-pal[data-mood="shy"] .auth-pal-mask {
+  opacity: 1;
+  transform: translateY(0) rotate(-4deg);
+}
+.auth-pal-ground {
+  height: 13px;
+  width: 45%;
+  margin: 0 auto 20px;
+  background: #b4a8d73b;
+  border-radius: 50%;
+  filter: blur(3px);
+}
+.auth-pal-orbit > * {
+  position: absolute;
+  z-index: 2;
+  color: #d29a15;
+}
+.auth-pal-orbit > svg:first-child {
+  width: 42px;
+  height: 42px;
+  left: 4%;
+  top: 38%;
+  color: #f4c745;
+  transform: rotate(-19deg);
+  animation: pal-bob 5s ease-in-out -2s infinite;
+}
+.auth-pal-orbit > span {
+  right: 3%;
+  top: 20%;
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: #ffdf70;
+  border: 4px solid #fff1a6;
+  box-shadow: 2px 4px 0 #dba73e;
+  font:
+    600 20px "Fredoka Variable",
+    sans-serif;
+  transform: rotate(13deg);
+}
+.auth-pal-orbit > svg:last-child {
+  right: 8%;
+  bottom: 20%;
+  width: 26px;
+  height: 26px;
+  color: #8c70c0;
+}
+.td-game-auth .auth-pal-caption h2 {
+  font-size: clamp(33px, 3.2vw, 45px);
+  line-height: 1.05;
+  margin: 18px 0;
+}
+.td-game-auth .auth-pal-caption h2 > span {
+  color: #8754ba;
+}
+.auth-pal-progress {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin-top: 23px;
+}
+.auth-pal-progress > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 800;
+  color: #6b7989;
+}
+.auth-pal-progress > span.is-done {
+  color: #087963;
+}
+.auth-pal-progress > span.is-current {
+  color: #8150b5;
+}
+.auth-pal[data-motion-running="false"]
+  :is(.auth-pal-bob, .auth-pal-orbit > svg) {
+  animation-play-state: paused;
+}
+.auth-pal-compact {
+  display: none;
+}
+.go-stage {
+  animation: checkpoint-enter 350ms cubic-bezier(0.22, 1, 0.36, 1);
+}
+.game-onboarding .is-done .go-checkpoint svg {
+  animation: pal-speech-in 300ms ease-out;
+}
+@keyframes pal-bob {
+  0%,
+  100% {
+    translate: 0 0;
+  }
+  50% {
+    translate: 0 -10px;
+  }
+}
+@keyframes pal-speech-in {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes checkpoint-enter {
+  from {
+    opacity: 0;
+    transform: translateY(13px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+@media (max-width: 750px) {
+  .td-game-auth .td-auth-form-inner::before {
+    display: none;
+  }
+  .auth-pal-compact {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 22px 0 10px;
+    min-height: 100px;
+    text-align: start;
+  }
+  .auth-pal-compact .auth-pal-scene {
+    width: 91px;
+    flex: 0 0 91px;
+    order: -1;
+    margin: 0;
+  }
+  .auth-pal-compact .auth-pal-scene img {
+    width: 100%;
+    height: auto;
+  }
+  .auth-pal-compact .auth-pal-scene::before {
+    inset: 12% 0 0;
+  }
+  .auth-pal-compact .auth-pal-speech {
+    font-size: 16px;
+    padding: 13px 16px;
+    min-height: 70px;
+    border-radius: 20px 20px 20px 5px;
+    margin: 0;
+    flex: 1;
+  }
+  .auth-pal-compact .auth-pal-speech svg {
+    display: none;
+  }
+  .auth-pal-compact :is(.auth-pal-caption, .auth-pal-orbit, .auth-pal-ground) {
+    display: none;
+  }
+  .auth-pal-compact .auth-pal-mask {
+    left: 30%;
+    width: 39%;
+    border-width: 1px;
+    box-shadow: 0 2px 0 #654ca0;
+  }
+  .auth-pal-compact .auth-pal-mask i {
+    border-width: 1px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .auth-pal *,
+  .go-stage {
+    animation: none !important;
+    transition: none !important;
+  }
+}

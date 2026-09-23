@@ -5,3 +5,6 @@ FigmeExtract/
 # Graphify graph output — regenerable local artifact (rebuilt by the post-commit
 # hook), ~11 MB including caches and dated backups.
 graphify-out/
+# Local verification output; source, assets and validation notes are committed.
+design/*-output.log
+design/detector-report.json

@@ -1,0 +1,592 @@
+/* Small collectible prizes drift over light pools; controls stay still. */
+.floating-shop .community-heading {
+  margin-bottom: 20px;
+}
+.floating-shop .community-heading h1 {
+  font-size: clamp(30px, 3.2vw, 44px);
+}
+.floating-shop .community-heading p {
+  max-width: 58ch;
+  font-size: 14px;
+}
+.floating-shop .shop-intro {
+  padding: 8px 0 24px;
+  gap: 25px;
+  min-height: 0;
+  margin-bottom: 20px;
+}
+.floating-shop .shop-intro > div > svg:first-child {
+  display: none;
+}
+.floating-shop .shop-intro h2 {
+  font-size: 24px;
+  margin: 0 0 8px;
+}
+.floating-shop .shop-intro p {
+  font-size: 13px;
+  max-width: 49ch;
+}
+.floating-shop .community-wallet {
+  gap: 15px;
+}
+.floating-shop .community-wallet strong {
+  font-size: 45px;
+  line-height: 1.1;
+}
+.floating-shop .community-wallet small {
+  font-size: 11px;
+}
+.floating-shop .community-big-coin {
+  width: 61px;
+  height: 61px;
+  border-width: 4px;
+}
+.floating-shop .community-big-coin svg {
+  width: 28px;
+  height: 28px;
+}
+.floating-shop .community-big-coin:after {
+  animation: none;
+}
+.floating-shop .community-rewards {
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 28px 20px;
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 14px 0 18px;
+}
+.floating-shop .community-reward {
+  align-items: center;
+  text-align: center;
+  position: relative;
+}
+.floating-shop .community-reward-art {
+  width: 100%;
+  min-height: 155px;
+  isolation: isolate;
+}
+.floating-shop .community-reward-art:before {
+  width: 121px;
+  height: 116px;
+  bottom: 25px;
+  border-radius: 50%;
+  background: radial-gradient(
+    ellipse at 35% 25%,
+    #ffffffbb,
+    var(--reward-fill)
+  );
+  opacity: 0.8;
+  transform: rotate(-10deg);
+  border: 2px solid #ffffffcc;
+  box-shadow: 0 9px 25px #5c728313;
+}
+.floating-shop .community-reward-art:after {
+  width: 79px;
+  height: 10px;
+  bottom: 5px;
+  background: #6b92a321;
+  border: 0;
+  box-shadow: 0 5px 9px #50667910;
+  border-radius: 50%;
+  animation: prize-shadow 4.5s ease-in-out infinite;
+  animation-delay: var(--float-delay);
+}
+.floating-shop .community-reward-art > span {
+  font-size: 66px;
+  filter: drop-shadow(0 12px 7px #46567824);
+  animation: prize-float 4.5s ease-in-out infinite;
+  animation-delay: var(--float-delay);
+  line-height: 1.2;
+  margin-bottom: 19px;
+}
+.floating-shop .community-reward:nth-child(even) .community-reward-art > span {
+  animation-name: prize-float-alternate;
+}
+.floating-shop
+  .community-reward[data-motion-running="false"]
+  .community-reward-art
+  > span,
+.floating-shop
+  .community-reward[data-motion-running="false"]
+  .community-reward-art:after {
+  animation-play-state: paused;
+}
+.floating-shop .community-reward:hover .community-reward-art:before {
+  opacity: 1;
+  background: var(--reward-fill);
+}
+.floating-shop .community-price {
+  top: 8px;
+  inset-inline-end: 0;
+  inset-inline-start: auto;
+  right: 0;
+  left: auto;
+  padding: 5px 10px;
+  gap: 4px;
+  font-size: 15px;
+  border-width: 2px;
+  box-shadow: 0 3px 5px #c2994840;
+  border-radius: 17px;
+  transform: rotate(7deg);
+}
+.floating-shop[dir="rtl"] .community-price {
+  right: auto;
+  left: 0;
+}
+.floating-shop .community-reward-body {
+  padding: 13px 0 0;
+  align-items: center;
+  width: 100%;
+}
+.floating-shop .community-reward-body h2 {
+  font-size: 19px;
+  max-width: 210px;
+  line-height: 1.25;
+}
+.floating-shop .community-reward-body p {
+  font-size: 12px;
+  line-height: 1.5;
+  margin: 7px 0 13px;
+  max-width: 220px;
+}
+.floating-shop .community-reward-action {
+  font-size: 12px;
+  min-height: 42px;
+  padding: 8px 16px;
+  border-radius: 18px;
+  width: auto;
+  max-width: 100%;
+  min-width: 125px;
+  box-shadow: 0 4px 6px #10514124;
+}
+.floating-shop .community-reward-body > .mb-3 {
+  font-size: 11px;
+  justify-content: center;
+  margin-bottom: 9px;
+}
+.floating-shop .community-reward.is-claimed .community-chip {
+  font-size: 12px;
+  min-height: 38px;
+  padding: 7px 13px;
+  background: #d1eddf;
+}
+.floating-shop .community-reward.is-claimed .community-reward-art > span {
+  animation: none;
+  filter: drop-shadow(0 7px 4px #43695320);
+}
+.reward-admin-tools {
+  display: flex;
+  justify-content: center;
+  gap: 3px;
+  margin-top: 10px;
+}
+.reward-admin-tools .community-icon-button {
+  min-width: 35px;
+  min-height: 35px;
+  color: #647888;
+}
+.reward-admin-tools .community-icon-button:hover {
+  background: #e0eaf6;
+  color: #254e6b;
+}
+.reward-admin-tools svg {
+  width: 14px;
+  height: 14px;
+}
+.shop-next-unlock {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 20px 0;
+  padding: 15px 0;
+  border-top: 2px dashed #d5dee9;
+}
+.shop-next-unlock > svg {
+  color: #7d64aa;
+}
+.shop-next-unlock p {
+  font-size: 12px;
+}
+@keyframes prize-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(-7deg);
+  }
+  50% {
+    transform: translateY(-11px) rotate(5deg);
+  }
+}
+@keyframes prize-float-alternate {
+  0%,
+  100% {
+    transform: translateY(-8px) rotate(7deg);
+  }
+  50% {
+    transform: translateY(3px) rotate(-4deg);
+  }
+}
+@keyframes prize-shadow {
+  0%,
+  100% {
+    transform: scaleX(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: scaleX(0.75);
+    opacity: 0.45;
+  }
+}
+.reward-reveal {
+  position: fixed;
+  inset: 0;
+  z-index: 110;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: 35px 22px;
+  background:
+    radial-gradient(ellipse at 50% 25%, #fffef4f7, transparent 65%),
+    linear-gradient(140deg, #e5f5f7fa, #f0e7fdfb);
+  backdrop-filter: blur(9px);
+  color: #244c49;
+  font-family: "Nunito Variable", "Heebo", sans-serif;
+  animation: reveal-open 0.2s ease-out;
+}
+.reward-reveal-stage {
+  position: relative;
+  width: min(700px, 100%);
+  text-align: center;
+  padding: 15px 75px 30px;
+  border: 0;
+  background: none;
+  box-shadow: none;
+  outline: none;
+}
+.reveal-close {
+  position: fixed;
+  top: 24px;
+  inset-inline-end: 27px;
+  width: 44px;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: #fff9;
+  border: 2px solid #cddce8;
+  border-radius: 50%;
+  color: #486573;
+}
+.reveal-prize {
+  position: relative;
+  width: 245px;
+  height: 210px;
+  display: grid;
+  place-items: center;
+  margin: 0 auto 15px;
+}
+.reveal-prize > span {
+  font-size: 115px;
+  line-height: 1;
+  z-index: 1;
+  filter: drop-shadow(0 15px 10px #77627124);
+  animation: prize-pop 0.7s cubic-bezier(0.18, 0.9, 0.25, 1.25) both;
+}
+.reveal-halo {
+  position: absolute;
+  inset: 9px 18px;
+  background: #f6daa0;
+  border-radius: 48% 45% 50% 46%;
+  opacity: 0.55;
+  transform: rotate(-16deg);
+  animation: halo-open 0.65s ease-out;
+}
+.reveal-star {
+  position: absolute;
+  color: #cc9522;
+  animation: star-pop 0.75s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.reveal-star.star-0 {
+  top: 0;
+  left: 25px;
+  transform: rotate(-15deg);
+}
+.reveal-star.star-1 {
+  top: 13px;
+  right: 19px;
+  animation-delay: 0.08s;
+}
+.reveal-star.star-2 {
+  bottom: 33px;
+  right: -4px;
+  color: #ab84cd;
+  animation-delay: 0.14s;
+}
+.reveal-star.star-3 {
+  bottom: 12px;
+  left: 32px;
+  color: #5fb399;
+  animation-delay: 0.1s;
+}
+.reveal-star.star-4 {
+  top: 88px;
+  left: -8px;
+  color: #dd8e7b;
+  animation-delay: 0.2s;
+}
+.reveal-star.star-5 {
+  bottom: 0;
+  right: 68px;
+  animation-delay: 0.16s;
+}
+.reward-reveal h2 {
+  font-family: "Fredoka Variable", "Heebo", sans-serif;
+  font-size: clamp(38px, 5vw, 58px);
+  font-weight: 600;
+  line-height: 1.08;
+  margin: 0 0 13px;
+  color: #7550a2;
+}
+.reward-reveal h3 {
+  font-family: "Fredoka Variable", "Heebo", sans-serif;
+  font-size: 25px;
+  line-height: 1.25;
+  font-weight: 550;
+  margin: 12px 0 17px;
+  overflow-wrap: anywhere;
+}
+.reward-reveal p {
+  font-size: 15px;
+  margin: 0;
+  color: #566b70;
+}
+.reveal-voucher {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin: 18px 0 !important;
+}
+.reveal-voucher span {
+  font-size: 12px;
+}
+.reveal-voucher strong {
+  letter-spacing: 0.06em;
+  color: #695018;
+  font-size: 17px;
+  user-select: all;
+  background: #ffefb7;
+  padding: 8px 16px;
+  border-radius: 12px;
+  max-width: 100%;
+  overflow-wrap: anywhere;
+}
+.reveal-balance {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  font-size: 12px !important;
+  margin-top: 12px !important;
+}
+.reveal-balance svg {
+  color: #ac7920;
+}
+.reveal-done {
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  gap: 14px;
+  min-height: 52px;
+  padding: 12px 24px;
+  margin-top: 25px;
+  background: #218e79;
+  border: 2px solid #0d6c5a;
+  border-radius: 20px;
+  color: white;
+  font-weight: 900;
+  font-size: 15px;
+  box-shadow: 0 5px 9px #17695c24;
+  transition: transform 0.15s;
+}
+.reveal-done:hover {
+  transform: translateY(-2px);
+  background: #167e6c;
+}
+.reward-reveal :focus-visible {
+  outline: 3px solid #885cac;
+  outline-offset: 5px;
+}
+.reveal-pal {
+  position: absolute;
+  width: 145px;
+  height: 155px;
+  object-fit: contain;
+  bottom: 22px;
+  inset-inline-end: -10px;
+  transform: rotate(10deg);
+  pointer-events: none;
+  animation: pal-hello 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.reward-reveal[dir="rtl"] .direction-arrow {
+  transform: rotate(180deg);
+}
+@keyframes reveal-open {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes prize-pop {
+  from {
+    opacity: 0.2;
+    transform: translateY(30px) scale(0.55) rotate(-20deg);
+  }
+  70% {
+    transform: translateY(-8px) scale(1.08) rotate(5deg);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes halo-open {
+  from {
+    transform: rotate(-55deg) scale(0.4);
+    opacity: 0;
+  }
+  to {
+    transform: rotate(-16deg) scale(1);
+    opacity: 0.55;
+  }
+}
+@keyframes star-pop {
+  from {
+    opacity: 0;
+    scale: 0.2;
+  }
+  to {
+    opacity: 1;
+    scale: 1;
+  }
+}
+@keyframes pal-hello {
+  from {
+    opacity: 0;
+    transform: translateY(40px) rotate(-10deg);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) rotate(10deg);
+  }
+}
+@media (max-width: 1200px) {
+  .floating-shop .community-rewards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 25px;
+  }
+  .floating-shop .community-reward-body h2 {
+    font-size: 19px;
+  }
+}
+@media (max-width: 760px) {
+  .floating-shop .shop-intro {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 18px;
+    padding: 0 0 20px;
+  }
+  .floating-shop .community-wallet {
+    align-self: flex-end;
+    margin-top: -5px;
+  }
+  .floating-shop .community-wallet strong {
+    font-size: 34px;
+  }
+  .floating-shop .community-big-coin {
+    width: 49px;
+    height: 49px;
+  }
+  .floating-shop .community-wallet small {
+    font-size: 10px;
+  }
+  .floating-shop .community-rewards {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px 18px;
+    padding-top: 6px;
+  }
+  .floating-shop .community-reward-art {
+    min-height: 145px;
+  }
+  .floating-shop .community-price {
+    font-size: 13px;
+    padding: 5px 8px;
+  }
+  .floating-shop .community-reward-body h2 {
+    font-size: 18px;
+  }
+  .floating-shop .community-reward-body p {
+    font-size: 11px;
+  }
+  .floating-shop .community-reward-action {
+    font-size: 11px;
+    padding: 8px 10px;
+    min-width: 110px;
+  }
+  .reward-reveal-stage {
+    padding: 30px 5px 10px;
+  }
+  .reveal-pal {
+    display: none;
+  }
+  .reveal-prize {
+    width: 215px;
+    height: 190px;
+  }
+  .reveal-prize > span {
+    font-size: 100px;
+  }
+  .reward-reveal h3 {
+    font-size: 23px;
+  }
+  .reveal-close {
+    top: 15px;
+    inset-inline-end: 16px;
+  }
+}
+@media (max-width: 360px) {
+  .floating-shop .community-rewards {
+    gap: 24px 13px;
+  }
+  .floating-shop .community-reward-art > span {
+    font-size: 56px;
+  }
+  .floating-shop .community-reward-art:before {
+    width: 106px;
+    height: 102px;
+  }
+  .floating-shop .community-reward-body h2 {
+    font-size: 16px;
+  }
+  .floating-shop .community-price {
+    font-size: 12px;
+  }
+  .reward-reveal {
+    padding-inline: 16px;
+  }
+  .reward-reveal h2 {
+    font-size: 36px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .floating-shop *,
+  .floating-shop *:before,
+  .floating-shop *:after,
+  .reward-reveal *,
+  .reward-reveal {
+    animation: none !important;
+    transition: none !important;
+  }
+}

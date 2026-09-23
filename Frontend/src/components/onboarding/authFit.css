@@ -1,0 +1,518 @@
+/* Auth is a sequence of compact screens, with natural overflow only as an
+   accessibility fallback for zoom, a keyboard, or unusually short windows. */
+.td-fit-auth {
+  min-height: 100dvh;
+}
+.td-fit-auth .td-auth-header {
+  height: 64px;
+  padding-inline: 4%;
+}
+.td-auth-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+.td-auth-demo-button {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  min-height: 44px;
+  color: #087963;
+  font-size: 12px;
+  font-weight: 850;
+}
+.td-auth-demo-button:hover {
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+.td-fit-auth .td-auth-layout {
+  min-height: calc(100dvh - 64px);
+  align-items: center;
+  max-width: 1250px;
+}
+.td-fit-auth .td-auth-form-side {
+  padding: 12px 35px 20px;
+  min-width: 0;
+}
+.td-fit-auth .td-auth-form-inner {
+  max-width: 470px;
+  margin: 0 auto;
+}
+.td-fit-auth h1 {
+  font-size: clamp(30px, 3.4vw, 45px);
+  line-height: 1.02;
+}
+.td-fit-auth .td-auth-intro {
+  font-size: 13px;
+  line-height: 1.45;
+  margin-top: 10px;
+  max-width: 430px;
+}
+.td-fit-auth .td-auth-tabs {
+  margin-top: 17px;
+  gap: 12px;
+}
+.td-fit-auth .td-auth-tabs button {
+  min-height: 44px;
+  padding: 8px 15px;
+  font-size: 17px;
+  border-bottom-width: 3px;
+  border-radius: 16px;
+}
+.td-fit-auth .td-login-form {
+  margin-top: 22px;
+  gap: 17px;
+}
+.td-fit-auth .td-login-form input {
+  height: 50px;
+}
+.td-fit-auth .td-login-form label {
+  margin-bottom: 6px;
+}
+.td-fit-auth .td-login-form .td-btn {
+  min-height: 51px;
+  padding-block: 10px;
+  font-size: 19px !important;
+  margin-top: 0;
+}
+.td-fit-auth .td-auth-art {
+  padding: 12px 24px 20px;
+  align-items: center;
+}
+.td-fit-auth .td-auth-art > .auth-pal {
+  position: relative;
+  top: auto;
+  max-width: 420px;
+}
+.td-fit-auth .auth-pal-scene {
+  max-width: min(340px, 39vh);
+}
+.td-fit-auth .auth-pal-speech {
+  font-size: 19px;
+  min-height: 60px;
+  padding: 13px 21px;
+  margin-bottom: 10px;
+}
+.td-fit-auth .auth-pal-caption h2 {
+  font-size: clamp(30px, 3vw, 40px);
+  margin: 10px 0;
+}
+.td-fit-auth .auth-pal-progress {
+  margin-top: 15px;
+}
+.td-fit-auth .auth-pal-ground {
+  margin-bottom: 12px;
+}
+.td-fit-auth .td-onboarding {
+  padding-top: 10px;
+}
+.td-fit-auth .go-checkpoint-path {
+  margin-bottom: 13px;
+  padding: 3px 10px;
+  gap: 10px;
+}
+.td-fit-auth .go-checkpoint-path::before {
+  top: 25px;
+}
+.td-fit-auth .go-checkpoint-path > li {
+  gap: 5px;
+}
+.td-fit-auth .go-checkpoint-path > li:nth-child(2) {
+  padding-top: 7px;
+}
+.td-fit-auth .go-checkpoint {
+  width: 48px;
+  height: 48px;
+  border-width: 3px;
+}
+.td-fit-auth .go-checkpoint svg {
+  width: 21px;
+  height: 21px;
+}
+.td-fit-auth .go-checkpoint-number {
+  width: 21px;
+  height: 21px;
+  font-size: 11px;
+  bottom: -6px;
+  border-width: 2px;
+}
+.td-fit-auth .go-checkpoint-label {
+  font-size: 12px;
+}
+.td-fit-auth .go-heading {
+  font-size: 23px;
+  margin-bottom: 3px;
+}
+.td-fit-auth .go-hint {
+  font-size: 12px;
+  line-height: 1.4;
+  margin: 0 0 10px;
+}
+.td-fit-auth .go-fields {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px 15px;
+}
+.td-fit-auth .go-fields > * {
+  margin: 0;
+}
+.td-fit-auth .go-fields > :is(h2, p, .go-home-preview) {
+  grid-column: 1/-1;
+}
+.td-fit-auth .go-fields > .go-hint {
+  margin-top: -7px;
+}
+.td-fit-auth .go-label {
+  font-size: 12px;
+  margin-bottom: 5px;
+}
+.td-fit-auth .go-input {
+  min-height: 46px;
+  padding: 9px 12px;
+  font-size: 16px;
+  border-radius: 13px;
+}
+.td-fit-auth .go-footer {
+  margin-top: 17px;
+  padding-top: 12px;
+  gap: 10px;
+}
+.td-fit-auth :is(.go-next, .go-back) {
+  min-height: 46px;
+  padding: 9px 15px;
+  font-size: 16px;
+  border-bottom-width: 3px;
+  border-radius: 16px;
+}
+.td-fit-auth .go-home-preview {
+  padding: 10px 0;
+  margin: 0;
+}
+.td-fit-auth .go-preview-name {
+  font-size: 21px;
+}
+/* Character choices stay available in three short panels. */
+.avatar-creator-compact {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.avatar-creator-compact > * {
+  margin: 0 !important;
+}
+.avatar-creator-compact .avatar-creator-preview {
+  display: grid;
+  grid-template-columns: 58px 1fr;
+  column-gap: 13px;
+  row-gap: 0;
+  padding: 2px 0 6px;
+  align-items: center;
+}
+.avatar-creator-compact .avatar-creator-preview > div {
+  grid-row: 1/3;
+  width: 54px !important;
+  height: 54px !important;
+  border-radius: 18px;
+}
+.avatar-creator-compact .avatar-creator-preview > div > span {
+  font-size: 29px !important;
+}
+.avatar-creator-compact .avatar-creator-preview > p {
+  font-size: 11px;
+  line-height: 1.4;
+}
+.avatar-part-tabs {
+  display: flex;
+  gap: 8px;
+}
+.avatar-part-tabs > button {
+  flex: 1;
+  min-height: 38px;
+  border-radius: 13px;
+  background: #e5eaf3;
+  color: #526176;
+  font-size: 13px;
+  font-weight: 850;
+  border-bottom: 3px solid #cbd6e5;
+}
+.avatar-part-tabs > button[aria-pressed="true"] {
+  background: #e3d4f7;
+  color: #633f8a;
+  border-color: #bda5d7;
+}
+.avatar-creator-compact .avatar-type-tabs {
+  background: transparent;
+  padding: 0;
+  gap: 8px;
+}
+.avatar-creator-compact .avatar-type-tabs > button {
+  min-height: 36px;
+  padding: 5px 6px;
+  font-size: 11px;
+}
+.avatar-creator-compact label {
+  font-size: 12px;
+  margin-bottom: 6px;
+}
+.avatar-creator-compact .avatar-icon-grid {
+  grid-template-columns: repeat(8, minmax(0, 1fr));
+  gap: 7px;
+}
+.avatar-creator-compact .avatar-icon-grid > button {
+  min-height: 40px;
+  padding: 4px;
+  font-size: 23px;
+}
+.avatar-creator-compact .avatar-sticker-grid {
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 6px;
+}
+.avatar-creator-compact .avatar-sticker-grid > button {
+  padding: 4px;
+  gap: 2px;
+  border-radius: 12px;
+}
+.avatar-creator-compact .avatar-sticker-grid > button > div {
+  width: 32px;
+  height: 32px;
+}
+.avatar-creator-compact .avatar-color-panel > .grid {
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+}
+.avatar-creator-compact .avatar-color-panel button {
+  padding: 8px;
+  gap: 6px;
+  min-height: 48px;
+}
+.avatar-creator-compact .avatar-color-panel button > div {
+  width: 24px;
+  height: 24px;
+}
+.avatar-creator-compact .avatar-color-panel button > span {
+  font-size: 11px;
+}
+.avatar-creator-compact .avatar-badge-panel > .grid {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 6px;
+}
+.avatar-creator-compact .avatar-badge-panel button {
+  padding: 7px 9px;
+  min-height: 36px;
+  font-size: 12px;
+}
+.avatar-creator-compact .space-y-3 > button {
+  padding-block: 12px;
+  gap: 8px;
+}
+@media (min-width: 751px) and (max-height: 900px) {
+  .td-fit-auth .td-auth-header {
+    height: 56px;
+  }
+  .td-fit-auth .td-auth-layout {
+    min-height: calc(100dvh - 56px);
+  }
+  .td-fit-auth .td-auth-form-side {
+    padding-block: 8px 12px;
+  }
+  .td-fit-auth h1 {
+    font-size: 32px;
+  }
+  .td-fit-auth .td-auth-intro {
+    margin-top: 7px;
+    font-size: 12px;
+  }
+  .td-fit-auth .td-auth-tabs {
+    margin-top: 12px;
+  }
+  .td-fit-auth .go-checkpoint-path {
+    margin-bottom: 10px;
+  }
+  .td-fit-auth .auth-pal-caption h2 {
+    font-size: 31px;
+  }
+  .td-fit-auth .auth-pal-speech {
+    font-size: 17px;
+    min-height: 52px;
+  }
+}
+@media (max-width: 750px) {
+  .td-fit-auth .td-auth-header {
+    height: 60px;
+    padding-inline: 20px;
+  }
+  .td-fit-auth .td-brand {
+    font-size: 24px !important;
+  }
+  .td-fit-auth .td-brand-mark {
+    height: 35px;
+    width: 33px;
+  }
+  .td-auth-header-actions {
+    gap: 10px;
+  }
+  .td-auth-demo-button {
+    font-size: 10px;
+    max-width: 95px;
+    line-height: 1.3;
+    text-align: start;
+  }
+  .td-auth-demo-button svg {
+    display: none;
+  }
+  .td-fit-auth .td-lang {
+    min-width: 44px;
+  }
+  .td-fit-auth .td-auth-layout {
+    display: block;
+    min-height: calc(100dvh - 60px);
+  }
+  .td-fit-auth .td-auth-form-side {
+    padding: 10px 20px 16px;
+  }
+  .td-fit-auth h1 {
+    font-size: 31px;
+  }
+  .td-fit-auth .td-auth-intro {
+    font-size: 12px;
+    margin-top: 7px;
+    line-height: 1.4;
+  }
+  .td-fit-auth .td-auth-tabs {
+    margin-top: 12px;
+  }
+  .td-fit-auth .td-auth-tabs button {
+    font-size: 16px;
+    padding-inline: 10px;
+  }
+  .td-fit-auth .auth-pal-compact {
+    min-height: 64px;
+    margin: 12px 0 7px;
+    gap: 8px;
+  }
+  .td-fit-auth .auth-pal-compact .auth-pal-scene {
+    width: 64px;
+    flex-basis: 64px;
+  }
+  .td-fit-auth .auth-pal-compact .auth-pal-speech {
+    font-size: 14px;
+    min-height: 52px;
+    padding: 10px 13px;
+    margin: 0;
+  }
+  .td-fit-auth .td-onboarding {
+    padding-top: 3px;
+  }
+  .td-fit-auth .go-checkpoint-label {
+    font-size: 11px;
+  }
+  .td-fit-auth .go-checkpoint-path {
+    padding-inline: 0;
+    margin-bottom: 11px;
+  }
+  .td-fit-auth .go-fields {
+    gap: 10px;
+  }
+  .td-fit-auth .go-label {
+    font-size: 11px;
+  }
+  .td-fit-auth .go-heading {
+    font-size: 22px;
+  }
+  .td-fit-auth .go-input {
+    padding-inline: 10px;
+  }
+  .td-fit-auth .go-footer {
+    margin-top: 12px;
+    padding-top: 10px;
+  }
+  .avatar-creator-compact .avatar-icon-grid {
+    grid-template-columns: repeat(6, minmax(0, 1fr));
+    gap: 6px;
+  }
+  .avatar-creator-compact .avatar-icon-grid > button {
+    min-height: 40px;
+  }
+  .avatar-creator-compact .avatar-sticker-grid {
+    grid-template-columns: repeat(5, minmax(0, 1fr));
+  }
+  .avatar-creator-compact .avatar-sticker-grid > button > span {
+    font-size: 9px;
+  }
+  .avatar-creator-compact .avatar-color-panel > .grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .td-fit-auth .td-login-form {
+    margin-top: 14px;
+  }
+}
+@media (max-width: 750px) and (max-height: 740px) {
+  .td-fit-auth .td-auth-header {
+    height: 54px;
+  }
+  .td-fit-auth .td-auth-layout {
+    min-height: calc(100dvh - 54px);
+  }
+  .td-fit-auth .td-auth-form-side {
+    padding-top: 4px;
+  }
+  .td-fit-auth h1 {
+    font-size: 27px;
+  }
+  .td-fit-auth.is-signup .td-auth-intro {
+    display: none;
+  }
+  .td-fit-auth .auth-pal-compact {
+    min-height: 51px;
+    margin: 8px 0 4px;
+  }
+  .td-fit-auth .auth-pal-compact .auth-pal-scene {
+    width: 51px;
+    flex-basis: 51px;
+  }
+  .td-fit-auth .auth-pal-compact .auth-pal-speech {
+    min-height: 44px;
+    font-size: 13px;
+    padding: 8px 11px;
+  }
+  .td-fit-auth .go-checkpoint-path {
+    margin-bottom: 7px;
+  }
+  .td-fit-auth .go-footer {
+    margin-top: 9px;
+    padding-top: 8px;
+  }
+}
+
+@media (max-width: 750px) {
+  .td-fit-auth.is-signup .td-auth-intro {
+    display: none;
+  }
+  .td-fit-auth.is-signup[data-step="2"] h1 :is(span, br) {
+    display: none;
+  }
+  .td-fit-auth.is-signup[data-step="2"]
+    .go-stage
+    > div
+    > :is(.go-heading, .go-hint) {
+    display: none;
+  }
+}
+@media (max-width: 750px) and (max-height: 740px) {
+  .td-fit-auth.is-signup[data-step="2"] h1 {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    padding: 0;
+    margin: -1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .td-fit-auth.is-signup[data-step="2"] .avatar-creator-compact {
+    gap: 6px;
+  }
+  .td-fit-auth.is-signup[data-step="2"] .td-auth-form-side {
+    padding-bottom: 8px;
+  }
+}
