@@ -1,0 +1,44 @@
+[
+  {
+    "repository": "nextlevelbuilder/ui-ux-pro-max-skill",
+    "stars": 129984,
+    "checked": "2026-09-23",
+    "commit": "dcc40ff5133ef78276117db0cc34e7b83cc8aeba",
+    "url": "https://github.com/nextlevelbuilder/ui-ux-pro-max-skill"
+  },
+  {
+    "repository": "pbakaus/impeccable",
+    "stars": 70013,
+    "checked": "2026-09-23",
+    "commit": "e0881d2de397d5e9761d7b35ff5017d8f5ebf69b",
+    "url": "https://github.com/pbakaus/impeccable"
+  },
+  {
+    "repository": "msitarzewski/agency-agents",
+    "stars": 154252,
+    "checked": "2026-09-23",
+    "commit": "053ddbbf392a1688fc7043d81529f47ef2cf86c8",
+    "url": "https://github.com/msitarzewski/agency-agents"
+  },
+  {
+    "repository": "anthropics/skills",
+    "stars": 177722,
+    "checked": "2026-09-23",
+    "commit": "34040c9c568585f6929bedeaad110ad08f079624",
+    "url": "https://github.com/anthropics/skills"
+  },
+  {
+    "repository": "vercel-labs/agent-skills",
+    "stars": 31473,
+    "checked": "2026-09-23",
+    "commit": "063bee94c3f4df8453406c830b0a7df0f2860278",
+    "url": "https://github.com/vercel-labs/agent-skills"
+  },
+  {
+    "repository": "Leonxlnx/taste-skill",
+    "stars": 89412,
+    "checked": "2026-09-23",
+    "commit": "c184364c58658b2f131b4ae8bd3d206cabb3deee",
+    "url": "https://github.com/Leonxlnx/taste-skill"
+  }
+]

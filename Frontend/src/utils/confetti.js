@@ -1,10 +1,10 @@
-const BRAND_COLORS = ['#6366f1', '#8b5cf6', '#06b6d4', '#10b981', '#f59e0b', '#ec4899'];
+const BRAND_COLORS = ["#17675c", "#c65035", "#bda9d8", "#e5be63", "#8faa7f"];
 
 let confettiPromise;
 
 function loadConfetti() {
   if (!confettiPromise) {
-    confettiPromise = import('canvas-confetti')
+    confettiPromise = import("canvas-confetti")
       .then((mod) => mod.default)
       .catch(() => {
         confettiPromise = null;

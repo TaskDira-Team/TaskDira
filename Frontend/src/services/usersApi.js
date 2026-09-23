@@ -1,8 +1,16 @@
-import { enrichUser, getLedgerEntry } from './mappers';
-import { store, delay, getRawUser, recalculateRanks, getActiveHouseholdId, hydrateHouseholdMembers } from './store';
-import { TASK_STATUSES } from '../data/mockData';
-import { USE_REAL_API } from './config';
-import { fetchHouseholdRoster } from './usersRemote';
+import { enrichUser, getLedgerEntry } from "./mappers";
+import {
+  store,
+  delay,
+  getRawUser,
+  recalculateRanks,
+  getActiveHouseholdId,
+  hydrateHouseholdMembers,
+} from "./store";
+import { TASK_STATUSES } from "../data/mockData";
+import { USE_REAL_API } from "./config";
+import { fetchHouseholdRoster } from "./usersRemote";
+import { adjustLocalTaskPoints, spendLocalCoins } from "./localWallet.js";
 
 export { enrichUser };
 
@@ -29,9 +37,11 @@ export async function fetchUsers() {
   await delay();
   const hid = getActiveHouseholdId();
   const memberIds = new Set(
-    store.members.filter((m) => m.householdId === hid).map((m) => m.userId)
+    store.members.filter((m) => m.householdId === hid).map((m) => m.userId),
   );
-  return store.users.filter((u) => memberIds.has(u.id)).map((u) => enrichUser(u));
+  return store.users
+    .filter((u) => memberIds.has(u.id))
+    .map((u) => enrichUser(u));
 }
 
 // Stays local even when USE_REAL_API.users is on: the backend ledger requires a
@@ -48,13 +58,14 @@ export async function updateUserPoints(userId, pointsDelta) {
       householdId: hid,
       userId,
       totalPoints: 0,
+      balance: 0,
       rank: 99,
       month: now.getMonth() + 1,
       year: now.getFullYear(),
     };
     store.pointsLedger.push(ledger);
   }
-  ledger.totalPoints = Math.max(0, ledger.totalPoints + pointsDelta);
+  Object.assign(ledger, adjustLocalTaskPoints(ledger, pointsDelta));
 
   const user = getRawUser(userId);
   if (user) {
@@ -69,7 +80,10 @@ export async function updateUserPoints(userId, pointsDelta) {
   recalculateRanks(hid);
 
   if (store.currentUser?.id === userId) {
-    store.currentUser = enrichUser(getRawUser(userId));
+    store.currentUser = {
+      ...store.currentUser,
+      ...enrichUser(getRawUser(userId)),
+    };
   }
   return enrichUser(getRawUser(userId));
 }
@@ -96,10 +110,14 @@ export function bumpDailyStreak(user) {
 export async function deductPoints(userId, amount) {
   await delay(200);
   const user = getRawUser(userId);
-  if (!user) throw new Error('משתמש לא נמצא');
+  if (!user) throw new Error("משתמש לא נמצא");
   const ledger = getLedgerEntry(userId);
-  if (!ledger || ledger.totalPoints < amount) throw new Error('אין מספיק נקודות למימוש פרס זה');
-  return updateUserPoints(userId, -amount);
+  Object.assign(ledger, spendLocalCoins(ledger, amount));
+  const updatedUser = enrichUser(user);
+  if (store.currentUser?.id === userId) {
+    store.currentUser = { ...store.currentUser, ...updatedUser };
+  }
+  return updatedUser;
 }
 
 export async function getLeaderboard() {
@@ -110,7 +128,7 @@ export async function getLeaderboard() {
   await delay();
   const hid = getActiveHouseholdId();
   const memberIds = new Set(
-    store.members.filter((m) => m.householdId === hid).map((m) => m.userId)
+    store.members.filter((m) => m.householdId === hid).map((m) => m.userId),
   );
   return store.users
     .filter((u) => memberIds.has(u.id))
@@ -179,7 +197,7 @@ export async function resetMonthlyScores() {
   });
 
   const memberIds = new Set(
-    store.members.filter((m) => m.householdId === hid).map((m) => m.userId)
+    store.members.filter((m) => m.householdId === hid).map((m) => m.userId),
   );
   store.users.forEach((u) => {
     if (memberIds.has(u.id)) u.tasksCompletedThisMonth = 0;
@@ -210,4 +228,19 @@ export async function getMonthlyLeaderboardHistory() {
   await delay(100);
   const hid = getActiveHouseholdId();
   return store.monthlyLeaderboardHistory.filter((h) => h.householdId === hid);
+}
+
+// Local ledgers are monthly earned totals; spending changes balance only.
+export function getLocalMonthlyEarnedXp(now = new Date()) {
+  const hid = getActiveHouseholdId();
+  return store.pointsLedger.reduce(
+    (sum, entry) =>
+      sum +
+      (entry.householdId === hid &&
+      entry.month === now.getMonth() + 1 &&
+      entry.year === now.getFullYear()
+        ? Math.max(0, Number(entry.totalPoints) || 0)
+        : 0),
+    0,
+  );
 }

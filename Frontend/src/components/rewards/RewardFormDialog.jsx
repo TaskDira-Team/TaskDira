@@ -1,6 +1,13 @@
-import { useEffect, useState } from 'react';
-import { Dialog, Field, GhostButton, LimeButton, darkControlStyle, fieldClass } from '../ui/kit';
-import { useI18n } from '../../context/I18nContext';
+import { useEffect, useState } from "react";
+import {
+  Dialog,
+  Field,
+  GhostButton,
+  LimeButton,
+  darkControlStyle,
+  fieldClass,
+} from "../ui/kit";
+import { useI18n } from "../../context/I18nContext";
 
 /**
  * One form for both creating and editing a reward, replacing the three
@@ -13,13 +20,20 @@ import { useI18n } from '../../context/I18nContext';
  * the threshold until the field is edited, so the default survives without a
  * separate step.
  */
-export default function RewardFormDialog({ open, reward, busy = false, onSubmit, onClose }) {
-  const { t } = useI18n();
+export default function RewardFormDialog({
+  open,
+  reward,
+  busy = false,
+  onSubmit,
+  onClose,
+}) {
+  const { t, lang } = useI18n();
+  const en = lang === "en";
   const isEdit = !!reward;
 
-  const [title, setTitle] = useState('');
-  const [requiredPoints, setRequiredPoints] = useState('50');
-  const [cost, setCost] = useState('50');
+  const [title, setTitle] = useState("");
+  const [requiredPoints, setRequiredPoints] = useState("50");
+  const [cost, setCost] = useState("50");
   const [costTouched, setCostTouched] = useState(false);
 
   // Reset whenever the dialog opens so a cancelled edit never leaks into the
@@ -27,14 +41,14 @@ export default function RewardFormDialog({ open, reward, busy = false, onSubmit,
   useEffect(() => {
     if (!open) return;
     if (reward) {
-      setTitle(reward.title ?? '');
+      setTitle(reward.title ?? "");
       setRequiredPoints(String(reward.requiredPoints ?? 50));
       setCost(String(reward.cost ?? reward.requiredPoints ?? 50));
       setCostTouched(true);
     } else {
-      setTitle('');
-      setRequiredPoints('50');
-      setCost('50');
+      setTitle("");
+      setRequiredPoints("50");
+      setCost("50");
       setCostTouched(false);
     }
   }, [open, reward]);
@@ -51,7 +65,10 @@ export default function RewardFormDialog({ open, reward, busy = false, onSubmit,
 
     const points = Number(requiredPoints) || 0;
     const parsedCost = Number(cost);
-    const cleanCost = cost.trim() === '' || Number.isNaN(parsedCost) || parsedCost < 0 ? points : parsedCost;
+    const cleanCost =
+      cost.trim() === "" || Number.isNaN(parsedCost) || parsedCost < 0
+        ? points
+        : parsedCost;
 
     onSubmit({ title: cleanTitle, requiredPoints: points, cost: cleanCost });
   };
@@ -60,11 +77,11 @@ export default function RewardFormDialog({ open, reward, busy = false, onSubmit,
     <Dialog
       open={open}
       onClose={onClose}
-      title={isEdit ? t('dialog.editReward') : t('dialog.newReward')}
+      title={isEdit ? t("dialog.editReward") : t("dialog.newReward")}
       footer={
         <div className="flex gap-3">
           <GhostButton onClick={onClose} className="flex-1">
-            {t('cancel')}
+            {t("cancel")}
           </GhostButton>
           <LimeButton
             type="submit"
@@ -72,25 +89,33 @@ export default function RewardFormDialog({ open, reward, busy = false, onSubmit,
             disabled={busy || !title.trim()}
             className="flex-1"
           >
-            {isEdit ? t('dialog.save') : t('dialog.create')}
+            {isEdit ? t("dialog.save") : t("dialog.create")}
           </LimeButton>
         </div>
       }
     >
       <form id="reward-form" onSubmit={handleSubmit} className="space-y-4">
-        <Field label={t('promptName')} htmlFor="reward-title">
+        <Field label={t("promptName")} htmlFor="reward-title">
           <input
             id="reward-title"
             type="text"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             required
-            placeholder={t('promptRewardName')}
+            placeholder={t("promptRewardName")}
             className={fieldClass}
           />
         </Field>
 
-        <Field label={t('promptRewardThreshold')} htmlFor="reward-threshold">
+        <Field
+          label={en ? "XP needed to unlock" : "XP לפתיחת הפרס"}
+          hint={
+            en
+              ? "Earned XP unlocks it. Only coins are spent."
+              : "XP שנצברו פותחים את הפרס. רק מטבעות מנוכים במימוש."
+          }
+          htmlFor="reward-threshold"
+        >
           <input
             id="reward-threshold"
             type="number"
@@ -105,8 +130,8 @@ export default function RewardFormDialog({ open, reward, busy = false, onSubmit,
         </Field>
 
         <Field
-          label={t('promptRewardCost')}
-          hint={costTouched ? undefined : t('dialog.rewardCostHint')}
+          label={en ? "Price in coins" : "מחיר במטבעות"}
+          hint={costTouched ? undefined : t("dialog.rewardCostHint")}
           htmlFor="reward-cost"
         >
           <input

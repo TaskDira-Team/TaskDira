@@ -1,16 +1,35 @@
-import { createContext, useContext, useState, useEffect, useCallback, useMemo } from 'react';
-import { api } from '../services/api';
-import { fetchMonthlyEarnedXp } from '../services/pointsRemote';
-import { USE_REAL_API } from '../services/config';
-import { completedThisMonth } from '../utils/monthlyStats';
-import { STATUS_LABELS, TASK_STATUSES } from '../data/mockData';
-import { useAuth } from './AuthContext';
-import { fireTaskCompleteConfetti, fireProofSubmittedConfetti } from '../utils/confetti';
-import { playTaskCompleteSound, playRewardClaimSound, isSoundEnabled, setSoundEnabled } from '../utils/sound';
+import {
+  createContext,
+  useContext,
+  useState,
+  useEffect,
+  useCallback,
+  useMemo,
+} from "react";
+import { api } from "../services/api";
+import { getLocalMonthlyEarnedXp } from "../services/usersApi";
+import { fetchMonthlyEarnedXp } from "../services/pointsRemote";
+import { USE_REAL_API } from "../services/config";
+import { completedThisMonth } from "../utils/monthlyStats";
+import { STATUS_LABELS, TASK_STATUSES } from "../data/mockData";
+import { useAuth } from "./AuthContext";
+import { useI18n } from "./I18nContext";
+import {
+  fireTaskCompleteConfetti,
+  fireProofSubmittedConfetti,
+} from "../utils/confetti";
+import {
+  playTaskCompleteSound,
+  playRewardClaimSound,
+  isSoundEnabled,
+  setSoundEnabled,
+} from "../utils/sound";
 
 const AppContext = createContext(null);
 
 export function AppProvider({ children }) {
+  const { lang, tx } = useI18n();
+  const he = lang === "he";
   const { user, updateProfile: authUpdateProfile, syncUser } = useAuth();
   const [household, setHousehold] = useState(null);
   const [users, setUsers] = useState([]);
@@ -20,6 +39,7 @@ export function AppProvider({ children }) {
   const [members, setMembers] = useState([]);
   const [monthlyXp, setMonthlyXp] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(null);
   const [toasts, setToasts] = useState([]);
   const [celebration, setCelebration] = useState(null);
   const [animatingTaskId, setAnimatingTaskId] = useState(null);
@@ -32,23 +52,29 @@ export function AppProvider({ children }) {
 
   const permissions = useMemo(
     () => ({
-      isAdmin: user?.userRole === 'Admin' || user?.isAdmin === true,
-      userRole: user?.userRole ?? (user?.isAdmin ? 'Admin' : 'Member'),
+      isAdmin: user?.userRole === "Admin" || user?.isAdmin === true,
+      userRole: user?.userRole ?? (user?.isAdmin ? "Admin" : "Member"),
       canCreateTask: !!user,
-      canDeleteTask: user?.userRole === 'Admin' || user?.isAdmin === true,
+      canDeleteTask: user?.userRole === "Admin" || user?.isAdmin === true,
       canChangePoints: !!user,
       canSetDueDate: !!user,
       canReassign: !!user,
     }),
-    [user]
+    [user],
   );
 
-  const getTaskPermissions = useCallback((task) => api.getPermissions(user, task), [user]);
+  const getTaskPermissions = useCallback(
+    (task) => api.getPermissions(user, task),
+    [user],
+  );
 
-  const addToast = useCallback((message, type = 'success') => {
+  const addToast = useCallback((message, type = "success") => {
     const id = Date.now();
     setToasts((prev) => [...prev, { id, message, type }]);
-    setTimeout(() => setToasts((prev) => prev.filter((t) => t.id !== id)), 3500);
+    setTimeout(
+      () => setToasts((prev) => prev.filter((t) => t.id !== id)),
+      3500,
+    );
   }, []);
 
   const spawnXpBurst = useCallback((points) => {
@@ -82,29 +108,54 @@ export function AppProvider({ children }) {
       fireTaskCompleteConfetti();
       playTaskCompleteSound();
       if (pts > 0) spawnXpBurst(pts);
-      addToast(`🎉 "${task.title}" הושלמה! +${pts} נקודות`, 'success');
+      addToast(
+        he
+          ? `🎉 "${task.title}" הושלמה! +${pts} נקודות`
+          : `🎉 "${tx(task.title)}" complete! +${pts} XP`,
+        "success",
+      );
     },
-    [addToast, spawnXpBurst]
+    [addToast, spawnXpBurst, he, tx],
   );
 
   const refreshData = useCallback(async () => {
-    const [householdData, usersData, tasksData, leaderboardData, rewardsData, membersData, earnedXp] =
-      await Promise.all([
+    try {
+      const [
+        householdData,
+        usersData,
+        tasksData,
+        leaderboardData,
+        rewardsData,
+        membersData,
+        earnedXp,
+      ] = await Promise.all([
         api.getHousehold(),
         api.getUsers(),
         api.getTasks(),
         api.getLeaderboard(),
         api.getRewards(),
         api.getMembers().catch(() => []),
-        USE_REAL_API.tasks ? fetchMonthlyEarnedXp() : Promise.resolve(0),
+        USE_REAL_API.tasks
+          ? fetchMonthlyEarnedXp()
+          : Promise.resolve(getLocalMonthlyEarnedXp()),
       ]);
-    setHousehold(householdData);
-    setUsers(usersData.map(member => ({ ...member, tasksCompletedThisMonth: completedThisMonth(tasksData, member.id) })));
-    setMonthlyXp(earnedXp);
-    setTasks(tasksData);
-    setLeaderboard(leaderboardData);
-    setRewards(rewardsData);
-    setMembers(membersData);
+      setHousehold(householdData);
+      setUsers(
+        usersData.map((member) => ({
+          ...member,
+          tasksCompletedThisMonth: completedThisMonth(tasksData, member.id),
+        })),
+      );
+      setMonthlyXp(earnedXp);
+      setTasks(tasksData);
+      setLeaderboard(leaderboardData);
+      setRewards(rewardsData);
+      setMembers(membersData);
+      setLoadError(null);
+    } catch (error) {
+      setLoadError(error.message || "Could not load household data.");
+      throw error;
+    }
   }, []);
 
   // syncUser after the first load: the auth user is hydrated before the roster
@@ -116,6 +167,9 @@ export function AppProvider({ children }) {
     setLoading(true);
     refreshData()
       .then(() => syncUser())
+      .catch(() => {
+        /* The app shell displays a retryable loading error. */
+      })
       .finally(() => setLoading(false));
   }, [user?.id, user?.activeHouseholdId, refreshData, syncUser]);
 
@@ -124,14 +178,18 @@ export function AppProvider({ children }) {
       try {
         const task = await api.createTask(taskData);
         await refreshData();
-        addToast(`משימה "${task.title}" נוצרה בהצלחה`);
+        addToast(
+          he
+            ? `משימה "${task.title}" נוצרה בהצלחה`
+            : `Quest "${tx(task.title)}" created!`,
+        );
         return task;
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const updateTask = useCallback(
@@ -139,14 +197,18 @@ export function AppProvider({ children }) {
       try {
         const task = await api.updateTask(taskId, updates);
         await refreshData();
-        addToast(`משימה "${task.title}" עודכנה`);
+        addToast(
+          he
+            ? `משימה "${task.title}" עודכנה`
+            : `Quest "${tx(task.title)}" updated!`,
+        );
         return task;
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const moveTask = useCallback(
@@ -160,17 +222,22 @@ export function AppProvider({ children }) {
         if (newStatus === TASK_STATUSES.DONE) {
           celebrateTaskDone(task);
         } else {
-          addToast(`"${task.title}" הועברה ל${STATUS_LABELS[newStatus]}`, 'info');
+          addToast(
+            he
+              ? `"${task.title}" הועברה ל${STATUS_LABELS[newStatus]}`
+              : `"${tx(task.title)}" moved to ${tx(STATUS_LABELS[newStatus])}`,
+            "info",
+          );
         }
         return task;
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       } finally {
         setTimeout(() => setAnimatingTaskId(null), 500);
       }
     },
-    [refreshData, addToast, celebrateTaskDone, syncUser]
+    [refreshData, addToast, celebrateTaskDone, syncUser, he, tx],
   );
 
   const submitTaskProof = useCallback(
@@ -179,14 +246,19 @@ export function AppProvider({ children }) {
         const task = await api.submitTaskProof(taskId, proofImageData);
         await refreshData();
         fireProofSubmittedConfetti();
-        addToast(`📸 "${task.title}" נשלח לאישור מנהל`, 'info');
+        addToast(
+          he
+            ? `📸 "${task.title}" נשלח לאישור מנהל`
+            : `📸 "${tx(task.title)}" sent for approval`,
+          "info",
+        );
         return task;
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const approveTask = useCallback(
@@ -199,13 +271,13 @@ export function AppProvider({ children }) {
         celebrateTaskDone(task);
         return task;
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       } finally {
         setTimeout(() => setAnimatingTaskId(null), 500);
       }
     },
-    [refreshData, addToast, celebrateTaskDone, syncUser]
+    [refreshData, addToast, celebrateTaskDone, syncUser, he, tx],
   );
 
   const rejectTask = useCallback(
@@ -213,14 +285,19 @@ export function AppProvider({ children }) {
       try {
         const task = await api.rejectTask(taskId, reason);
         await refreshData();
-        addToast(`"${task.title}" נדחה – נסו שוב`, 'warning');
+        addToast(
+          he
+            ? `"${task.title}" נדחה – נסו שוב`
+            : `"${tx(task.title)}" needs another try`,
+          "warning",
+        );
         return task;
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const claimTask = useCallback(
@@ -228,14 +305,19 @@ export function AppProvider({ children }) {
       try {
         const task = await api.claimTask(taskId);
         await refreshData();
-        addToast(`תפסת את המשימה "${task.title}"! 💪`, 'success');
+        addToast(
+          he
+            ? `תפסת את המשימה "${task.title}"! 💪`
+            : `You claimed "${tx(task.title)}"! 💪`,
+          "success",
+        );
         return task;
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const deleteTask = useCallback(
@@ -243,14 +325,19 @@ export function AppProvider({ children }) {
       try {
         const task = await api.deleteTask(taskId);
         await refreshData();
-        addToast(`משימה "${task.title}" נמחקה`, 'warning');
+        addToast(
+          he
+            ? `משימה "${task.title}" נמחקה`
+            : `Quest "${tx(task.title)}" deleted`,
+          "warning",
+        );
         return task;
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const toggleSubItem = useCallback(
@@ -260,31 +347,36 @@ export function AppProvider({ children }) {
         await refreshData();
         return task;
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const resetMonthlyScores = useCallback(async () => {
     try {
       await api.resetMonthlyScores();
       await refreshData();
-      addToast('איפוס חודשי: משימות שבוצעו הועברו לארכיון, נקודות ננעלו ללוח היסטוריה', 'info');
+      addToast(
+        he
+          ? "איפוס חודשי: משימות שבוצעו הועברו לארכיון, נקודות ננעלו ללוח היסטוריה"
+          : "Monthly reset complete",
+        "info",
+      );
     } catch (err) {
-      addToast(err.message, 'warning');
+      addToast(err.message, "warning");
       throw err;
     }
-  }, [refreshData, addToast]);
+  }, [refreshData, addToast, he, tx]);
 
   const updateProfile = useCallback(
     async (updates) => {
       await authUpdateProfile(updates);
       await refreshData();
-      addToast('הפרופיל עודכן בהצלחה');
+      addToast(he ? "הפרופיל עודכן בהצלחה" : "Your character is ready!");
     },
-    [authUpdateProfile, refreshData, addToast]
+    [authUpdateProfile, refreshData, addToast, he],
   );
 
   const redeemReward = useCallback(
@@ -296,15 +388,15 @@ export function AppProvider({ children }) {
         playRewardClaimSound();
         setCelebration({
           reward: result.reward,
-          remainingPoints: result.user?.balance ?? result.user?.points ?? 0,
+          remainingPoints: result.user?.balance ?? 0,
         });
         return result;
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [syncUser, refreshData, addToast]
+    [syncUser, refreshData, addToast],
   );
 
   const createReward = useCallback(
@@ -312,13 +404,13 @@ export function AppProvider({ children }) {
       try {
         await api.createReward(data);
         await refreshData();
-        addToast('פרס חדש נוסף לחנות!');
+        addToast(he ? "פרס חדש נוסף לחנות!" : "A new treat is in the shop!");
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const updateReward = useCallback(
@@ -326,13 +418,13 @@ export function AppProvider({ children }) {
       try {
         await api.updateReward(id, data);
         await refreshData();
-        addToast('הפרס עודכן');
+        addToast(he ? "הפרס עודכן" : "Reward updated");
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const deleteReward = useCallback(
@@ -340,13 +432,13 @@ export function AppProvider({ children }) {
       try {
         await api.deleteReward(id);
         await refreshData();
-        addToast('הפרס נמחק', 'warning');
+        addToast(he ? "הפרס נמחק" : "Reward deleted", "warning");
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const inviteMember = useCallback(
@@ -354,14 +446,14 @@ export function AppProvider({ children }) {
       try {
         const invited = await api.inviteUser({ email });
         await refreshData();
-        addToast('ההזמנה נשלחה בהצלחה');
+        addToast(he ? "ההזמנה נשלחה בהצלחה" : "Invitation sent");
         return invited;
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const changeMemberRole = useCallback(
@@ -369,13 +461,13 @@ export function AppProvider({ children }) {
       try {
         await api.changeMemberRole(userId, role);
         await refreshData();
-        addToast('התפקיד עודכן');
+        addToast(he ? "התפקיד עודכן" : "Role updated");
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const removeMember = useCallback(
@@ -383,25 +475,32 @@ export function AppProvider({ children }) {
       try {
         await api.removeMember(userId);
         await refreshData();
-        addToast('החבר הוסר מהבית', 'warning');
+        addToast(
+          he ? "החבר הוסר מהבית" : "Member removed from household",
+          "warning",
+        );
       } catch (err) {
-        addToast(err.message, 'warning');
+        addToast(err.message, "warning");
         throw err;
       }
     },
-    [refreshData, addToast]
+    [refreshData, addToast, he, tx],
   );
 
   const dismissCelebration = useCallback(() => setCelebration(null), []);
 
-  const pendingApprovalCount = tasks.filter((t) => t.status === TASK_STATUSES.PENDING_APPROVAL).length;
+  const pendingApprovalCount = tasks.filter(
+    (t) => t.status === TASK_STATUSES.PENDING_APPROVAL,
+  ).length;
 
   return (
     <AppContext.Provider
       value={{
         monthlyXp,
         household,
-        group: household ? { id: household.id, name: household.displayName } : null,
+        group: household
+          ? { id: household.id, name: household.displayName }
+          : null,
         users,
         tasks,
         leaderboard,
@@ -411,6 +510,9 @@ export function AppProvider({ children }) {
         changeMemberRole,
         removeMember,
         loading,
+        loadError,
+        dismissToast: (id) =>
+          setToasts((previous) => previous.filter((toast) => toast.id !== id)),
         toasts,
         celebration,
         xpBursts,
@@ -453,6 +555,6 @@ export function AppProvider({ children }) {
 
 export function useApp() {
   const ctx = useContext(AppContext);
-  if (!ctx) throw new Error('useApp must be used within AppProvider');
+  if (!ctx) throw new Error("useApp must be used within AppProvider");
   return ctx;
 }

@@ -1,144 +1,138 @@
-import { useState } from 'react';
-import { Pencil, Plus, Trash2 } from 'lucide-react';
-import { useI18n } from '../context/I18nContext';
-import { useAuth } from '../context/AuthContext';
-import { useApp } from '../context/AppContext';
+import { useState } from "react";
 import {
-  ACCENTS,
+  Check,
+  Coins,
+  Gift,
+  LockKeyhole,
+  Pencil,
+  Plus,
+  Sparkles,
+  Star,
+  Trash2,
+} from "lucide-react";
+import { useI18n } from "../context/I18nContext";
+import { useAuth } from "../context/AuthContext";
+import { useApp } from "../context/AppContext";
+import {
   ConfirmDialog,
   CountUp,
-  Dialog,
   LimeButton,
-  Panel,
   ScreenShell,
-} from '../components/ui/kit';
-import RewardFormDialog from '../components/rewards/RewardFormDialog';
-import Confetti from '../components/ui/Confetti';
+} from "../components/ui/kit";
+import RewardFormDialog from "../components/rewards/RewardFormDialog";
+import RewardReveal from "../components/rewards/RewardReveal";
+import useVisibleMotion from "../hooks/useVisibleMotion";
+import "../components/rewards/floatingShop.css";
+import "../components/ui/community.css";
 
-// `category` is free text with no fixed vocabulary; enrichReward falls back to a
-// tier derived from requiredPoints, so colour keys off that with a stable
-// per-position fallback for anything else.
-const CATEGORY_ACCENT = { tier1: 'lime', tier2: 'sky', tier3: 'gold' };
-const FALLBACK_ACCENTS = ['sky', 'coral', 'grape', 'gold', 'mint', 'lime'];
+const FILLS = [
+  "var(--community-coral)",
+  "var(--community-lilac)",
+  "var(--community-gold)",
+  "var(--community-mint)",
+];
 
-function accentFor(reward, index) {
-  return CATEGORY_ACCENT[reward.category] ?? FALLBACK_ACCENTS[index % FALLBACK_ACCENTS.length];
-}
-
-function AdminRow({ onEdit, onDelete }) {
-  return (
-    <div className="mt-3 flex justify-end gap-1 border-t border-white/8 pt-2">
-      <button
-        type="button"
-        onClick={onEdit}
-        className="rounded-lg p-1 text-ink-faint transition hover:text-sky"
-      >
-        <Pencil className="h-3.5 w-3.5" />
-      </button>
-      <button
-        type="button"
-        onClick={onDelete}
-        className="rounded-lg p-1 text-ink-faint transition hover:text-coral"
-      >
-        <Trash2 className="h-3.5 w-3.5" />
-      </button>
-    </div>
-  );
-}
-
-function RewardCard({ reward, accent, xp, balance, claiming, onClaim, isAdmin, onEdit, onDelete }) {
-  const { t } = useI18n();
-  const c = ACCENTS[accent];
-  const admin = isAdmin ? <AdminRow onEdit={onEdit} onDelete={onDelete} /> : null;
-
-  if (reward.claimed) {
-    return (
-      <div className="flex flex-col rounded-2xl border border-lime/35 bg-lime/8 p-4">
-        <div className="flex items-start justify-between">
-          <div
-            className="grid h-11 w-11 place-items-center rounded-xl text-xl"
-            style={{ background: `${c}1f`, border: `1px solid ${c}44` }}
-          >
-            {reward.emoji}
-          </div>
-          <span
-            className="grid h-7 w-7 place-items-center rounded-full text-sm font-black text-[#152007]"
-            style={{ background: ACCENTS.lime, boxShadow: `0 0 16px -4px ${ACCENTS.lime}` }}
-          >
-            ✓
-          </span>
-        </div>
-        <div className="mt-3 text-[14px] font-extrabold">{reward.title}</div>
-        <div className="mt-0.5 flex-1 text-[11px] text-ink-faint">{reward.description}</div>
-        <div className="num mt-4 text-center text-[12px] font-extrabold text-lime">
-          {t('rewards.claimedNote')}
-        </div>
-        {admin}
-      </div>
-    );
-  }
-
-  // Locked by standing: lifetime XP has not reached requiredPoints yet. This is
-  // not the same as being unable to afford it.
-  if (!reward.unlocked) {
-    const xpGap = Math.max(0, reward.requiredPoints - xp);
-    return (
-      <div className="flex flex-col rounded-2xl border-2 border-dashed border-white/15 bg-black/20 p-4">
-        <div className="grid h-11 w-11 place-items-center rounded-xl bg-white/5 text-xl opacity-45 grayscale">
-          {reward.emoji}
-        </div>
-        <div className="mt-3 text-[14px] font-extrabold text-ink-dim">{reward.title}</div>
-        <div className="mt-0.5 flex-1 text-[11px] text-ink-faint">{reward.description}</div>
-        <div className="num mt-4 rounded-full border border-white/12 py-2 text-center text-[12px] font-bold text-ink-faint">
-          🔒 {t('missingPoints')} {xpGap.toLocaleString('en-US')} XP
-        </div>
-        {admin}
-      </div>
-    );
-  }
-
-  // Unlocked but the wallet is short: the reward is earned, just not paid for.
+function RewardCard({
+  reward,
+  index,
+  xp,
+  balance,
+  claiming,
+  onClaim,
+  isAdmin,
+  onEdit,
+  onDelete,
+}) {
+  const { t, lang, tx } = useI18n();
+  const en = lang === "en";
+  const { ref, running } = useVisibleMotion();
+  const xpGap = Math.max(0, reward.requiredPoints - xp);
   const shortBy = Math.max(0, reward.cost - balance);
-  const affordable = reward.affordable && shortBy === 0;
-
+  const affordable = reward.unlocked && reward.affordable && shortBy === 0;
   return (
-    <div
-      className="group flex flex-col rounded-2xl border p-4 transition-transform duration-300 hover:-translate-y-1"
-      style={{ borderColor: `${c}38`, background: `${c}0f` }}
+    <article
+      ref={ref}
+      data-motion-running={running}
+      className={`community-reward ${reward.claimed ? "is-claimed" : !reward.unlocked ? "is-locked" : ""}`}
+      style={{
+        "--reward-fill": FILLS[index % FILLS.length],
+        "--float-delay": `${index * -0.85}s`,
+      }}
     >
-      <div className="flex items-start justify-between">
-        <div
-          className="grid h-11 w-11 place-items-center rounded-xl text-xl transition group-hover:scale-110"
-          style={{ background: `${c}22`, border: `1px solid ${c}55`, boxShadow: `0 0 22px -10px ${c}` }}
-        >
-          {reward.emoji}
+      <div className="community-reward-art">
+        <span aria-hidden="true">{reward.emoji || "🎁"}</span>
+        <div className="community-price">
+          <Coins size={16} aria-hidden="true" />
+          {reward.cost.toLocaleString()}
         </div>
-        <span className="num text-[13px] font-extrabold text-gold">
-          🪙 {reward.cost.toLocaleString('en-US')}
-        </span>
       </div>
-      <div className="mt-3 text-[14px] font-extrabold">{reward.title}</div>
-      <div className="mt-0.5 flex-1 text-[11px] text-ink-faint">{reward.description}</div>
-      <button
-        type="button"
-        disabled={!affordable || claiming}
-        onClick={onClaim}
-        className="mt-4 rounded-full bg-gradient-to-b from-lime to-lime-deep py-2 text-[13px] font-extrabold text-[#152007] transition hover:brightness-110 disabled:cursor-not-allowed disabled:bg-none disabled:bg-white/8 disabled:text-ink-faint"
-        style={affordable ? { boxShadow: `0 8px 22px -10px ${ACCENTS.lime}` } : undefined}
-      >
-        {claiming
-          ? '…'
-          : affordable
-            ? t('rewards.redeem')
-            : `${t('missingPoints')} ${shortBy.toLocaleString('en-US')}`}
-      </button>
-      {admin}
-    </div>
+      <div className="community-reward-body">
+        <h2>{tx(reward.title)}</h2>
+        <p>
+          {tx(reward.description) ||
+            (en
+              ? "A little something to make your hard work feel extra good."
+              : "משהו קטן שיהפוך את המאמץ שלכם לשווה עוד יותר.")}
+        </p>
+        {!reward.claimed && !reward.unlocked && (
+          <div className="mb-3 flex items-center gap-2 text-sm text-ink-dim">
+            <LockKeyhole size={15} aria-hidden="true" />
+            {xpGap.toLocaleString()} XP {en ? "to unlock" : "לפתיחה"}
+          </div>
+        )}
+        {reward.claimed ? (
+          <div className="community-chip justify-center py-3">
+            <Check size={18} aria-hidden="true" />
+            {t("rewards.claimedNote")}
+          </div>
+        ) : (
+          <button
+            type="button"
+            disabled={!affordable || claiming}
+            onClick={onClaim}
+            className="community-reward-action"
+          >
+            {claiming
+              ? en
+                ? "Redeeming…"
+                : "מממשים…"
+              : !reward.unlocked
+                ? en
+                  ? "Keep earning XP"
+                  : "ממשיכים לצבור XP"
+                : affordable
+                  ? t("rewards.redeem")
+                  : `${shortBy.toLocaleString()} ${en ? "more coins needed" : "מטבעות נוספים נדרשים"}`}
+          </button>
+        )}
+        {isAdmin && (
+          <div className="reward-admin-tools">
+            <button
+              type="button"
+              onClick={onEdit}
+              className="community-icon-button"
+              aria-label={`${en ? "Edit" : "עריכה"} ${tx(reward.title)}`}
+            >
+              <Pencil size={17} />
+            </button>
+            <button
+              type="button"
+              onClick={onDelete}
+              className="community-icon-button"
+              aria-label={`${en ? "Delete" : "מחיקה"} ${tx(reward.title)}`}
+            >
+              <Trash2 size={17} />
+            </button>
+          </div>
+        )}
+      </div>
+    </article>
   );
 }
 
 export default function Rewards() {
-  const { t, dir, tx } = useI18n();
+  const { t, dir, tx, lang } = useI18n();
+  const en = lang === "en";
   const { user } = useAuth();
   const {
     rewards,
@@ -159,7 +153,7 @@ export default function Rewards() {
 
   const me = users.find((u) => u.id === user?.id) || user;
   const xp = me?.points ?? 0;
-  const balance = me?.balance ?? xp;
+  const balance = me?.balance ?? 0;
   const isAdmin = permissions?.isAdmin === true;
 
   const handleClaim = async (reward) => {
@@ -192,7 +186,7 @@ export default function Rewards() {
       if (editing) {
         await updateReward(editing.id, { ...editing, ...values });
       } else {
-        await createReward({ ...values, emoji: '🎁', description: '' });
+        await createReward({ ...values, emoji: "🎁", description: "" });
       }
       setFormOpen(false);
       setEditing(null);
@@ -221,74 +215,117 @@ export default function Rewards() {
     .sort((a, b) => a.requiredPoints - b.requiredPoints)[0];
 
   return (
-    <ScreenShell dir={dir}>
-      <div className="space-y-6">
-        {/* The single add-reward entry point: centred against the heading on
-            desktop, stacked below it on mobile rather than crammed alongside. */}
-        <div className="flex flex-col items-start gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div>
-            <h1 className="text-2xl font-black">{t('rewardsStore')}</h1>
-            <p className="mt-1 text-[13px] text-ink-dim">{t('rewards.subtitle')}</p>
-          </div>
-          {isAdmin && (
-            <LimeButton size="sm" onClick={handleCreate} className="shrink-0">
-              <span className="inline-flex items-center gap-1.5">
-                <Plus className="h-4 w-4" />
-                {t('addReward')}
-              </span>
-            </LimeButton>
-          )}
+    <ScreenShell
+      dir={dir}
+      width="max-w-7xl"
+      className="community-page floating-shop"
+    >
+      <div className="community-heading">
+        <div>
+          <h1>
+            {en ? "Welcome to the happy shop!" : "ברוכים הבאים לחנות הכיף!"}
+          </h1>
+          <p>
+            {en
+              ? "Turn the little things you do at home into something to look forward to."
+              : "הופכים את הדברים הקטנים שעושים בבית למשהו שכיף לצפות לו."}
+          </p>
         </div>
-
-        <Panel className="overflow-hidden p-6 text-center" glow accent="gold">
-          <div className="num text-[11px] font-bold tracking-widest text-ink-faint uppercase">
-            {t('pointsBalance')}
-          </div>
-          <div
-            className="mt-2 flex items-center justify-center gap-2 text-5xl font-black text-gold"
-            style={{ textShadow: '0 0 34px #ffcb4777' }}
-          >
-            <span className="anim-bob-soft text-3xl">🪙</span>
-            <CountUp to={balance} />
-          </div>
-        </Panel>
-
-        {rewards.length === 0 ? (
-          <div className="rounded-2xl border border-dashed border-white/15 p-8 text-center">
-            <div className="text-3xl">🎁</div>
-            <div className="mt-3 text-[14px] font-extrabold text-ink-dim">{t('rewardsStore')}</div>
-            <div className="num mt-1 text-[12px] text-ink-faint">{t('milestoneHint')}</div>
-          </div>
-        ) : (
-          <div className="grid grid-cols-2 gap-3">
-            {rewards.map((reward, index) => (
-              <RewardCard
-                key={reward.id}
-                reward={reward}
-                accent={accentFor(reward, index)}
-                xp={xp}
-                balance={balance}
-                claiming={claimingId === reward.id}
-                onClaim={() => handleClaim(reward)}
-                isAdmin={isAdmin}
-                onEdit={() => handleEdit(reward)}
-                onDelete={() => handleDelete(reward)}
-              />
-            ))}
-          </div>
-        )}
-
-        {nextLocked && (
-          <div className="num rounded-2xl border border-dashed border-white/15 p-4 text-center text-[12px] text-ink-faint">
-            {t('rewards.nextA')}
-            {nextLocked.emoji} {nextLocked.title}
-            {t('rewards.nextB').replace(
-              '{n}',
-              Math.max(0, nextLocked.requiredPoints - xp).toLocaleString('en-US')
-            )}
-          </div>
+        {isAdmin && (
+          <LimeButton onClick={handleCreate}>
+            <span className="inline-flex items-center gap-2">
+              <Plus size={18} />
+              {t("addReward")}
+            </span>
+          </LimeButton>
         )}
       </div>
+      <section className="community-feature shop-intro">
+        <div>
+          <Gift className="mb-4" size={32} aria-hidden="true" />
+          <h2>
+            {en ? "Little chores. BIG treats!" : "משימות קטנות. כיף גדול!"}
+          </h2>
+          <p>
+            {en
+              ? "XP unlocks new rewards. Spendable coins make them yours. Your lifetime XP stays with you."
+              : "XP פותח פרסים חדשים. מטבעות מאפשרים לממש אותם. הניסיון שצברתם נשאר שלכם."}
+          </p>
+        </div>
+        <div className="community-wallet">
+          <span className="community-big-coin" aria-hidden="true">
+            <Star size={38} fill="currentColor" strokeWidth={2.5} />
+          </span>
+          <div>
+            <strong>
+              <CountUp to={balance} />
+            </strong>
+            <small>{en ? "Spendable coins" : "מטבעות למימוש"}</small>
+            <small>
+              {xp.toLocaleString()} {en ? "lifetime XP" : "XP שנצברו"}
+            </small>
+          </div>
+        </div>
+      </section>
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <h2 className="text-xl font-extrabold">{t("rewardsStore")}</h2>
+        <span className="community-chip">
+          {
+            rewards.filter((r) => !r.claimed && r.unlocked && r.affordable)
+              .length
+          }{" "}
+          {en ? "ready to redeem" : "זמינים למימוש"}
+        </span>
+      </div>
+      {rewards.length === 0 ? (
+        <div className="community-empty">
+          <Gift size={42} />
+          <h2>
+            {en ? "Make room for good things." : "מפנים מקום לדברים טובים."}
+          </h2>
+          <p>
+            {en
+              ? isAdmin
+                ? "Add your first household reward to give everyone something to work toward."
+                : "Your household admin can add rewards for everyone to work toward."
+              : isAdmin
+                ? "הוסיפו את הפרס הראשון כדי שיהיה לכולם למה לשאוף."
+                : "מנהל הבית יכול להוסיף פרסים שיהיה לכולם למה לשאוף."}
+          </p>
+        </div>
+      ) : (
+        <div className="community-rewards">
+          {rewards.map((reward, index) => (
+            <RewardCard
+              key={reward.id}
+              reward={reward}
+              index={index}
+              xp={xp}
+              balance={balance}
+              claiming={claimingId === reward.id}
+              onClaim={() => handleClaim(reward)}
+              isAdmin={isAdmin}
+              onEdit={() => handleEdit(reward)}
+              onDelete={() => setDeleting(reward)}
+            />
+          ))}
+        </div>
+      )}
+      {nextLocked && (
+        <div className="shop-next-unlock">
+          <Sparkles
+            size={22}
+            className="shrink-0 text-gold"
+            aria-hidden="true"
+          />
+          <p className="text-sm text-ink-dim">
+            {en ? "Your next unlock: " : "הפרס הבא שייפתח: "}
+            <strong className="text-ink">{tx(nextLocked.title)}</strong> ·{" "}
+            {Math.max(0, nextLocked.requiredPoints - xp).toLocaleString()} XP{" "}
+            {en ? "to go" : "נותרו"}
+          </p>
+        </div>
+      )}
 
       <RewardFormDialog
         open={formOpen}
@@ -303,50 +340,21 @@ export default function Rewards() {
 
       <ConfirmDialog
         open={!!deleting}
-        title={t('dialog.deleteRewardTitle')}
-        message={t('dialog.deleteRewardBody').replace('{name}', deleting?.title ?? '')}
-        confirmLabel={t('dialog.delete')}
-        cancelLabel={t('cancel')}
+        title={t("dialog.deleteRewardTitle")}
+        message={t("dialog.deleteRewardBody").replace(
+          "{name}",
+          tx(deleting?.title ?? ""),
+        )}
+        confirmLabel={t("dialog.delete")}
+        cancelLabel={t("cancel")}
         busy={busy}
         onConfirm={handleConfirmDelete}
         onCancel={() => setDeleting(null)}
       />
 
-      {/* Redeeming sets `celebration` in AppContext, but only the legacy
-          Dashboard used to render it — the new UI showed nothing. */}
-      {celebration && <Confetti active />}
-      <Dialog
-        open={!!celebration}
-        onClose={dismissCelebration}
-        title={t('congrats')}
-        accent="gold"
-        size="sm"
-        footer={
-          <LimeButton onClick={dismissCelebration} className="w-full">
-            {t('nice')}
-          </LimeButton>
-        }
-      >
-        <div className="text-center">
-          <div className="text-5xl">{celebration?.reward?.emoji ?? '🎁'}</div>
-          <p className="mt-3 text-sm text-ink-dim">{t('redeemedSuccess')}</p>
-          <p className="mt-1 text-lg font-black break-words text-ink">
-            {tx(celebration?.reward?.title ?? '')}
-          </p>
-
-          {celebration?.reward?.code && (
-            <div className="num mt-4 inline-flex items-center gap-2 rounded-xl border border-gold/35 bg-gold/12 px-3 py-2 text-sm font-bold tracking-wide text-gold">
-              {t('voucherCode')}: {celebration.reward.code}
-            </div>
-          )}
-
-          <p className="num mt-4 text-[13px] text-ink-faint">
-            {t('remainingBalance')}{' '}
-            <span className="font-extrabold text-gold">{celebration?.remainingPoints ?? 0}</span>{' '}
-            {t('pointsWord')}
-          </p>
-        </div>
-      </Dialog>
+      {celebration && (
+        <RewardReveal celebration={celebration} onClose={dismissCelebration} />
+      )}
     </ScreenShell>
   );
 }

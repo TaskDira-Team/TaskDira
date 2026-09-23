@@ -1,9 +1,11 @@
-import { useMemo, useState } from 'react';
-import { useI18n } from '../context/I18nContext';
-import { useAuth } from '../context/AuthContext';
-import { useApp } from '../context/AppContext';
-import { getRingAccent } from '../data/avatars';
-import { completedThisMonth } from '../utils/monthlyStats';
+import { useMemo, useState } from "react";
+import { Home, Plus, ShieldCheck, Users } from "lucide-react";
+import "../components/ui/community.css";
+import { useI18n } from "../context/I18nContext";
+import { useAuth } from "../context/AuthContext";
+import { useApp } from "../context/AppContext";
+import { getRingAccent } from "../data/avatars";
+import { completedThisMonth } from "../utils/monthlyStats";
 import {
   ACCENTS,
   Avatar,
@@ -12,19 +14,16 @@ import {
   Field,
   GhostButton,
   LimeButton,
-  Panel,
   ScreenShell,
-  StatTile,
-  XPBar,
   fieldClass,
-} from '../components/ui/kit';
+} from "../components/ui/kit";
 
-const FALLBACK_ACCENTS = ['grape', 'mint', 'sky', 'lime', 'coral', 'gold'];
+const FALLBACK_ACCENTS = ["grape", "mint", "sky", "lime", "coral", "gold"];
 
 // The API returns 'Admin' / 'Member'; comparing against lowercase silently
 // renders every admin as a plain member and hides all their controls.
 function isAdminRole(role) {
-  return typeof role === 'string' && role.toLowerCase() === 'admin';
+  return typeof role === "string" && role.toLowerCase() === "admin";
 }
 
 function accentFor(user, index) {
@@ -34,17 +33,17 @@ function accentFor(user, index) {
 }
 
 function joinedLabel(joinedAt, lang) {
-  if (!joinedAt) return '';
+  if (!joinedAt) return "";
   const d = new Date(joinedAt);
-  if (Number.isNaN(d.getTime())) return '';
-  return d.toLocaleDateString(lang === 'he' ? 'he-IL' : 'en-US', {
-    month: 'long',
-    year: 'numeric',
+  if (Number.isNaN(d.getTime())) return "";
+  return d.toLocaleDateString(lang === "he" ? "he-IL" : "en-US", {
+    month: "long",
+    year: "numeric",
   });
 }
 
 export default function Household() {
-  const { t, dir, lang, role: roleLabel } = useI18n();
+  const { t, dir, lang, role: roleLabel, householdName } = useI18n();
   const { user } = useAuth();
   const {
     household,
@@ -61,10 +60,11 @@ export default function Household() {
   const [editing, setEditing] = useState(null);
   const [busy, setBusy] = useState(false);
   const [inviteOpen, setInviteOpen] = useState(false);
-  const [inviteEmail, setInviteEmail] = useState('');
+  const [inviteEmail, setInviteEmail] = useState("");
   const [removing, setRemoving] = useState(null);
 
   const isAdmin = permissions?.isAdmin === true;
+  const en = lang === "en";
 
   const rows = useMemo(() => {
     const source = members?.length ? members : [];
@@ -73,8 +73,8 @@ export default function Household() {
         const profile = users.find((u) => u.id === m.userId) ?? m.user ?? {};
         return {
           userId: m.userId,
-          name: profile.fullName || profile.name || '',
-          emoji: profile.avatar?.emoji ?? '🙂',
+          name: profile.fullName || profile.name || "",
+          emoji: profile.avatar?.emoji ?? "🙂",
           accent: accentFor(profile, index),
           xp: profile.points ?? 0,
           level: profile.level?.level,
@@ -100,20 +100,22 @@ export default function Household() {
   const admins = rows.filter((r) => r.admin);
   const managedBy =
     admins.length >= 2
-      ? t('household.managedBy')
-          .replace('{a}', admins[0].name.split(' ')[0])
-          .replace('{b}', admins[1].name.split(' ')[0])
+      ? t("household.managedBy")
+          .replace("{a}", admins[0].name.split(" ")[0])
+          .replace("{b}", admins[1].name.split(" ")[0])
       : admins.length === 1
-        ? `${t('role.admin')} · ${admins[0].name.split(' ')[0]}`
-        : '';
+        ? `${t("role.admin")} · ${admins[0].name.split(" ")[0]}`
+        : "";
 
   const run = async (fn) => {
     setBusy(true);
     try {
       await fn();
       setEditing(null);
+      return true;
     } catch {
-      // AppContext already surfaced the Hebrew message as a toast.
+      // The provider shows the API error; keep dialogs open for a retry.
+      return false;
     } finally {
       setBusy(false);
     }
@@ -123,195 +125,263 @@ export default function Household() {
     e.preventDefault();
     const email = inviteEmail.trim();
     if (!email) return;
-    await run(() => inviteMember(email));
-    setInviteOpen(false);
-    setInviteEmail('');
+    if (await run(() => inviteMember(email))) {
+      setInviteOpen(false);
+      setInviteEmail("");
+    }
   };
 
   const handleConfirmRemove = async () => {
     if (!removing) return;
-    await run(() => removeMember(removing.userId));
-    setRemoving(null);
+    if (await run(() => removeMember(removing.userId))) setRemoving(null);
   };
 
   return (
-    <ScreenShell dir={dir}>
-      <div className="space-y-6">
-        <h1 className="text-2xl font-black">{t('household.title')}</h1>
-
-        {/* household card */}
-        <Panel className="overflow-hidden p-6" glow accent="grape">
-          <div className="flex items-center gap-4">
-            <span
-              className="anim-bob-soft grid h-16 w-16 place-items-center rounded-2xl text-3xl"
-              style={{
-                background: 'linear-gradient(150deg,#a06cff55,#1a1046)',
-                border: '2px solid #a06cff',
-                boxShadow: '0 0 30px -8px #a06cff',
-              }}
-            >
-              🏡
-            </span>
-            <div className="min-w-0 flex-1">
-              <div className="text-xl font-black">{household?.displayName || household?.name || ''}</div>
-              {household?.address && (
-                <div className="num mt-0.5 text-[12px] text-ink-dim">{household.address}</div>
-              )}
-            </div>
-          </div>
-
-          <div className="mt-6 grid grid-cols-3 gap-3">
-            <StatTile value={rows.length} label={t('household.membersStat')} accent="grape" />
-            <StatTile
-              value={familyXp.toLocaleString('en-US')}
-              label={t('household.familyXp')}
-              accent="lime"
-            />
-            <StatTile value={monthlyDone} label={t('household.monthTasks')} accent="sky" />
-          </div>
-
-          <div className="mt-5">
-            <div className="num mb-1.5 flex justify-between text-[11px] text-ink-dim">
-              <span>{t('monthlyGoal')}</span>
-              <span className="font-extrabold text-lime">
-                {monthlyXp} / {goal} XP
-              </span>
-            </div>
-            <XPBar value={goalPct} />
-          </div>
-        </Panel>
-
-        {/* members */}
+    <ScreenShell dir={dir} width="max-w-7xl" className="community-page">
+      <header className="community-heading">
         <div>
-          <div className="mb-3 flex items-center justify-between">
-            <h2 className="text-[15px] font-extrabold">{t('household.membersTitle')}</h2>
-            {managedBy && <span className="num text-[11px] text-ink-faint">{managedBy}</span>}
-          </div>
-
-          <ul className="space-y-2.5">
-            {rows.map((m) => {
-              const c = ACCENTS[m.accent];
-              return (
-                <li key={m.userId}>
-                  <div className="rounded-2xl border border-white/8 bg-panel/50 p-3.5">
-                    <div className="flex items-center gap-3">
-                      <Avatar emoji={m.emoji} ring={m.accent} size={46} level={m.level} />
-                      <div className="min-w-0 flex-1">
-                        <div className="flex items-center gap-2">
-                          <span className="truncate text-[14px] font-extrabold">{m.name}</span>
-                          <span
-                            className="num rounded-md px-1.5 py-px text-[10px] font-extrabold"
-                            style={
-                              m.admin
-                                ? { background: `${ACCENTS.gold}22`, color: ACCENTS.gold }
-                                : { background: '#ffffff12', color: '#b9addf' }
-                            }
-                          >
-                            {m.admin ? `⚙︎ ${t('role.admin')}` : t('role.member')}
-                          </span>
-                        </div>
-                        <div className="num mt-0.5 text-[11px] text-ink-faint">
-                          {[m.familyRole ? roleLabel(m.familyRole) : null, joinedLabel(m.joinedAt, lang)]
-                            .filter(Boolean)
-                            .join(' · ')}
-                        </div>
-                        <div className="mt-2 h-1.5 overflow-hidden rounded-full bg-black/40">
-                          <div
-                            className="h-full rounded-full"
-                            style={{
-                              width: `${(m.xp / maxXp) * 100}%`,
-                              background: `linear-gradient(90deg,${c}77,${c})`,
-                              boxShadow: `0 0 12px -2px ${c}`,
-                            }}
-                          />
-                        </div>
-                      </div>
-                      <div className="shrink-0 text-end">
-                        <div className="num text-[14px] font-extrabold" style={{ color: c }}>
-                          {m.xp.toLocaleString('en-US')}
-                        </div>
-                        {/* Self-demotion is a 409, so the toggle never appears on your own row. */}
-                        {isAdmin && !m.isSelf && (
-                          <button
-                            onClick={() => setEditing(editing === m.userId ? null : m.userId)}
-                            className="num mt-1 block text-[11px] font-bold text-ink-faint transition hover:text-lime"
-                          >
-                            {t('household.changeRole')}
-                          </button>
-                        )}
-                        {(m.isSelf || isAdmin) && (
-                          <button
-                            onClick={() => setRemoving(m)}
-                            disabled={busy}
-                            className="num mt-1 block text-[11px] font-bold text-ink-faint transition hover:text-coral disabled:opacity-40"
-                          >
-                            {t('remove')}
-                          </button>
-                        )}
-                      </div>
-                    </div>
-
-                    {editing === m.userId && (
-                      <div className="mt-3 flex gap-2 border-t border-white/8 pt-3">
-                        <button
-                          onClick={() => run(() => changeMemberRole(m.userId, 'Admin'))}
-                          disabled={busy}
-                          className={`num flex-1 rounded-xl py-2 text-[12px] font-extrabold transition disabled:opacity-40 ${
-                            m.admin ? 'bg-gold/20 text-gold' : 'bg-white/6 text-ink-dim hover:bg-white/12'
-                          }`}
-                        >
-                          {t('household.roleAdmin')}
-                        </button>
-                        <button
-                          onClick={() => run(() => changeMemberRole(m.userId, 'Member'))}
-                          disabled={busy}
-                          className={`num flex-1 rounded-xl py-2 text-[12px] font-extrabold transition disabled:opacity-40 ${
-                            !m.admin ? 'bg-lime/20 text-lime' : 'bg-white/6 text-ink-dim hover:bg-white/12'
-                          }`}
-                        >
-                          {t('household.roleMember')}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </li>
-              );
-            })}
-          </ul>
+          <h1>{en ? "One home. A super squad!" : "בית אחד. נבחרת על!"}</h1>
+          <p>
+            {en
+              ? "Different people, shared space, one little world to look after."
+              : "אנשים שונים, מקום משותף ועולם קטן אחד לדאוג לו."}
+          </p>
         </div>
-
         {isAdmin && (
-          <button
-            onClick={() => setInviteOpen(true)}
-            disabled={busy}
-            className="w-full rounded-2xl border-2 border-dashed border-lime/35 bg-lime/6 py-4 text-[14px] font-extrabold text-lime transition hover:bg-lime/12 disabled:opacity-40"
-          >
-            ＋ {t('household.invite')}
-          </button>
+          <LimeButton onClick={() => setInviteOpen(true)} disabled={busy}>
+            <span className="inline-flex items-center gap-2">
+              <Plus size={18} />
+              {t("household.invite")}
+            </span>
+          </LimeButton>
         )}
-
-        <Panel className="p-5">
-          <h3 className="text-[14px] font-extrabold">{t('household.adminControls')}</h3>
-          <ul className="mt-3 divide-y divide-white/8 text-[13px]">
-            <li className="flex items-center justify-between py-3">
-              <span className="font-bold text-ink-dim">{t('household.ctrl1')}</span>
-              <span className="num font-extrabold text-lime">
-                {household?.requireProofApproval ? t('on') : t('off')}
-              </span>
-            </li>
-          </ul>
-        </Panel>
+      </header>
+      <div className="community-household-top">
+        <section className="community-feature">
+          <div>
+            <Home size={36} aria-hidden="true" className="mb-4" />
+            <h2>{householdName(household?.displayName || household?.name)}</h2>
+            {household?.address && <p>{household.address}</p>}
+            <p>
+              {managedBy ||
+                (en
+                  ? "A home that works better together."
+                  : "בית שמתנהל טוב יותר ביחד.")}
+            </p>
+          </div>
+          <div className="flex -space-x-3 rtl:space-x-reverse">
+            {rows.slice(0, 3).map((m) => (
+              <Avatar
+                key={m.userId}
+                emoji={m.emoji}
+                ring={m.accent}
+                size={52}
+              />
+            ))}
+          </div>
+        </section>
+        <div className="community-house-stats">
+          <div className="community-house-stat">
+            <span className="community-muted">
+              {t("household.membersStat")}
+            </span>
+            <strong>{rows.length}</strong>
+          </div>
+          <div className="community-house-stat">
+            <span className="community-muted">{t("household.familyXp")}</span>
+            <strong>{familyXp.toLocaleString()}</strong>
+          </div>
+          <div className="community-house-stat">
+            <span className="community-muted">{t("household.monthTasks")}</span>
+            <strong>{monthlyDone}</strong>
+          </div>
+        </div>
       </div>
+      <section className="community-team-goal">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-extrabold">{t("monthlyGoal")}</h2>
+          <span className="text-sm font-bold text-lime">
+            {monthlyXp.toLocaleString()} / {goal.toLocaleString()} XP
+          </span>
+        </div>
+        <div
+          className="community-progress"
+          role="progressbar"
+          aria-label={t("monthlyGoal")}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={goalPct}
+        >
+          <span style={{ width: `${goalPct}%` }} />
+        </div>
+        <p className="community-note mt-3">
+          {en
+            ? "One shared goal. Every earned point moves your household forward."
+            : "מטרה משותפת אחת. כל נקודה שנצברת מקדמת את הבית שלכם."}
+        </p>
+      </section>
+      <section>
+        <h2 className="community-section-title flex items-center gap-2">
+          <Users size={22} />
+          {t("household.membersTitle")}
+        </h2>
+        {rows.length ? (
+          <ul className="community-member-grid">
+            {rows.map((m) => (
+              <li
+                key={m.userId}
+                className="community-member"
+                style={{ "--member-tint": `${ACCENTS[m.accent]}18` }}
+              >
+                <div className="flex items-center gap-3">
+                  <Avatar
+                    emoji={m.emoji}
+                    ring={m.accent}
+                    size={74}
+                    level={m.level}
+                  />
+                  <div className="min-w-0 flex-1">
+                    <h3 className="text-lg font-extrabold break-words">
+                      {m.name}
+                    </h3>
+                    <div className="mt-1 flex items-center gap-2 flex-wrap">
+                      <span
+                        className="community-chip"
+                        style={
+                          m.admin
+                            ? {
+                                background: "var(--community-gold)",
+                                color: "#976500",
+                              }
+                            : undefined
+                        }
+                      >
+                        {m.admin ? t("role.admin") : t("role.member")}
+                      </span>
+                      {m.isSelf && (
+                        <span className="text-xs text-ink-dim">
+                          {t("leaderboard.you")}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                <p className="community-note mt-4">
+                  {[
+                    m.familyRole ? roleLabel(m.familyRole) : null,
+                    joinedLabel(m.joinedAt, lang),
+                  ]
+                    .filter(Boolean)
+                    .join(" · ")}
+                </p>
+                <div className="mt-4 flex items-center gap-4">
+                  <div className="community-progress flex-1" aria-hidden="true">
+                    <span
+                      style={{
+                        width: `${(m.xp / maxXp) * 100}%`,
+                        background: ACCENTS[m.accent],
+                      }}
+                    />
+                  </div>
+                  <strong className="text-sm whitespace-nowrap">
+                    {m.xp.toLocaleString()} XP
+                  </strong>
+                </div>
+                {(isAdmin || m.isSelf) && (
+                  <div className="community-member-actions">
+                    {isAdmin && !m.isSelf && (
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setEditing(editing === m.userId ? null : m.userId)
+                        }
+                        disabled={busy}
+                        aria-expanded={editing === m.userId}
+                      >
+                        {t("household.changeRole")}
+                      </button>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setRemoving(m)}
+                      disabled={busy}
+                      className="text-coral"
+                    >
+                      {m.isSelf
+                        ? en
+                          ? "Leave household"
+                          : "עזיבת הבית"
+                        : t("remove")}
+                    </button>
+                  </div>
+                )}
+                {editing === m.userId && (
+                  <div className="mt-3 flex gap-2">
+                    {["Admin", "Member"].map((role) => (
+                      <button
+                        key={role}
+                        type="button"
+                        onClick={() =>
+                          run(() => changeMemberRole(m.userId, role))
+                        }
+                        disabled={busy}
+                        aria-pressed={role === "Admin" ? m.admin : !m.admin}
+                        className="min-h-11 flex-1 rounded-xl bg-lime/10 px-3 py-2 text-sm font-bold text-lime"
+                      >
+                        {role === "Admin"
+                          ? t("household.roleAdmin")
+                          : t("household.roleMember")}
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </li>
+            ))}
+          </ul>
+        ) : (
+          <div className="community-empty">
+            <Users size={36} />
+            <h2>{en ? "Make yourself at home." : "מרגישים בבית."}</h2>
+            <p>
+              {en
+                ? "Invite your household to start sharing the everyday tasks."
+                : "הזמינו את חברי הבית כדי להתחיל לחלוק את משימות היומיום."}
+            </p>
+          </div>
+        )}
+      </section>
+      <section
+        className="community-house-rules mt-8 flex items-center gap-4 p-6"
+        style={{ background: "var(--community-lilac)" }}
+      >
+        <ShieldCheck
+          className="shrink-0 text-grape"
+          size={30}
+          aria-hidden="true"
+        />
+        <div className="flex-1">
+          <h2 className="text-lg font-extrabold">
+            {t("household.adminControls")}
+          </h2>
+          <p className="community-note mt-1">{t("household.ctrl1")}</p>
+        </div>
+        <span className="community-chip">
+          {household?.requireProofApproval ? t("on") : t("off")}
+        </span>
+      </section>
 
       <Dialog
         open={inviteOpen}
         onClose={() => setInviteOpen(false)}
-        title={t('dialog.inviteTitle')}
+        title={t("dialog.inviteTitle")}
         size="sm"
         footer={
           <div className="flex gap-3">
-            <GhostButton onClick={() => setInviteOpen(false)} className="flex-1">
-              {t('cancel')}
+            <GhostButton
+              onClick={() => setInviteOpen(false)}
+              className="flex-1"
+            >
+              {t("cancel")}
             </GhostButton>
             <LimeButton
               type="submit"
@@ -319,13 +389,13 @@ export default function Household() {
               disabled={busy || !inviteEmail.trim()}
               className="flex-1"
             >
-              {t('dialog.inviteCta')}
+              {t("dialog.inviteCta")}
             </LimeButton>
           </div>
         }
       >
         <form id="invite-form" onSubmit={handleInviteSubmit}>
-          <Field label={t('emailLabel')} htmlFor="invite-email">
+          <Field label={t("emailLabel")} htmlFor="invite-email">
             <input
               id="invite-email"
               type="email"
@@ -343,10 +413,13 @@ export default function Household() {
 
       <ConfirmDialog
         open={!!removing}
-        title={t('dialog.removeMemberTitle')}
-        message={t('dialog.removeMemberBody').replace('{name}', removing?.name ?? '')}
-        confirmLabel={t('remove')}
-        cancelLabel={t('cancel')}
+        title={t("dialog.removeMemberTitle")}
+        message={t("dialog.removeMemberBody").replace(
+          "{name}",
+          removing?.name ?? "",
+        )}
+        confirmLabel={t("remove")}
+        cancelLabel={t("cancel")}
         busy={busy}
         onConfirm={handleConfirmRemove}
         onCancel={() => setRemoving(null)}

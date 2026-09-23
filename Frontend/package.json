@@ -7,7 +7,8 @@
     "dev": "vite",
     "test": "node --test tests/*.test.js src/components/landing/*.test.js src/hooks/*.test.js",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "demo": "vite --mode demo --port 3001"
   },
   "devDependencies": {
     "@tailwindcss/vite": "^4.3.3",
@@ -19,6 +20,8 @@
     "vite": "^8.1.1"
   },
   "dependencies": {
+    "@fontsource-variable/fredoka": "^5.3.0",
+    "@fontsource-variable/nunito": "^5.3.0",
     "canvas-confetti": "^1.9.4",
     "framer-motion": "^12.42.2",
     "gsap": "^3.15.0",

@@ -1,292 +1,672 @@
-import { useMemo, useState } from 'react';
-import { Bookmark, X } from 'lucide-react';
-import useSavedChores from '../hooks/useSavedChores';
-import { useI18n } from '../context/I18nContext';
-import { useAuth } from '../context/AuthContext';
-import { useApp } from '../context/AppContext';
-import { useRoute } from '../context/RouteContext';
-import { TASK_STATUSES } from '../data/mockData';
-import TaskModal from '../components/board/TaskModal';
+import { useMemo, useState } from "react";
 import {
-  ACCENTS,
-  Avatar,
-  LimeButton,
-  Panel,
-  SegmentedTabs,
-  StatTile,
-  XPBar,
-} from '../components/ui/kit';
+  ArrowUpRight,
+  Bookmark,
+  Check,
+  CheckCheck,
+  Coins,
+  Flame,
+  Gift,
+  Plus,
+  Search,
+  Sparkles,
+  Sun,
+  Moon,
+  Layers3,
+  ListTodo,
+  CalendarDays,
+  Utensils,
+  Armchair,
+  BedDouble,
+  Home,
+  Loader2,
+  Route,
+} from "lucide-react";
+import { useI18n } from "../context/I18nContext";
+import { useAuth } from "../context/AuthContext";
+import { useApp } from "../context/AppContext";
+import { useRoute } from "../context/RouteContext";
+import useSavedChores from "../hooks/useSavedChores";
+import QuestPath from "../components/board/QuestPath";
+import QuestDetailDialog from "../components/board/QuestDetailDialog";
+import { getQuickCompletionAction } from "../utils/questActions";
+import TaskModal from "../components/board/TaskModal";
+import HouseStage from "../components/landing/HouseStage";
+import { ActivityChart } from "../components/insights/HouseholdCharts";
+import {
+  buildInsights,
+  parseTaskDate,
+  taskPoints,
+  isDone,
+  dayKey,
+} from "../utils/insights";
+import "../components/landing/houseJourney.css";
+import { deriveMilestoneProgress } from "../utils/milestoneProgress";
 
-const CATEGORY_STYLE = {
-  kitchen: { emoji: '🍽️', accent: 'gold' },
-  living: { emoji: '🛋️', accent: 'sky' },
-  shopping: { emoji: '🛒', accent: 'mint' },
-  cleaning: { emoji: '🧹', accent: 'sky' },
-  cooking: { emoji: '👨‍🍳', accent: 'gold' },
-  room: { emoji: '🛏️', accent: 'grape' },
-  homework: { emoji: '📚', accent: 'sky' },
-  pet: { emoji: '🐕', accent: 'coral' },
-  maintenance: { emoji: '🔧', accent: 'grape' },
-  trash: { emoji: '🗑️', accent: 'mint' },
-  other: { emoji: '📌', accent: 'lime' },
+const rooms = [
+  ["home", Home, "Whole home", "כל הבית"],
+  ["kitchen", Utensils, "Kitchen", "מטבח"],
+  ["living", Armchair, "Living room", "סלון"],
+  ["bedroom", BedDouble, "Bedroom", "חדר שינה"],
+];
+const roomCategory = {
+  kitchen: ["kitchen", "cooking"],
+  living: ["living", "cleaning"],
+  bedroom: ["room", "bedroom"],
 };
-
-function styleFor(categoryId) {
-  return CATEGORY_STYLE[categoryId] ?? CATEGORY_STYLE.other;
-}
-
-function endOfToday() {
-  const d = new Date();
-  d.setHours(23, 59, 59, 999);
-  return d;
-}
-
-function TaskCard({ task, done, onToggle, saved, onSave, canSave }) {
-  const { t, category, lang } = useI18n();
-  const { emoji, accent } = styleFor(task.categoryId);
-  const c = ACCENTS[accent];
-  const points = task.pointsValue ?? task.points ?? 0;
-
-  return (
-    <div
-      className={`group relative flex items-center gap-4 overflow-hidden rounded-2xl border p-4 transition-all duration-300 ${done ? 'border-lime/40 bg-lime/8' : 'border-white/8 bg-panel/55 hover:border-white/20'
-        }`}
-    >
-      <span
-        aria-hidden
-        className="absolute inset-y-0 start-0 w-1"
-        style={{ background: c, boxShadow: `0 0 14px ${c}` }}
-      />
-      <span
-        className="grid h-12 w-12 shrink-0 place-items-center rounded-xl text-xl"
-        style={{ background: `${c}1f`, border: `1px solid ${c}44` }}
-      >
-        {emoji}
-      </span>
-
-      <div className="min-w-0 flex-1">
-        <div className={`truncate font-extrabold ${done ? 'text-ink-faint line-through' : 'text-ink'}`}>
-          {task.title}
-        </div>
-        <div className="mt-1 flex items-center gap-2">
-          <span
-            className="num rounded-md px-1.5 py-px text-[10px] font-bold"
-            style={{ background: `${c}20`, color: c }}
-          >
-            {category(task.categoryId)}
-          </span>
-          <span className="num text-[11px] font-bold text-lime">+{points} XP</span>
-          {task.subItemsProgress && (
-            <span className="num text-[11px] font-bold text-ink-faint">
-              {task.subItemsProgress.done}/{task.subItemsProgress.total}
-            </span>
-          )}
-        </div>
-      </div>
-
-      <button disabled={!canSave} onClick={onSave} aria-pressed={saved} aria-label={`${saved ? (lang === 'he' ? 'ביטול שמירה' : 'Unsave chore') : (lang === 'he' ? 'שמירה לאחר כך' : 'Save chore')}: ${task.title}`} className={`grid h-10 w-10 shrink-0 place-items-center rounded-xl transition hover:bg-white/10 ${saved ? 'text-lime' : 'text-ink-faint'}`}>
-        <Bookmark size={18} fill={saved ? 'currentColor' : 'none'} />
-      </button>
-      <button
-        onClick={onToggle}
-        disabled={done}
-        aria-pressed={done}
-        aria-label={t(done ? 'dashboard.uncheckAria' : 'dashboard.checkAria').replace('{t}', task.title)}
-        className={`grid h-10 w-10 shrink-0 place-items-center rounded-full border-2 text-lg transition-transform duration-200 hover:scale-110 disabled:cursor-default disabled:hover:scale-100 ${done ? 'border-lime text-[#152007]' : 'border-white/20 text-transparent hover:border-lime/60'
-          }`}
-        style={done ? { background: ACCENTS.lime, boxShadow: `0 0 22px -4px ${ACCENTS.lime}` } : undefined}
-      >
-        ✓
-      </button>
-    </div>
-  );
-}
+const roomIcon = (category) =>
+  category === "kitchen" || category === "cooking"
+    ? Utensils
+    : category === "room" || category === "bedroom"
+      ? BedDouble
+      : category === "living"
+        ? Armchair
+        : ListTodo;
 
 export default function HomeDashboard() {
-  const { t, dir, lang } = useI18n();
-  const he = lang === 'he';
+  const { lang, tx, category } = useI18n();
   const { user } = useAuth();
-  const { navigate } = useRoute();
-  const { tasks, users, household, moveTask, permissions, createTask } = useApp();
+  const {
+    tasks,
+    users,
+    household,
+    rewards,
+    moveTask,
+    permissions,
+    getTaskPermissions,
+    createTask,
+    updateTask,
+  } = useApp();
+  const { path, navigate } = useRoute();
+  const he = lang === "he";
+  const tasksPage = path === "/tasks";
+  const [filter, setFilter] = useState("open");
+  const [room, setRoom] = useState("home");
+  const [search, setSearch] = useState("");
+  const [view, setView] = useState("path");
+  const [night, setNight] = useState(false);
+  const [exploded, setExploded] = useState(false);
+  const [model, setModel] = useState(true);
+  const [editor, setEditor] = useState(undefined);
+  const [detailId, setDetailId] = useState(null);
+  const detailTask = tasks.find((task) => task.id === detailId);
+  const openDetails = (task) => setDetailId(task.id);
+  const requireProof = household?.requireProofApproval === true;
+  const [busy, setBusy] = useState(null);
   const saved = useSavedChores(user?.id, household?.id);
-  const savedTasks = tasks.filter(task => saved.isSaved(task.id));
-  const [tab, setTab] = useState('today');
-  const [createOpen, setCreateOpen] = useState(false);
-
+  const insight = useMemo(() => buildInsights(tasks, users), [tasks, users]);
   const me = users.find((u) => u.id === user?.id) || user;
-  const xp = me?.points ?? 0;
-  const balance = me?.balance ?? xp;
-  const level = me?.level;
-  const rank = me?.rank;
-
-  const { today, week, done } = useMemo(() => {
-    const limit = endOfToday();
-    const buckets = { today: [], week: [], done: [] };
-    for (const task of tasks) {
-      if (task.status === TASK_STATUSES.DONE) {
-        buckets.done.push(task);
-        continue;
-      }
-      const due = task.dueDate || task.dueAt;
-      if (!due || new Date(due) <= limit) buckets.today.push(task);
-      else buckets.week.push(task);
+  const balance = me?.balance ?? 0;
+  const progress = deriveMilestoneProgress(tasks, me);
+  const reward = [...rewards]
+    .filter((r) => !r.claimed && (r.pointsCost ?? r.cost ?? 0) > 0)
+    .sort((a, b) => (a.pointsCost ?? a.cost) - (b.pointsCost ?? b.cost))[0];
+  const rewardCost = reward?.pointsCost ?? reward?.cost ?? 0;
+  const completedRooms = [
+    ["kitchen", "dishes"],
+    ["living", "plants"],
+    ["bedroom", "laundry"],
+  ]
+    .filter(([id]) => {
+      const group = tasks.filter((t) =>
+        roomCategory[id].includes(t.categoryId),
+      );
+      return group.length && group.every(isDone);
+    })
+    .map(([, quest]) => quest);
+  const filtered = tasks.filter((task) => {
+    if (room !== "home" && !roomCategory[room]?.includes(task.categoryId))
+      return false;
+    if (
+      search &&
+      !`${tx(task.title)} ${task.title} ${category(task.categoryId)}`
+        .toLowerCase()
+        .includes(search.toLowerCase())
+    )
+      return false;
+    if (filter === "done") return isDone(task);
+    if (filter === "saved") return saved.isSaved(task.id);
+    if (filter === "mine")
+      return (
+        !isDone(task) &&
+        String(task.assignedUserId ?? task.assigneeId) === String(user?.id)
+      );
+    return !isDone(task);
+  });
+  const grouped = new Map();
+  for (const task of filtered) {
+    const date = parseTaskDate(task.dueDate ?? task.dueAt);
+    const key = date ? dayKey(date) : "undated";
+    if (!grouped.has(key)) grouped.set(key, []);
+    grouped.get(key).push(task);
+  }
+  const groups = [...grouped.entries()].sort(([a], [b]) => a.localeCompare(b));
+  const complete = async (task) => {
+    if (busy) return;
+    const intent = getQuickCompletionAction(
+      task,
+      getTaskPermissions(task),
+      requireProof,
+    );
+    if (intent === "none") return;
+    if (intent === "proof" || intent === "review") {
+      openDetails(task);
+      return;
     }
-    return buckets;
-  }, [tasks]);
-
-  const list = tab === 'saved' ? savedTasks : tab === 'done' ? done : tab === 'week' ? week : today;
-
-  const tabs = [
-    { key: 'today', label: t('dashboard.tab.today') },
-    { key: 'week', label: t('dashboard.tab.week') },
-    { key: 'done', label: t('filter.done') },
-    { key: 'saved', label: he ? 'שמורות' : 'Saved' },
-  ];
-
-  const completedThisMonth = me?.tasksCompletedThisMonth ?? 0;
-
+    setBusy(task.id);
+    try {
+      await moveTask(task.id, "Done");
+    } catch {
+      /* Shared toast exposes the error. */
+    } finally {
+      setBusy(null);
+    }
+  };
+  const taskRow = (task) => {
+    const done = isDone(task),
+      Icon = roomIcon(task.categoryId);
+    const assignee = users.find(
+      (u) => u.id === (task.assignedUserId ?? task.assigneeId),
+    );
+    const due = parseTaskDate(task.dueDate ?? task.dueAt);
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const overdue = !done && due && due < today;
+    return (
+      <article
+        className={`quest-row ${done ? "is-complete" : ""}`}
+        key={task.id}
+      >
+        <button
+          className="quest-complete"
+          disabled={
+            !!busy ||
+            getQuickCompletionAction(
+              task,
+              getTaskPermissions(task),
+              requireProof,
+            ) === "none"
+          }
+          onClick={() => complete(task)}
+          aria-label={`${task.status === "PendingApproval" ? (he ? "בדיקת משימה" : "Review quest") : he ? "השלמת משימה" : "Complete quest"}: ${tx(task.title)}`}
+        >
+          {busy === task.id ? (
+            <Loader2 size={17} className="animate-spin" />
+          ) : done ? (
+            <Check size={18} />
+          ) : (
+            <span />
+          )}
+        </button>
+        <span className={`quest-category category-${task.categoryId}`}>
+          <Icon size={20} />
+        </span>
+        <button className="quest-content" onClick={() => openDetails(task)}>
+          <strong>{tx(task.title)}</strong>
+          <span>
+            {category(task.categoryId)}
+            {due && (
+              <span className={overdue ? "is-overdue" : ""}>
+                {" "}
+                ·{" "}
+                {overdue
+                  ? he
+                    ? "באיחור"
+                    : "Overdue"
+                  : due.toLocaleDateString(he ? "he-IL" : "en-GB", {
+                      month: "short",
+                      day: "numeric",
+                    })}
+              </span>
+            )}
+            {task.status === "PendingApproval" && (
+              <span> · {he ? "ממתין לאישור" : "Awaiting approval"}</span>
+            )}
+          </span>
+        </button>
+        <span
+          className="quest-assignee"
+          title={assignee?.fullName || (he ? "ללא שיוך" : "Unassigned")}
+        >
+          {(assignee?.fullName || assignee?.name || "–").slice(0, 1)}
+        </span>
+        <strong className="quest-points">
+          +{taskPoints(task)}
+          <small>XP</small>
+        </strong>
+        <button
+          className={`quest-bookmark ${saved.isSaved(task.id) ? "is-saved" : ""}`}
+          disabled={!saved.ready}
+          aria-pressed={saved.isSaved(task.id)}
+          onClick={() => saved.toggle(task.id)}
+          aria-label={`${saved.isSaved(task.id) ? (he ? "ביטול שמירה" : "Unsave") : he ? "שמירה" : "Save"}: ${tx(task.title)}`}
+        >
+          <Bookmark
+            size={18}
+            fill={saved.isSaved(task.id) ? "currentColor" : "none"}
+          />
+        </button>
+      </article>
+    );
+  };
   return (
-    <div dir={dir} className="space-y-6 py-6">
-      <div className="flex items-start justify-between">
+    <div className="world-page">
+      <div className="world-page-heading">
         <div>
-          <div className="num text-[12px] font-bold text-ink-faint">
-            {new Date().toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long' })}
-          </div>
-          <h1 className="mt-1 text-2xl font-black">
-            {t('dashboard.greeting').replace('{name}', (me?.fullName || me?.name || '').split(' ')[0])}
+          <h1>
+            {tasksPage
+              ? he
+                ? "דברים קטנים. ניצחונות גדולים."
+                : "Let’s go on a quest!"
+              : he
+                ? `איזה כיף שחזרת, ${(me?.fullName || "").split(" ")[0]}.`
+                : `Hey ${(me?.fullName || me?.name || "friend").split(" ")[0]}! Ready to play?`}
+            {!tasksPage && <Sun className="greeting-sun" />}
           </h1>
+          <p>
+            {tasksPage
+              ? he
+                ? "כל מה שהבית צריך, במקום אחד."
+                : "Follow the stars! Every little chore is a new adventure."
+              : he
+                ? "יום חדש לעשות טוב, להרוויח נקודות ולגדול ביחד."
+                : "Pick a quest. Grab some coins. Make your home happy!"}
+          </p>
         </div>
+        {permissions.canCreateTask && (
+          <button className="world-button" onClick={() => setEditor(null)}>
+            <Plus size={18} />
+            {he ? "משימה חדשה" : "New quest"}
+          </button>
+        )}
       </div>
-
-      <Panel className="overflow-hidden p-6" glow accent="lime">
-        <div className="flex items-center gap-5">
-          <Avatar emoji={level?.emoji || '🦊'} ring="lime" size={82} float />
-          <div className="min-w-0 flex-1">
-            <div className="flex items-center gap-2">
-              <span className="truncate text-xl font-black">{me?.fullName || me?.name}</span>
-              {level && (
-                <span
-                  className="num rounded-lg px-2 py-0.5 text-[11px] font-extrabold text-[#152007]"
-                  style={{ background: ACCENTS.lime }}
+      {!tasksPage && (
+        <>
+          <div className="home-overview">
+            <section className={`home-world ${night ? "is-night" : ""}`}>
+              <div className="home-world-copy">
+                <h2>{he ? "העולם הקטן שלנו." : "Home sweet playground!"}</h2>
+                <p>
+                  {insight.open
+                    ? he
+                      ? `${insight.open} הזדמנויות לעשות היום טוב.`
+                      : `${insight.open} quests are waiting. Let’s make some magic!`
+                    : he
+                      ? "הבית מוכן לרגעים הטובים."
+                      : "Your home is ready for the good stuff."}
+                </p>
+                <button
+                  className="home-world-link"
+                  onClick={() => {
+                    setModel(true);
+                    setExploded(!exploded);
+                  }}
                 >
-                  LV {level.level}
-                </span>
-              )}
+                  <Layers3 size={16} />
+                  {he ? "גלו כל פינה" : "Discover every corner"}
+                  <ArrowUpRight size={16} />
+                </button>
+              </div>
+              <div className="home-model">
+                {model ? (
+                  <HouseStage
+                    he={he}
+                    view={room}
+                    night={night}
+                    exploded={exploded}
+                    completed={completedRooms}
+                    onRoomChange={setRoom}
+                  />
+                ) : (
+                  <button
+                    className="home-model-poster"
+                    onClick={() => setModel(true)}
+                    aria-label={
+                      he ? "פתיחת הבית בתלת ממד" : "Explore your home in 3D"
+                    }
+                  >
+                    <img src="/images/taskdira-house.webp" alt="" />
+                    <span>
+                      <Layers3 size={16} />
+                      {he ? "נכנסים לתלת ממד" : "Step inside · 3D"}
+                    </span>
+                  </button>
+                )}
+              </div>
+              <div className="home-world-controls">
+                <button
+                  className="world-icon-button"
+                  aria-label={he ? "תאורת לילה" : "Evening lighting"}
+                  aria-pressed={night}
+                  onClick={() => {
+                    setModel(true);
+                    setNight(!night);
+                  }}
+                >
+                  {night ? <Moon size={18} /> : <Sun size={18} />}
+                </button>
+              </div>
+              <div
+                className="home-room-nav"
+                aria-label={he ? "בחירת חדר" : "Choose a room"}
+              >
+                {rooms.map(([id, Icon, en, heb]) => (
+                  <button
+                    key={id}
+                    aria-pressed={room === id}
+                    onClick={() => {
+                      setRoom(id);
+                      if (id !== "home") setModel(true);
+                    }}
+                  >
+                    <Icon size={16} />
+                    {he ? heb : en}
+                  </button>
+                ))}
+              </div>
+            </section>
+            <section className="home-next-reward">
+              <Gift size={32} strokeWidth={1.6} />
+              <h2>{he ? "משהו טוב באופק." : "Ooh, treasure!"}</h2>
+              <p>
+                {reward
+                  ? tx(reward.title || reward.name)
+                  : he
+                    ? "בחרו משהו ששווה לעשות בשבילו."
+                    : "Make room for something worth working toward."}
+              </p>
+              <div
+                className="reward-progress"
+                role="progressbar"
+                aria-label={he ? "התקדמות לפרס" : "Progress toward reward"}
+                aria-valuemin={0}
+                aria-valuemax={Math.max(1, rewardCost)}
+                aria-valuenow={Math.min(balance, Math.max(1, rewardCost))}
+              >
+                <span
+                  style={{
+                    width: `${rewardCost ? Math.min(100, (balance / rewardCost) * 100) : 0}%`,
+                  }}
+                />
+              </div>
+              <span className="home-reward-caption">
+                {reward
+                  ? balance >= rewardCost
+                    ? he
+                      ? "הפרס הזה כבר בהישג יד!"
+                      : "This one is within reach!"
+                    : `${rewardCost - balance} ${he ? "מטבעות לרגע הבא" : "more coins to your next little joy"}`
+                  : he
+                    ? "הוסיפו פרס ראשון בחנות"
+                    : "Add your first reward in the shop"}
+              </span>
+              <button onClick={() => navigate("/rewards")}>
+                {he ? "לחנות הפרסים" : "Visit the reward shop"}
+                <ArrowUpRight size={18} />
+              </button>
+            </section>
+          </div>
+          <div className="world-stats four">
+            <div className="world-stat mint">
+              <CheckCheck />
+              <span>{he ? "ניצחונות השבוע" : "Weekly wins"}</span>
+              <strong>{insight.periodDone}</strong>
+              <small>
+                {he ? "משימות שהושלמו ב־7 ימים" : "Quests completed in 7 days"}
+              </small>
             </div>
-            <div className="num mt-1 text-[12px] text-ink-dim">
-              {rank ? (
-                <>
-                  {t('dashboard.rank1')}
-                  <span className="font-extrabold text-gold">{rank}</span>
-                  {t('dashboard.rank2')}
-                  <span className="font-extrabold">{users.length}</span>
-                  {t('dashboard.rank3')}
-                  {household?.displayName || household?.name || ''}
-                </>
-              ) : (
-                household?.displayName || household?.name || ''
-              )}
+            <div className="world-stat peach">
+              <Coins />
+              <span>{he ? "המטבעות שלי" : "Your coin stash"}</span>
+              <strong>{balance}</strong>
+              <small>
+                {he ? "מטבעות לפרסים שאתם אוהבים" : "Coins for things you love"}
+              </small>
             </div>
-            <div className="mt-3">
-              <XPBar
-                value={level?.progressToNext ?? 0}
-                label={`${xp} XP${level?.next ? ` · ${level.next.minPoints - xp} → LV ${level.next.level}` : ''}`}
-              />
+            <div className="world-stat lavender">
+              <Sparkles />
+              <span>{he ? "הניקוד שלי" : "Star power"}</span>
+              <strong>
+                {me?.points ?? 0}
+                <em>XP</em>
+              </strong>
+              <small>
+                {he ? "כל מאמץ קטן נחשב" : "Every little effort counts"}
+              </small>
+            </div>
+            <div className="world-stat butter">
+              <Flame />
+              <span>{he ? "שומרים על הרצף" : "On fire!"}</span>
+              <strong>
+                {progress.streak}
+                <em>{he ? "ימים" : "days"}</em>
+              </strong>
+              <small>
+                {he ? "הרצף האישי שלכם" : "Your personal activity streak"}
+              </small>
             </div>
           </div>
-        </div>
-
-        <div className="mt-6 grid grid-cols-3 gap-3">
-          <StatTile emoji="🪙" value={balance} label={t('dashboard.coins')} accent="gold" />
-          <StatTile emoji="🔥" value={me?.streakDays ?? 0} label={t('dashboard.streak')} accent="coral" />
-          <StatTile emoji="✅" value={completedThisMonth} label={t('filter.done')} accent="grape" />
-        </div>
-      </Panel>
-
-      <div className="grid grid-cols-2 gap-3">
-        <button
-          onClick={() => navigate('/rewards')}
-          className="rounded-2xl border p-4 text-start transition hover:-translate-y-0.5"
-          style={{ borderColor: `${ACCENTS.sky}38`, background: `${ACCENTS.sky}12` }}
-        >
-          <div className="text-xl">🎁</div>
-          <div className="mt-2 text-[14px] font-extrabold">{t('rewardsStore')}</div>
-          <div className="num text-[11px] text-ink-faint">{balance} {t('pointsShort')}</div>
-        </button>
-        <button
-          onClick={() => navigate('/leaderboard')}
-          className="rounded-2xl border p-4 text-start transition hover:-translate-y-0.5"
-          style={{ borderColor: `${ACCENTS.grape}38`, background: `${ACCENTS.grape}12` }}
-        >
-          <div className="text-xl">🏆</div>
-          <div className="mt-2 text-[14px] font-extrabold">{t('nav.leaderboard')}</div>
-          <div className="num text-[11px] text-ink-faint">{xp} XP</div>
-        </button>
-      </div>
-
-      <div className="grid items-start gap-5 xl:grid-cols-[minmax(0,1fr)_250px]">
-        <div className="min-w-0">
-          <SegmentedTabs items={tabs} value={tab} onChange={setTab} />
-
-          <div className="mt-4 space-y-2.5">
-            {list.map((task) => (
-              <TaskCard
-                key={task.id}
-                task={task}
-                saved={saved.isSaved(task.id)}
-                onSave={() => saved.toggle(task.id)}
-                canSave={saved.ready}
-                done={task.status === TASK_STATUSES.DONE}
-                onToggle={() => moveTask(task.id, TASK_STATUSES.DONE)}
+        </>
+      )}
+      <div className={tasksPage ? "quests-full" : "home-bottom-grid"}>
+        <section className="world-panel quest-panel">
+          <div className="world-section-heading">
+            <h2>
+              {tasksPage
+                ? he
+                  ? "המשימות שלנו"
+                  : "Your quest road"
+                : he
+                  ? "הניצחון הקטן הבא"
+                  : "Follow the fun!"}
+            </h2>
+            <span className="world-count">{filtered.length}</span>
+          </div>
+          <div className="quest-tools">
+            <div
+              className="world-tabs"
+              aria-label={he ? "סינון משימות" : "Filter quests"}
+            >
+              {[
+                ["open", "To do", "לביצוע"],
+                ["mine", "Mine", "שלי"],
+                ["done", "Done", "הושלמו"],
+                ["saved", "Saved", "שמורות"],
+              ].map(([id, en, heb]) => (
+                <button
+                  key={id}
+                  aria-pressed={filter === id}
+                  onClick={() => setFilter(id)}
+                >
+                  {he ? heb : en}
+                </button>
+              ))}
+            </div>
+            <div className="quest-view">
+              <button
+                aria-label={he ? "מסלול הרפתקאות" : "Adventure path"}
+                aria-pressed={view === "path"}
+                onClick={() => setView("path")}
+              >
+                <Route size={18} />
+              </button>
+              <button
+                aria-label={he ? "תצוגת רשימה" : "List view"}
+                aria-pressed={view === "list"}
+                onClick={() => setView("list")}
+              >
+                <ListTodo size={17} />
+              </button>
+              <button
+                aria-label={he ? "קיבוץ לפי תאריך" : "Group by date"}
+                aria-pressed={view === "calendar"}
+                onClick={() => setView("calendar")}
+              >
+                <CalendarDays size={17} />
+              </button>
+            </div>
+          </div>
+          {tasksPage && (
+            <div className="quest-search">
+              <Search size={17} />
+              <label className="sr-only" htmlFor="quest-search">
+                {he ? "חיפוש משימות" : "Search quests"}
+              </label>
+              <input
+                id="quest-search"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={
+                  he ? "מחפשים משהו לעשות?" : "Find your next little win…"
+                }
               />
-            ))}
-            {list.length === 0 && (
-              <div className="rounded-2xl border border-dashed border-white/15 py-10 text-center text-sm text-ink-faint">
-                {tab === 'saved' ? (he ? 'לחצו על סימניית המשימה כדי לשמור אותה כאן.' : 'Bookmark a chore to keep it here.') : tab === 'done' ? t('emptyTasks') : t('dashboard.empty')}
+              <select
+                aria-label={he ? "סינון לפי חדר" : "Filter by room"}
+                value={room}
+                onChange={(e) => setRoom(e.target.value)}
+              >
+                {rooms.map(([id, , en, heb]) => (
+                  <option key={id} value={id}>
+                    {he ? heb : en}
+                  </option>
+                ))}
+              </select>
+            </div>
+          )}
+          <div className="quest-list">
+            {view === "path" && filtered.length > 0 ? (
+              <QuestPath
+                tasks={filtered}
+                he={he}
+                tx={tx}
+                onOpen={openDetails}
+                onComplete={complete}
+                getPermissions={getTaskPermissions}
+                busy={busy}
+                preview={!tasksPage}
+              />
+            ) : view === "list" ? (
+              filtered.map(taskRow)
+            ) : (
+              groups.map(([key, group]) => (
+                <div className="quest-date-group" key={key}>
+                  <h3>
+                    <CalendarDays size={16} />
+                    {key === "undated"
+                      ? he
+                        ? "ללא תאריך"
+                        : "Whenever you’re ready"
+                      : new Date(`${key}T12:00:00`).toLocaleDateString(
+                          he ? "he-IL" : "en-GB",
+                          { weekday: "long", month: "short", day: "numeric" },
+                        )}
+                  </h3>
+                  {group.map(taskRow)}
+                </div>
+              ))
+            )}
+            {!filtered.length && (
+              <div className="quest-empty">
+                <Home size={32} strokeWidth={1.5} />
+                <h3>
+                  {he ? "יש מקום לדברים טובים." : "Room for good things."}
+                </h3>
+                <p>
+                  {filter === "saved"
+                    ? he
+                      ? "שמרו משימה בלחיצה על הסימנייה."
+                      : "Bookmark a quest to keep it close."
+                    : he
+                      ? "אין כרגע משימות בסינון הזה."
+                      : "No quests in this view just yet."}
+                </p>
+                <button
+                  className="world-text-button"
+                  disabled={!permissions.canCreateTask}
+                  onClick={() => setEditor(null)}
+                >
+                  {he ? "מוסיפים משימה?" : "Add a little quest"}
+                  <Plus size={15} />
+                </button>
               </div>
             )}
           </div>
-        </div>
-
-        <aside className="rounded-2xl border border-white/10 bg-panel/60 p-5" aria-label={he ? 'משימות שמורות' : 'Saved chores'}>
-          <div className="flex items-center gap-2 text-lime">
-            <Bookmark size={18} />
-            <h2 className="flex-1 text-sm font-extrabold">{he ? 'שמרתי לאחר כך' : 'Saved for later'}</h2>
-            <span className="num text-xs">{savedTasks.length}</span>
-          </div>
-          <p className="mt-2 text-xs leading-relaxed text-ink-faint">{he ? 'הרשימה האישית שלכם, בדפדפן הזה.' : 'Your personal shortlist, in this browser.'}</p>
-          <div className="mt-4 space-y-2">{savedTasks.map(task => <div key={task.id} className="flex items-center gap-2 rounded-xl bg-white/5 p-2">
-            <span>{styleFor(task.categoryId).emoji}</span>
-            <button className="min-w-0 flex-1 text-start text-xs font-bold" onClick={() => setTab('saved')}>
-              <span className={`block truncate ${task.status === TASK_STATUSES.DONE ? 'line-through opacity-50' : ''}`}>{task.title}</span>
-              <small className="text-ink-faint">+{task.pointsValue ?? task.points ?? 0} XP</small>
+          {!tasksPage && (
+            <button
+              className="quest-see-all"
+              onClick={() => navigate("/tasks")}
+            >
+              {he ? "כל המשימות של הבית" : "See all household quests"}
+              <ArrowUpRight size={16} />
             </button>
-            <button className="grid h-9 w-9 shrink-0 place-items-center rounded-lg text-ink-faint hover:bg-white/10" onClick={() => saved.toggle(task.id)} aria-label={`${he ? 'ביטול שמירה' : 'Unsave chore'}: ${task.title}`}>
-              <X size={14} />
+          )}
+        </section>
+        {!tasksPage && (
+          <section className="world-panel home-activity">
+            <div className="game-companion">
+              <img src="/images/dira-mascot.png" alt="" />
+              <div className="companion-speech">
+                {he ? "משימה קטנה. כיף ענקי!" : "Small chore. HUGE high five!"}
+                <span>✦ ✦ ✦</span>
+              </div>
+            </div>
+            <div className="world-section-heading">
+              <h2>{he ? "הקצב שלנו" : "Watch your wins grow!"}</h2>
+              <button
+                className="world-icon-button"
+                onClick={() => navigate("/insights")}
+                aria-label={he ? "כל נתוני ההתקדמות" : "View all insights"}
+              >
+                <ArrowUpRight size={20} />
+              </button>
+            </div>
+            <p>
+              {he
+                ? "שבעה ימים של עשייה ביחד."
+                : "Your team’s power-ups from the last 7 days."}
+            </p>
+            <ActivityChart data={insight.daily} he={he} compact />
+            <button
+              className="world-text-button"
+              onClick={() => navigate("/insights")}
+            >
+              {he ? "גלו את הסיפור המלא" : "Explore the full story"}
+              <ArrowUpRight size={17} />
             </button>
-          </div>)}</div>
-          {!savedTasks.length && <div className="mt-4 rounded-xl border border-dashed border-white/15 px-3 py-6 text-center text-xs leading-relaxed text-ink-faint">{he ? 'משהו שתרצו לעשות אחר כך? שמרו אותו בלחיצה על הסימנייה.' : 'Something for later? Tap its bookmark and find it right here.'}</div>}
-        </aside>
+          </section>
+        )}
       </div>
-
-      {permissions?.canCreateTask !== false && (
-        <div className="flex justify-center pb-2">
-          <LimeButton onClick={() => setCreateOpen(true)}>{t('dashboard.addQuest')}</LimeButton>
-        </div>
+      {detailTask && (
+        <QuestDetailDialog
+          key={detailTask.id}
+          task={detailTask}
+          users={users}
+          requireProof={requireProof}
+          permissions={getTaskPermissions(detailTask)}
+          onClose={() => setDetailId(null)}
+          onEdit={(task) => {
+            setDetailId(null);
+            setEditor(task);
+          }}
+          isSaved={saved.isSaved(detailTask.id)}
+          savedReady={saved.ready}
+          onToggleSaved={() => saved.toggle(detailTask.id)}
+        />
       )}
-
-      {createOpen && (
+      {editor !== undefined && (
         <TaskModal
-          task={null}
+          key={editor?.id || "new"}
+          task={editor}
           variant="dark"
           users={users}
-          permissions={permissions}
+          permissions={editor ? getTaskPermissions(editor) : permissions}
           currentUserId={user?.id}
           onSave={async (data) => {
-            await createTask(data);
-            setCreateOpen(false);
+            if (editor) await updateTask(editor.id, data);
+            else await createTask(data);
+            setEditor(undefined);
           }}
-          onClose={() => setCreateOpen(false)}
+          onClose={() => setEditor(undefined)}
         />
       )}
     </div>
