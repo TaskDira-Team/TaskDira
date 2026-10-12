@@ -1,0 +1,307 @@
+.play-date-picker {
+  width: 100%;
+  min-width: 0;
+}
+.play-date-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 54px;
+  padding: 7px 10px;
+  border: 2px solid #cbded6;
+  border-radius: 16px;
+  box-shadow: 0 3px 2px #c2d6ce;
+  background: #fffef9;
+  color: #244c49;
+  font:
+    850 14px/1.4 "Nunito Variable",
+    "Heebo",
+    sans-serif;
+  text-align: start;
+  cursor: pointer;
+}
+.play-date-trigger:hover:not(:disabled) {
+  background: #f5faf4;
+  border-color: #a5c5b5;
+}
+.play-date-trigger[aria-expanded="true"] {
+  border-color: #8d77b4;
+  box-shadow: 0 3px 2px #cabbdf;
+}
+.play-date-trigger:disabled {
+  background: #edf1ed;
+  color: #61736a;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+.play-date-icon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  background: #ffdfcc;
+  color: #97502d;
+}
+.play-date-check {
+  flex-shrink: 0;
+  margin-inline-start: auto;
+  color: #317548;
+}
+.play-calendar {
+  position: fixed;
+  inset: auto;
+  z-index: 120;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 16px;
+  border: 0;
+  border-radius: 24px;
+  background: #fffef9;
+  color: #244c49;
+  box-shadow:
+    0 12px 35px #244c492b,
+    0 3px 6px #244c4912;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #b0ccbd #f3f7ef;
+  font-family: "Nunito Variable", "Heebo", sans-serif;
+  font-weight: 800;
+  transform-origin: top center;
+  animation: calendar-unfold 0.17s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.play-calendar:not([popover]),
+.play-calendar:popover-open {
+  display: block;
+}
+.play-calendar * {
+  box-sizing: border-box;
+}
+.play-calendar[data-above="true"] {
+  transform-origin: bottom center;
+}
+.play-calendar::backdrop {
+  background: transparent;
+  pointer-events: none;
+}
+.play-calendar .play-calendar-header {
+  display: grid;
+  grid-template-columns: 40px 1fr 40px;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  padding: 0;
+  background: transparent;
+  border: 0;
+}
+.play-calendar-header h3 {
+  margin: 0;
+  font:
+    600 20px/1.25 "Fredoka Variable",
+    "Heebo",
+    sans-serif;
+  color: #244c49;
+  text-align: center;
+}
+.play-calendar-header button {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: 13px;
+  border: 0;
+  background: #e9ddfb;
+  color: #6a4798;
+  cursor: pointer;
+}
+.play-calendar-header button:hover:not(:disabled) {
+  background: #ddcafa;
+}
+.play-calendar-header button:disabled {
+  background: #f0f2ea;
+  color: #a4ada4;
+  cursor: not-allowed;
+}
+.play-calendar-weekdays,
+.play-calendar-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 4px;
+}
+.play-calendar-weekdays {
+  margin-bottom: 6px;
+}
+.play-calendar-weekdays > span {
+  padding-block: 3px;
+  color: #5c7268;
+  text-align: center;
+  font-size: 12px;
+}
+.play-calendar-week + .play-calendar-week {
+  margin-top: 4px;
+}
+.play-calendar-week > span {
+  min-width: 0;
+}
+.play-calendar .play-calendar-day {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 100%;
+  aspect-ratio: 1;
+  min-height: 40px;
+  padding: 0;
+  border: 0;
+  border-radius: 13px;
+  background: transparent;
+  color: #244c49;
+  font:
+    850 15px/1 "Nunito Variable",
+    "Heebo",
+    sans-serif;
+  font-variant-numeric: tabular-nums;
+  cursor: pointer;
+  transition:
+    background 0.12s,
+    transform 0.12s;
+}
+.play-calendar .play-calendar-day:hover:not(:disabled) {
+  background: #f0e9fa;
+  transform: translateY(-1px);
+}
+.play-calendar .play-calendar-day.is-adjacent {
+  color: #71827a;
+}
+.play-calendar .play-calendar-day[aria-current="date"]::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #8a62bb;
+}
+.play-calendar .play-calendar-day.is-selected {
+  background: #d6eddd;
+  color: #235d40;
+  box-shadow: inset 0 -3px 0 #a6cfb3;
+}
+.play-calendar-day > svg {
+  position: absolute;
+  top: 4px;
+  inset-inline-end: 4px;
+}
+.play-calendar .play-calendar-day:disabled {
+  color: #acb7ae;
+  background: transparent;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+.play-calendar-shortcuts {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 7px;
+  margin-top: 14px;
+  padding-top: 13px;
+  border-top: 1px dashed #d4dfd4;
+}
+.play-calendar-shortcuts button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 5px;
+  padding: 8px 3px;
+  min-height: 40px;
+  border: 0;
+  border-radius: 12px;
+  background: #fff0cb;
+  color: #795819;
+  font-size: 12px;
+  font-weight: 850;
+  cursor: pointer;
+}
+.play-calendar-shortcuts button:hover:not(:disabled) {
+  background: #ffe6aa;
+}
+.play-calendar-shortcuts button:disabled {
+  background: #f0f2ea;
+  color: #8a978d;
+  cursor: not-allowed;
+}
+.play-calendar-shortcuts svg {
+  flex-shrink: 0;
+}
+.play-calendar .play-calendar-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 2px 0;
+  margin: 0;
+  background: transparent;
+  border: 0;
+  color: #5c7268;
+  font-size: 12px;
+}
+.play-calendar-footer > span {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.play-calendar-footer i {
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: #8a62bb;
+}
+.play-calendar-footer button {
+  border: 0;
+  background: transparent;
+  color: #526960;
+  padding: 6px 8px;
+  font-weight: 850;
+  cursor: pointer;
+}
+.play-calendar-footer button:hover {
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.play-calendar button:focus-visible,
+.play-date-trigger:focus-visible {
+  outline: 3px solid #7655bb;
+  outline-offset: 2px;
+}
+.play-calendar ::selection {
+  background: #c9eaa8;
+  color: #254319;
+}
+.ticket-plan .ticket-date-field {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+.ticket-date-field > span {
+  color: #244c49;
+}
+@keyframes calendar-unfold {
+  from {
+    opacity: 0.75;
+    transform: scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .play-calendar {
+    animation: none;
+  }
+  .play-calendar .play-calendar-day {
+    transition: none;
+  }
+}

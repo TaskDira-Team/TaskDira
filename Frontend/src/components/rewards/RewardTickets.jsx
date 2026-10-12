@@ -17,6 +17,8 @@ import { useI18n } from "../../context/I18nContext";
 import { PlayNotice } from "../world/PlayBits";
 import PrizeArt from "./PrizeArt";
 import PlaySelect from "../ui/PlaySelect";
+import PlayDatePicker from "../ui/PlayDatePicker";
+import { parseCalendarDate } from "../../utils/calendarDates";
 const TIMES = [
   ["morning", "In the morning", "בבוקר", Sunrise, "peach"],
   ["afternoon", "In the afternoon", "אחר הצהריים", Sun, "gold"],
@@ -32,6 +34,8 @@ function TicketItem({ ticket }) {
   const [editing, setEditing] = useState(false);
   const [date, setDate] = useState(ticket.date || "");
   const [when, setWhen] = useState(ticket.when || "after-dinner");
+  const minDate = new Date().toISOString().slice(0, 10);
+  const validDate = !!parseCalendarDate(date) && date >= minDate;
   const name =
     users.find((u) => String(u.id) === ticket.userId)?.fullName ||
     (he ? "חבר צוות" : "Crew member");
@@ -112,6 +116,7 @@ function TicketItem({ ticket }) {
             className="ticket-plan"
             onSubmit={async (e) => {
               e.preventDefault();
+              if (!validDate) return;
               if (
                 await change("ticket.schedule", {
                   rewardId: ticket.rewardId,
@@ -122,16 +127,18 @@ function TicketItem({ ticket }) {
                 setEditing(false);
             }}
           >
-            <label>
-              {he ? "באיזה יום?" : "Which day?"}
-              <input
-                type="date"
-                required
+            <div className="ticket-date-field">
+              <span>{he ? "באיזה יום?" : "Which day?"}</span>
+              <PlayDatePicker
                 value={date}
-                min={new Date().toISOString().slice(0, 10)}
-                onChange={(e) => setDate(e.target.value)}
+                onChange={setDate}
+                min={minDate}
+                he={he}
+                label={he ? "באיזה יום?" : "Which day?"}
+                disabled={busy}
+                required
               />
-            </label>
+            </div>
             <label>
               {he ? "מתי ביום?" : "When that day?"}
               <PlaySelect
@@ -149,7 +156,10 @@ function TicketItem({ ticket }) {
               />
             </label>
             <div className="ticket-actions">
-              <button className="play-button small" disabled={busy}>
+              <button
+                className="play-button small"
+                disabled={busy || !validDate}
+              >
                 {he ? "קבענו!" : "It’s a date!"}
               </button>
               <button
