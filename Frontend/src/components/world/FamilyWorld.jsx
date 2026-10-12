@@ -37,6 +37,8 @@ import {
   supportFor,
   taskSkill,
 } from "../../utils/familyWorld";
+import { AdventureInvitation } from "./PlayBits";
+import { usePlay } from "../../context/PlayContext";
 import HouseStage from "../landing/HouseStage";
 import "./familyWorld.css";
 
@@ -61,6 +63,7 @@ const positions = [
 export default function FamilyWorld({ onOpen, onNew }) {
   const { tasks, users, household, loading, loadError, permissions } = useApp();
   const { user } = useAuth();
+  const { state: playState } = usePlay();
   const { lang, tx } = useI18n();
   const { navigate } = useRoute();
   const he = lang === "he";
@@ -206,6 +209,7 @@ export default function FamilyWorld({ onOpen, onNew }) {
           {text("My treasures", "האוצרות שלי")}
         </button>
       </nav>
+      <AdventureInvitation />
       {(error || loadError) && (
         <div className="fw-error" role="alert">
           {error || text("Your household didn’t load.", "הבית לא נטען.")}
@@ -245,6 +249,7 @@ export default function FamilyWorld({ onOpen, onNew }) {
               open={roofOpen}
               worldMode
               world={world}
+              personalRoom={playState?.rooms[String(user?.id)]}
             />
           </div>
           <div className="fw-companion">

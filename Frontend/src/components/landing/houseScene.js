@@ -257,7 +257,8 @@ export function createHouseScene(
   // Bedroom upstairs, books, pillows and a woven-style basket.
   box(1.65, 0.25, 2.5, palette.wood, house, 1.25, 3.02, -0.25, 0.06);
   box(1.59, 0.24, 2.44, palette.cream, house, 1.25, 3.22, -0.25, 0.1);
-  box(1.61, 0.15, 1.52, palette.lilac, house, 1.25, 3.4, 0.2, 0.09);
+  const bedroomPaint = material("#b084e4");
+  box(1.61, 0.15, 1.52, bedroomPaint, house, 1.25, 3.4, 0.2, 0.09);
   box(1.68, 0.8, 0.16, palette.wood, house, 1.25, 3.37, -1.47, 0.08);
   for (const x of [0.82, 1.63])
     box(0.61, 0.16, 0.47, palette.cream, house, x, 3.41, -1.07, 0.1);
@@ -429,6 +430,83 @@ export function createHouseScene(
     living: { eye: [4.2, 2.15, 6.4], target: [1.25, 1.05, -0.2] },
     bedroom: { eye: [4.5, 5.6, 6.6], target: [1.2, 3.6, 0] },
   };
+  const personalDecor = {};
+  for (const id of ["cushion", "lamp", "plant", "cup", "moon"]) {
+    personalDecor[id] = new THREE.Group();
+    personalDecor[id].visible = false;
+    house.add(personalDecor[id]);
+  }
+  sphere(
+    0.3,
+    palette.cream,
+    personalDecor.cushion,
+    1.2,
+    3.57,
+    0.65,
+    [1.5, 0.4, 1],
+  );
+  sphere(
+    0.19,
+    palette.cream,
+    personalDecor.cushion,
+    1.02,
+    3.6,
+    0.63,
+    [1, 0.5, 1],
+  );
+  cylinder(0.12, 0.2, 0.08, palette.gold, personalDecor.lamp, 0.25, 2.91, -1.2);
+  cylinder(
+    0.025,
+    0.025,
+    0.58,
+    palette.gold,
+    personalDecor.lamp,
+    0.25,
+    3.23,
+    -1.2,
+  );
+  sphere(0.24, palette.cream, personalDecor.lamp, 0.25, 3.6, -1.2, [1, 0.9, 1]);
+  const roomPlant = plant(2.5, 2.85, 1.15, 0.9);
+  personalDecor.plant.add(roomPlant);
+  box(0.42, 0.09, 0.4, palette.wood, personalDecor.cup, 2.52, 3.0, 0.05);
+  cylinder(0.15, 0.1, 0.24, palette.gold, personalDecor.cup, 2.52, 3.2, 0.05);
+  mesh(
+    new THREE.TorusGeometry(0.14, 0.028, 8, 18),
+    palette.gold,
+    personalDecor.cup,
+    2.36,
+    3.25,
+    0.05,
+  );
+  cylinder(
+    0.012,
+    0.012,
+    0.45,
+    palette.wood,
+    personalDecor.moon,
+    1.1,
+    4.65,
+    -1.5,
+  );
+  const roomMoon = mesh(
+    new THREE.TorusGeometry(0.27, 0.09, 12, 24, Math.PI * 1.55),
+    palette.gold,
+    personalDecor.moon,
+    1.1,
+    4.2,
+    -1.5,
+  );
+  roomMoon.rotation.z = 0.75;
+  function setPersonalRoom(room) {
+    bedroomPaint.color.set(
+      { mint: "#72c7ae", peach: "#efa98c", lilac: "#b397dc", sky: "#89bddf" }[
+        room.color
+      ] || "#b397dc",
+    );
+    for (const [id, group] of Object.entries(personalDecor))
+      group.visible = room.items?.includes(id) || false;
+    render();
+  }
   const worldDecor = new THREE.Group();
   scene.add(worldDecor);
   worldDecor.visible = false;
@@ -943,6 +1021,7 @@ export function createHouseScene(
       setRoom("home");
     },
     setWorld,
+    setPersonalRoom,
     setRoom,
     setOpen,
     setNight,

@@ -24,7 +24,7 @@ The approved first release serves mixed ages with support per skill. It extends 
 - The shared clubhouse adds stages at 1, 4 and 8 distinct completed tasks. Garden/picnic/telescope decorations unlock at 3, 8 and 15. All are reusable, free decorations rather than purchases.
 - The server snapshots completed task IDs when the world is read/changed. Reopening or removing a credited task does not remove progress. Tasks deleted before the first snapshot cannot be reconstructed.
 - Placement is shared across the household; concurrent updates to the same decoration are last-write-wins. Other devices see updates when returning to the page or refreshing.
-- Demo world settings/progress persist only in this browser. Sample tasks and reward claims reset on reload. The explicit demo contains 24 open missions with authored three-step checklists, 137 completed missions across six weeks, and 18 rewards covering available, unaffordable, locked and claimed states. XP and wallet balances are calculated from those records. Real households receive no sample records.
+- Demo world settings/progress persist only in this browser. Sample tasks, reward claims and wallets now persist together on reload (see FAMILY-ADVENTURES.md). The explicit demo contains 24 open missions with authored three-step checklists, 137 completed missions across six weeks, and 18 rewards covering available, unaffordable, locked and claimed states. XP and wallet balances are calculated from those records. Real households receive no sample records.
 
 ## Validation
 

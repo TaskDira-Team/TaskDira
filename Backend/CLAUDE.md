@@ -316,3 +316,5 @@ The ledger is append-only. An **earn** is a positive row carrying `taskid`; a **
 The sibling app is **React 19 + Vite (web)** — plain JSX, no TypeScript. Its `services/` layer talks to this API behind per-domain flags in `services/config.js`: **auth, users, households, tasks and rewards are all live**; the proof flow, achievements, streaks, notifications, the assistant bot and monthly rollover remain mock because no backend supports them. Changes to DTO shapes or status codes break it — check `services/*Remote.js` before altering a contract.
 
 - **Next:** decide the points-spend model and the `familyrole` column (both block the gamification UX), then extend the state machine for the proof pipeline.
+
+Family play (008 PostgreSQL / 005 SQL Server) adds GET/POST `/api/family/{household}/play`: adventures, room keepsakes, weekly choices, help requests and scheduled reward tickets. `FamilyPlayRules` validates against server records; `FamilyPlayService` locks the household row, reconciles snapshots and rejects stale revisions. Apply the matching migration before serving this feature. See `design/FAMILY-ADVENTURES.md`.

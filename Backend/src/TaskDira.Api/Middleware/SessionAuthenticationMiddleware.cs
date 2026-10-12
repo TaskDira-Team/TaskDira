@@ -52,6 +52,8 @@ public class SessionAuthenticationMiddleware
             var allowed = (method == "POST" && System.Text.RegularExpressions.Regex.IsMatch(path, @"^/api/households/\d+/points-ledger$"))
                 || method == "GET" || (method == "POST" && path == "/api/auth/logout")
                 || (method == "PUT" && System.Text.RegularExpressions.Regex.IsMatch(path, @"^/api/family/\d+/world/placement$"))
+                // Play commands enforce parent/child roles and task ownership in the service.
+                || (method == "POST" && System.Text.RegularExpressions.Regex.IsMatch(path, @"^/api/family/\d+/play$"))
                 || (method == "PUT" && path == $"/api/users/{userId}")
                 || (method == "POST" && System.Text.RegularExpressions.Regex.IsMatch(path, @"^/api/rewards/\d+/claim$"));
             var taskMatch = System.Text.RegularExpressions.Regex.Match(path, @"^/api/tasks/(\d+)/(status|subitems/\d+)$");

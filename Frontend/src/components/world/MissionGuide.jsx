@@ -1,3 +1,4 @@
+import { MissionHelp } from "./PlayBits";
 import { useEffect, useState } from "react";
 import { Check, HandHeart, Flag, Volume2, X, ArrowLeft } from "lucide-react";
 import { useI18n } from "../../context/I18nContext";
@@ -239,10 +240,8 @@ export default function MissionGuide({ task, permissions, busy, run }) {
         )}
       </div>
       {help && (
-        <div className="mg-help" role="status">
-          {he
-            ? "אפשר לעצור. גשו למבוגר ואמרו: ״אפשר להראות לי את הצעד הראשון?״ שום דבר לא אובד כשמבקשים עזרה."
-            : "It’s okay to pause. Find your grown-up and say, “Can you show me the first step?” Asking for help never takes anything away."}
+        <div className="mg-help">
+          <MissionHelp task={task} step={steps.length ? index + 1 : 0} />
         </div>
       )}
       {voiceError && (

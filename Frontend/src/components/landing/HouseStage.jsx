@@ -25,6 +25,7 @@ export default function HouseStage({
   onReady,
   world,
   worldMode = false,
+  personalRoom,
 }) {
   const host = useRef(null);
   const markers = useRef({});
@@ -95,6 +96,9 @@ export default function HouseStage({
   useEffect(() => {
     if (world) scene.current?.setWorld(world);
   }, [world, ready]);
+  useEffect(() => {
+    if (personalRoom) scene.current?.setPersonalRoom(personalRoom);
+  }, [personalRoom, ready]);
   const completedKey = completed.join(",");
   useEffect(() => {
     scene.current?.setCompleted(completed);

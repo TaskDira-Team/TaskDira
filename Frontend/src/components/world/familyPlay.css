@@ -1,0 +1,1439 @@
+.family-play {
+  --play-ink: #254b48;
+  --play-muted: #52686a;
+  color: var(--play-ink);
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 12px 4px 55px;
+}
+.family-play h1,
+.family-play h2,
+.family-play h3,
+.reward-ticket-book h2,
+.reward-ticket-book h3,
+.adventure-invitation strong {
+  font-family: "Fredoka Variable", "Heebo", sans-serif;
+}
+.family-play h1 {
+  font-size: clamp(34px, 4.2vw, 58px);
+  font-weight: 570;
+  line-height: 1.06;
+  letter-spacing: -0.025em;
+  text-wrap: balance;
+}
+.family-play h2,
+.reward-ticket-book h2 {
+  font-size: clamp(23px, 2.4vw, 30px);
+  line-height: 1.2;
+  font-weight: 560;
+}
+.family-play h3,
+.reward-ticket-book h3 {
+  font-size: 21px;
+  line-height: 1.25;
+  font-weight: 560;
+}
+.family-play p,
+.reward-ticket-book p {
+  line-height: 1.6;
+}
+.family-play :is(button, input, select):focus-visible,
+.reward-ticket-book :is(button, input, select):focus-visible,
+.mission-help-request button:focus-visible,
+.adventure-invitation:focus-visible {
+  outline: 3px solid #6c4596;
+  outline-offset: 4px;
+}
+.family-play ::selection,
+.reward-ticket-book ::selection {
+  background: #ffe391;
+  color: #254b48;
+}
+.family-play input,
+.reward-ticket-book input {
+  caret-color: #087963;
+  accent-color: #14856d;
+}
+.family-play input,
+.reward-ticket-book input,
+.reward-ticket-book select {
+  color: #254b48;
+  background: #fffefa;
+  border: 2px solid #c9d9d7;
+  padding: 10px 12px;
+  border-radius: 12px;
+  min-height: 44px;
+  min-width: 0;
+}
+.play-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 48px;
+  padding: 12px 21px;
+  border: 2px solid #187960;
+  border-bottom-width: 5px;
+  border-radius: 17px;
+  background: #32bc91;
+  color: #123c30;
+  font-weight: 900;
+  box-shadow: 0 5px 12px #254b4810;
+  transition:
+    background 0.15s,
+    transform 0.15s;
+  cursor: pointer;
+}
+.play-button:hover:not(:disabled) {
+  background: #5dcfa9;
+  transform: translateY(-2px);
+}
+.play-button:active:not(:disabled) {
+  transform: translateY(2px);
+}
+.play-button.secondary {
+  border-color: #c3b2d8;
+  background: #eee1fb;
+  color: #573c73;
+}
+.play-button.secondary:hover:not(:disabled) {
+  background: #e3cef8;
+}
+.play-button.small {
+  min-height: 43px;
+  font-size: 13px;
+  padding: 8px 14px;
+  border-radius: 13px;
+}
+.play-button:disabled {
+  opacity: 0.55;
+  cursor: default;
+  transform: none;
+}
+.play-link {
+  display: inline-flex;
+  gap: 7px;
+  align-items: center;
+  justify-content: center;
+  padding: 9px 4px;
+  min-height: 44px;
+  color: #315a57;
+  font-weight: 850;
+  font-size: 14px;
+  cursor: pointer;
+  text-underline-offset: 4px;
+}
+.play-link:hover {
+  color: #087963;
+  text-decoration: underline;
+}
+.play-link:disabled {
+  opacity: 0.5;
+  cursor: default;
+}
+.play-wayfinding {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 15px;
+  font-size: 13px;
+  color: #596d71;
+}
+.play-wayfinding > span {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.family-play-nav {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  border-bottom: 2px solid #d8e3e5;
+  padding-bottom: 15px;
+  margin-bottom: 22px;
+}
+.family-play-nav button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 13px 19px;
+  min-height: 50px;
+  border-radius: 15px;
+  border: 2px solid transparent;
+  font-size: 14px;
+  font-weight: 900;
+  color: #4c6469;
+}
+.family-play-nav button:hover {
+  background: #e8f0f2;
+}
+.family-play-nav button[aria-current] {
+  background: #efe4fa;
+  border-color: #d3bde5;
+  color: #5d397d;
+  box-shadow: 0 3px 6px #704a9412;
+}
+.family-play-nav b {
+  background: #fcd3b6;
+  color: #713e22;
+  font-size: 11px;
+  border-radius: 50%;
+  width: 21px;
+  height: 21px;
+  display: grid;
+  place-items: center;
+}
+.play-notice {
+  background: #fff1d1;
+  color: #734311;
+  padding: 14px 18px;
+  border-radius: 14px;
+  display: flex;
+  justify-content: space-between;
+  gap: 14px;
+  align-items: center;
+  margin: 16px 0;
+}
+.play-notice button {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  min-height: 44px;
+  font-weight: 900;
+  flex-shrink: 0;
+}
+.play-loading {
+  padding: 20px 0;
+  color: #52686a;
+}
+.play-chapter {
+  animation: play-chapter-in 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+@keyframes play-chapter-in {
+  from {
+    opacity: 0.8;
+    transform: translateY(7px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.play-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+  margin: 24px 0;
+}
+.play-section-heading p {
+  margin-top: 8px;
+  color: #52686a;
+  max-width: 65ch;
+  font-size: 15px;
+}
+.play-avatar {
+  flex-shrink: 0;
+  display: inline-grid;
+  place-items: center;
+  width: 37px;
+  height: 37px;
+  border-radius: 50% 45% 48% 40%;
+  background: #d9c9f0;
+  color: #593f75;
+  font-weight: 950;
+  font-size: 17px;
+}
+.adventure-invitation {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  text-align: start;
+  width: 100%;
+  padding: 15px 20px;
+  margin: 8px 0 22px;
+  background: #e9e0f7;
+  border: 2px solid #d4c1e9;
+  border-bottom-width: 4px;
+  border-radius: 22px;
+  color: #4c3865;
+  transition: background 0.18s;
+}
+.adventure-invitation:hover {
+  background: #e1d3f3;
+}
+.invitation-moon {
+  width: 49px;
+  height: 49px;
+  background: #fff4cc;
+  color: #886028;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.adventure-invitation > span:nth-child(2) {
+  flex: 1;
+}
+.adventure-invitation strong {
+  display: block;
+  font-size: 21px;
+  line-height: 1.2;
+  font-weight: 550;
+}
+.adventure-invitation small {
+  display: block;
+  font-size: 12px;
+  margin-top: 5px;
+}
+.family-adventure-hero {
+  display: grid;
+  grid-template-columns: 1fr 1.04fr;
+  min-height: 365px;
+  align-items: center;
+  column-gap: 24px;
+  padding: 18px 12px 25px;
+  position: relative;
+}
+.adventure-story {
+  position: relative;
+  z-index: 1;
+}
+.adventure-story > p:first-of-type {
+  font-size: 18px;
+  color: #536579;
+  max-width: 30ch;
+  margin: 18px 0 24px;
+}
+.adventure-art {
+  position: relative;
+  text-align: center;
+  padding-bottom: 32px;
+}
+.adventure-art img {
+  width: 100%;
+  height: auto;
+  filter: drop-shadow(0 15px 15px #6e567615);
+}
+.adventure-theme-art {
+  width: 80%;
+  aspect-ratio: 1;
+  margin: 0 auto;
+  background-image: url("/images/garden-camp-adventures.png");
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+}
+.adventure-theme-art.art-camp {
+  background-position: 100% 0;
+}
+.adventure-art-stamp {
+  font-size: 11px;
+  font-weight: 850;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: #5e4976;
+  padding: 8px 12px;
+  border-radius: 12px;
+  background: #e8def4;
+  margin-top: -8px;
+}
+.theme-garden .adventure-art-stamp {
+  background: #dceccc;
+  color: #496032;
+}
+.theme-camp .adventure-art-stamp {
+  background: #f8dfc4;
+  color: #775130;
+}
+.crew-avatars {
+  display: flex;
+  align-items: center;
+  padding-inline-start: 4px;
+  margin: 24px 0 18px;
+}
+.crew-avatars > span {
+  border: 3px solid #f1f7fc;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  background: var(--crew-color);
+  margin-inline-start: -4px;
+  font-weight: 900;
+  font-size: 16px;
+  color: #344b4a;
+}
+.crew-avatars strong {
+  font-size: 12px;
+  margin-inline-start: 12px;
+  max-width: 19ch;
+}
+.adventure-story .adventure-progress-copy {
+  font-weight: 900;
+  font-size: 14px;
+  margin-bottom: 9px;
+}
+.adventure-progress {
+  height: 16px;
+  border-radius: 20px;
+  background: #dae4e7;
+  padding: 3px;
+  max-width: 340px;
+}
+.adventure-progress span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: #33b799;
+  transition: width 0.35s ease-out;
+}
+.adventure-complete .adventure-progress span {
+  background: #d4a535;
+}
+.adventure-complete .play-button {
+  margin-top: 20px;
+}
+.adventure-new-copy {
+  color: #52686a;
+  margin-bottom: 22px;
+  max-width: 40ch;
+}
+.adventure-trail-section {
+  padding-top: 10px;
+}
+.family-adventure-trail {
+  position: relative;
+  list-style: none;
+  margin: 26px 0 0;
+  padding: 0 0 0 30px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0 36px;
+}
+.family-adventure-trail li {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+  padding: 23px 0;
+  border-bottom: 1px dashed #bfd2d1;
+  position: relative;
+}
+.family-adventure-trail li:nth-child(2n) {
+  transform: translateY(23px);
+}
+.adventure-stop {
+  display: grid;
+  place-items: center;
+  width: 57px;
+  height: 57px;
+  border-radius: 48% 43% 46% 41%;
+  background: #e0d2ee;
+  border: 3px solid #d1bfe3;
+  border-bottom-width: 6px;
+  color: #6a4c88;
+  font-family: "Fredoka Variable", sans-serif;
+  font-size: 25px;
+  flex-shrink: 0;
+}
+.family-adventure-trail li.is-done .adventure-stop {
+  background: #bee7d7;
+  border-color: #88c6b0;
+  color: #24634f;
+}
+.family-adventure-trail li.is-mine:not(.is-done) .adventure-stop {
+  background: #ffe498;
+  border-color: #e5c26a;
+  color: #765418;
+}
+.family-adventure-trail li > div {
+  flex: 1;
+  min-width: 0;
+}
+.family-adventure-trail li small {
+  color: #635076;
+  font-size: 12px;
+  font-weight: 900;
+}
+.family-adventure-trail li h3 {
+  font-size: 20px;
+  margin: 4px 0 5px;
+}
+.family-adventure-trail li div > span {
+  color: #52696a;
+  font-size: 12px;
+  line-height: 1.5;
+  display: block;
+}
+.adventure-keepsake {
+  display: flex;
+  align-items: center;
+  gap: 23px;
+  padding: 24px 0;
+  margin: 54px 0 20px;
+  max-width: 700px;
+}
+.adventure-keepsake > span {
+  width: 84px;
+  height: 84px;
+  border-radius: 50%;
+  background: #ffe6a0;
+  color: #8a611c;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  box-shadow:
+    inset 0 -5px 10px #c2903820,
+    0 12px 16px #76541810;
+}
+.adventure-keepsake p {
+  margin-top: 7px;
+  color: #52686a;
+  font-size: 14px;
+}
+.adventure-theme-picker {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.adventure-theme-picker button {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-radius: 14px;
+  border: 2px solid #cadad8;
+  padding: 13px 15px;
+  min-height: 48px;
+  font-weight: 850;
+  font-size: 14px;
+}
+.adventure-theme-picker button[aria-pressed="true"] {
+  border-color: #997bb9;
+  background: #e9ddf6;
+  color: #62407f;
+}
+.play-mission-picker {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 28px;
+  max-height: 480px;
+  overflow: auto;
+  padding: 5px 8px 14px 2px;
+  scrollbar-color: #a0bbb4 transparent;
+  scrollbar-width: thin;
+}
+.play-mission-picker fieldset {
+  min-width: 0;
+  border: 0;
+}
+.play-mission-picker legend {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 900;
+  margin-bottom: 15px;
+}
+.play-choice {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 12px 6px;
+  margin-bottom: 5px;
+  border-bottom: 1px solid #d2e0dd;
+  cursor: pointer;
+}
+.play-choice.chosen {
+  background: #e4f1e8;
+  border-radius: 12px;
+  border-bottom-color: transparent;
+}
+.play-choice input {
+  width: 20px;
+  height: 20px;
+  min-height: 20px;
+  margin-top: 3px;
+  flex-shrink: 0;
+}
+.play-choice strong {
+  display: block;
+  font-size: 14px;
+  line-height: 1.4;
+}
+.play-choice small {
+  display: block;
+  color: #52686a;
+  font-size: 11px;
+  margin-top: 5px;
+}
+.play-form-footer {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 18px;
+  margin-top: 26px;
+  padding-top: 18px;
+  border-top: 1px solid #d0ddda;
+}
+.play-form-footer > :first-child {
+  margin-inline-end: auto;
+}
+.play-parent-tools {
+  margin-top: 30px;
+  border-top: 1px solid #d0ddda;
+  padding: 16px 0;
+  color: #52686a;
+  font-size: 14px;
+}
+.play-parent-tools summary {
+  font-weight: 900;
+  cursor: pointer;
+  padding: 8px 0;
+  color: #395f5a;
+}
+.play-parent-tools > p {
+  margin: 8px 0 14px;
+  max-width: 70ch;
+}
+.personal-room > .play-section-heading {
+  margin-top: 34px;
+}
+.room-name-tag {
+  transform: rotate(5deg);
+  background: #ffe5a6;
+  padding: 14px 22px;
+  border-radius: 13px;
+  font-family: "Fredoka Variable", sans-serif;
+  font-size: 23px;
+  box-shadow: 0 6px 10px #89682714;
+}
+.personal-room-studio {
+  display: grid;
+  grid-template-columns: 1.7fr 1fr;
+  gap: 30px;
+  align-items: center;
+}
+.personal-room-scene {
+  height: 440px;
+  min-width: 0;
+  position: relative;
+  background: #e8edf6;
+  border-radius: 45% 42% 18% 22% / 18% 20% 9% 8%;
+}
+.personal-room-scene .td-house-stage {
+  height: 100%;
+  min-height: 0;
+  width: 100%;
+}
+.personal-room-scene .td-stage-canvas {
+  height: 100%;
+}
+.room-return {
+  position: absolute;
+  top: 16px;
+  inset-inline-start: 18px;
+  display: flex;
+  gap: 7px;
+  align-items: center;
+  background: #fffdf2;
+  padding: 10px 12px;
+  border-radius: 12px;
+  border: 1px solid #d0dad6;
+  font-size: 12px;
+  font-weight: 900;
+}
+.room-paintbox h2 {
+  max-width: 16ch;
+  margin-bottom: 22px;
+}
+.room-swatches {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 18px 12px;
+}
+.room-swatches button {
+  display: grid;
+  justify-items: start;
+  gap: 8px;
+  font-size: 12px;
+  color: #445e5c;
+  font-weight: 850;
+}
+.room-swatches button > span {
+  width: 51px;
+  height: 47px;
+  border-radius: 45% 40% 48% 40%;
+  display: grid;
+  place-items: center;
+  color: #1e4640;
+  border: 3px solid transparent;
+  box-shadow: inset 0 -4px 4px #254b481c;
+}
+.room-swatches button[aria-pressed="true"] > span {
+  outline: 3px solid #46645f;
+  outline-offset: 4px;
+}
+.room-paintbox > p {
+  font-size: 13px;
+  color: #52686a;
+  margin: 20px 0;
+  max-width: 33ch;
+}
+.room-paintbox .room-save-message {
+  font-size: 12px;
+  min-height: 40px;
+  margin: 14px 0 0;
+}
+.room-keepsakes {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 18px;
+  padding: 14px 0;
+}
+.room-keepsake {
+  text-align: center;
+  padding: 12px 8px 18px;
+  border-radius: 20px;
+}
+.room-keepsake:hover:not(:disabled) {
+  background: #e6efed;
+}
+.room-keepsake.is-placed {
+  background: #e3efe7;
+}
+.room-keepsake:disabled {
+  opacity: 0.63;
+}
+.keepsake-object {
+  position: relative;
+  display: grid;
+  place-items: center;
+  height: 100px;
+  margin-bottom: 14px;
+  color: #6b5986;
+}
+.keepsake-object::after {
+  content: "";
+  position: absolute;
+  bottom: 9px;
+  width: 67px;
+  height: 8px;
+  border-radius: 50%;
+  background: #46645418;
+  filter: blur(3px);
+}
+.keepsake-object > svg:first-child {
+  width: 55px;
+  height: 55px;
+  padding: 7px;
+  box-sizing: content-box;
+  background: #e3d5f2;
+  border: 3px solid #d0b9e4;
+  border-bottom-width: 7px;
+  border-radius: 43% 40% 35% 35%;
+}
+.keepsake-plant > svg:first-child {
+  color: #426c43;
+  background: #d2e8c5;
+  border-color: #b6ce9b;
+}
+.keepsake-cup > svg:first-child,
+.keepsake-moon > svg:first-child {
+  color: #846026;
+  background: #fbe3a6;
+  border-color: #ddc47f;
+}
+.keepsake-lamp > svg:first-child {
+  color: #89503e;
+  background: #f8d0b9;
+  border-color: #e0ad91;
+}
+.keepsake-object > svg:nth-child(2) {
+  position: absolute;
+  inset-inline-end: 15%;
+  bottom: 2px;
+  background: #f1f7fc;
+  border-radius: 50%;
+  padding: 5px;
+  box-sizing: content-box;
+}
+.room-keepsake strong {
+  display: block;
+  font-family: "Fredoka Variable", sans-serif;
+  font-size: 17px;
+}
+.room-keepsake small {
+  display: block;
+  font-size: 11px;
+  line-height: 1.5;
+  color: #52686a;
+  margin: 7px auto 0;
+  max-width: 23ch;
+}
+.weekly-heading-art {
+  width: 82px;
+  height: 82px;
+  border-radius: 20px;
+  display: grid;
+  place-items: center;
+  position: relative;
+  color: #63864b;
+  background: #e0eccc;
+  transform: rotate(-6deg);
+  margin: 34px 0 24px;
+}
+.weekly-heading-art span {
+  position: absolute;
+  bottom: -7px;
+  inset-inline-end: -7px;
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  background: #ffe293;
+  color: #735321;
+  border-radius: 50%;
+}
+.weekly-picks .play-section-heading {
+  align-items: flex-start;
+}
+.weekly-picks h1 {
+  font-size: clamp(34px, 4vw, 49px);
+}
+.weekly-choice-count {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 18px 0 25px;
+}
+.weekly-choice-count > span {
+  width: 43px;
+  height: 43px;
+  display: grid;
+  place-items: center;
+  background: #ffe393;
+  border-radius: 50%;
+  font-family: "Fredoka Variable", sans-serif;
+  font-size: 25px;
+  color: #76561f;
+}
+.weekly-choice-count strong {
+  font-size: 14px;
+}
+.weekly-choice-count small {
+  margin-inline-start: auto;
+  font-size: 12px;
+  color: #52686a;
+}
+.weekly-mission-menu article {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  padding: 21px 6px;
+  border-bottom: 1px solid #cdded8;
+}
+.weekly-pick-token {
+  width: 51px;
+  height: 51px;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: 17px;
+  background: #e4e8ed;
+  color: #6c8290;
+}
+.weekly-mission-menu article.is-chosen .weekly-pick-token {
+  color: #2a7459;
+  background: #c6e9d5;
+}
+.weekly-mission-menu article > div:nth-child(2) {
+  flex: 1;
+}
+.weekly-mission-menu small {
+  color: #52686a;
+  display: block;
+  margin-top: 6px;
+  font-size: 12px;
+}
+.weekly-pick-actions {
+  display: grid;
+  justify-items: center;
+  gap: 4px;
+}
+.weekly-pick-actions .play-link {
+  font-size: 12px;
+}
+.weekly-family-promises {
+  margin-top: 45px;
+}
+.weekly-family-promises h2 {
+  margin-bottom: 16px;
+}
+.weekly-family-promises > div {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 0;
+  border-bottom: 1px solid #d7e2df;
+}
+.weekly-family-promises strong {
+  font-size: 13px;
+  min-width: 80px;
+}
+.weekly-family-promises p {
+  margin-inline-start: 15px;
+  font-size: 13px;
+  color: #52686a;
+}
+.rotation-suggestion {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 12px 0;
+  align-items: center;
+}
+.rotation-suggestion small {
+  display: block;
+  margin-top: 5px;
+}
+.play-empty {
+  text-align: center;
+  padding: 44px 20px;
+  color: #587263;
+}
+.play-empty > svg {
+  margin: 0 auto 16px;
+}
+.play-empty h2 {
+  margin-bottom: 9px;
+}
+.play-empty p {
+  max-width: 52ch;
+  margin: auto;
+}
+.helping-intro {
+  margin: 35px 0 30px;
+  max-width: 690px;
+}
+.helping-intro > svg {
+  background: #f8d7c4;
+  color: #8b513a;
+  border-radius: 20px;
+  padding: 14px;
+  box-sizing: content-box;
+  margin-bottom: 22px;
+  transform: rotate(-6deg);
+}
+.helping-intro h1 {
+  font-size: clamp(32px, 4vw, 48px);
+}
+.helping-intro p {
+  color: #52686a;
+  margin-top: 17px;
+}
+.help-request-list {
+  max-width: 820px;
+}
+.help-request-list article {
+  padding: 22px 0 28px;
+  border-bottom: 2px dashed #c4d8d2;
+}
+.help-person {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin-bottom: 12px;
+}
+.help-person > div {
+  flex: 1;
+}
+.help-person strong {
+  font-size: 12px;
+  color: #52686a;
+}
+.help-person h2 {
+  font-size: 24px;
+  margin-top: 3px;
+}
+.help-person > svg {
+  color: #997144;
+}
+.help-options {
+  display: flex;
+  gap: 9px;
+  flex-wrap: wrap;
+  margin: 14px 0;
+}
+.help-options button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  background: #fffdf5;
+  border: 2px solid #c8d9d3;
+  border-bottom-width: 4px;
+  border-radius: 14px;
+  padding: 11px 13px;
+  min-height: 46px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #345b50;
+}
+.help-options button[aria-pressed="true"] {
+  background: #d7eddf;
+  border-color: #8aba9e;
+}
+.help-options button:disabled {
+  opacity: 0.55;
+}
+.help-receipt {
+  background: #e3efdf;
+  color: #3b6642;
+  padding: 11px 15px;
+  border-radius: 14px;
+  font-size: 14px;
+}
+.help-refresh-note {
+  color: #52686a;
+  font-size: 12px;
+  margin-top: 30px;
+}
+.mission-help-request > p {
+  font-size: 14px;
+}
+.reward-ticket-book {
+  padding: 24px 0 36px;
+  margin-bottom: 22px;
+  border-bottom: 2px dashed #ccdbd5;
+  color: #254b48;
+}
+.reward-ticket-book .play-section-heading {
+  margin-top: 0;
+}
+.real-ticket-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 22px;
+}
+.real-reward-ticket {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  background: #fff9e9;
+  padding: 22px 18px;
+  border-radius: 8px 24px 24px 8px;
+  position: relative;
+  box-shadow: 0 8px 16px #254b4809;
+}
+.real-reward-ticket::before {
+  content: "";
+  position: absolute;
+  inset-inline-start: 97px;
+  top: 15px;
+  bottom: 15px;
+  border-inline-start: 2px dashed #e1d4b4;
+}
+.real-ticket-art {
+  flex: 0 0 65px;
+  padding-top: 18px;
+}
+.real-ticket-art .prize-miniature {
+  display: block;
+  width: 65px;
+  height: 65px;
+  background-image: url("/images/treasure-toys-atlas.png");
+  background-size: 600% 300%;
+  background-repeat: no-repeat;
+}
+.real-ticket-art .prize-custom {
+  color: #aa7a34;
+}
+.real-ticket-content {
+  padding-inline-start: 16px;
+  flex: 1;
+  min-width: 0;
+}
+.ticket-owner {
+  font-size: 11px;
+  font-weight: 900;
+  color: #7d642e;
+}
+.real-ticket-content h3 {
+  margin: 4px 0 10px;
+}
+.ticket-status {
+  display: flex;
+  gap: 6px;
+  align-items: flex-start;
+  font-size: 13px;
+  color: #576654;
+}
+.ticket-status svg {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.ticket-actions {
+  display: flex;
+  gap: 10px 18px;
+  align-items: center;
+  flex-wrap: wrap;
+  margin-top: 12px;
+}
+.real-ticket-content > small {
+  display: block;
+  font-size: 12px;
+  margin-top: 9px;
+  color: #65715c;
+}
+.ticket-plan {
+  margin-top: 17px;
+}
+.ticket-plan label {
+  display: grid;
+  gap: 5px;
+  font-size: 12px;
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+.ticket-plan input,
+.ticket-plan select {
+  width: 100%;
+  font-size: 13px;
+}
+.ticket-enjoyed {
+  background: #e8f1e4;
+}
+.play-empty-inline {
+  color: #52686a;
+  padding: 6px 0;
+  font-size: 14px;
+}
+[dir="rtl"] :is(.adventure-invitation, .play-link) > .lucide-arrow-right,
+[dir="rtl"] .play-link > .lucide-arrow-left {
+  transform: scaleX(-1);
+}
+@media (max-width: 1050px) {
+  .family-adventure-hero {
+    min-height: 300px;
+    gap: 15px;
+  }
+  .real-ticket-list {
+    grid-template-columns: 1fr;
+  }
+  .personal-room-studio {
+    grid-template-columns: 1.3fr 1fr;
+    gap: 18px;
+  }
+  .personal-room-scene {
+    height: 400px;
+  }
+  .play-mission-picker {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+@media (max-width: 680px) {
+  .family-play {
+    padding: 0 0 32px;
+  }
+  .play-wayfinding {
+    margin: 0 0 10px;
+  }
+  .play-wayfinding > span {
+    max-width: 38%;
+    font-size: 11px;
+  }
+  .family-play-nav {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 5px;
+    padding-bottom: 12px;
+    margin-bottom: 12px;
+  }
+  .family-play-nav button {
+    padding: 9px 8px;
+    font-size: 12px;
+    min-height: 46px;
+    gap: 7px;
+  }
+  .family-play-nav svg {
+    width: 18px;
+  }
+  .family-adventure-hero {
+    grid-template-columns: 1fr;
+    padding: 13px 0 10px;
+    gap: 0;
+  }
+  .family-adventure-hero h1 {
+    max-width: 14ch;
+    font-size: 38px;
+  }
+  .adventure-story > p:first-of-type {
+    font-size: 15px;
+    margin: 12px 0 16px;
+    max-width: 32ch;
+  }
+  .adventure-art {
+    grid-row: 1;
+    max-width: 275px;
+    width: 100%;
+    margin: 0 auto 14px;
+    padding: 0;
+  }
+  .adventure-art-stamp {
+    display: none;
+  }
+  .crew-avatars {
+    margin: 15px 0 12px;
+  }
+  .adventure-progress {
+    max-width: none;
+  }
+  .play-section-heading {
+    display: block;
+    margin: 27px 0 18px;
+  }
+  .play-section-heading > button {
+    margin-top: 15px;
+  }
+  .family-adventure-trail {
+    grid-template-columns: 1fr;
+    padding: 0;
+    margin-top: 0;
+  }
+  .family-adventure-trail li {
+    padding: 20px 0;
+    gap: 14px;
+  }
+  .family-adventure-trail li:nth-child(2n) {
+    transform: none;
+  }
+  .adventure-stop {
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
+  }
+  .family-adventure-trail li h3 {
+    font-size: 19px;
+  }
+  .adventure-keepsake {
+    gap: 16px;
+    margin: 24px 0 4px;
+  }
+  .adventure-keepsake > span {
+    width: 64px;
+    height: 64px;
+  }
+  .adventure-keepsake h3 {
+    font-size: 20px;
+  }
+  .adventure-keepsake p {
+    font-size: 13px;
+  }
+  .play-mission-picker {
+    grid-template-columns: 1fr;
+    max-height: 420px;
+    gap: 22px;
+  }
+  .play-form-footer {
+    gap: 8px 15px;
+  }
+  .adventure-theme-picker {
+    flex-direction: column;
+  }
+  .personal-room > .play-section-heading {
+    margin-top: 23px;
+    position: relative;
+    padding-inline-end: 50px;
+  }
+  .personal-room h1 {
+    font-size: 36px;
+  }
+  .room-name-tag {
+    position: absolute;
+    top: 0;
+    inset-inline-end: 0;
+    font-size: 15px;
+    padding: 9px 12px;
+  }
+  .personal-room-studio {
+    grid-template-columns: 1fr;
+    gap: 22px;
+  }
+  .personal-room-scene {
+    height: 340px;
+  }
+  .room-return {
+    top: 10px;
+    inset-inline-start: 10px;
+    font-size: 11px;
+  }
+  .room-paintbox h2 {
+    max-width: none;
+    font-size: 24px;
+    margin-bottom: 20px;
+  }
+  .room-swatches {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 9px;
+  }
+  .room-swatches button {
+    font-size: 10px;
+    justify-items: center;
+    gap: 12px;
+    text-align: center;
+  }
+  .room-swatches button > span {
+    width: 44px;
+    height: 42px;
+  }
+  .room-paintbox > p {
+    max-width: none;
+    margin: 17px 0;
+  }
+  .room-keepsakes {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  .room-keepsake:last-child {
+    grid-column: 1 / -1;
+    max-width: 180px;
+    justify-self: center;
+    width: 100%;
+  }
+  .weekly-heading-art {
+    width: 65px;
+    height: 65px;
+    margin: 24px 0;
+  }
+  .weekly-heading-art > svg {
+    width: 43px;
+  }
+  .weekly-choice-count {
+    gap: 10px;
+    padding-bottom: 15px;
+  }
+  .weekly-choice-count small {
+    width: 100%;
+    margin: 0;
+    font-size: 11px;
+  }
+  .weekly-mission-menu article {
+    flex-wrap: wrap;
+    gap: 13px;
+    padding: 21px 0;
+  }
+  .weekly-mission-menu h3 {
+    font-size: 20px;
+  }
+  .weekly-pick-actions {
+    width: 100%;
+    display: flex;
+    justify-content: space-between;
+    gap: 8px;
+    padding-inline-start: 0;
+  }
+  .weekly-pick-actions .play-button {
+    font-size: 12px;
+  }
+  .weekly-family-promises > div {
+    flex-wrap: wrap;
+    gap: 9px;
+  }
+  .weekly-family-promises p {
+    width: 100%;
+    margin: 0;
+    font-size: 12px;
+  }
+  .helping-intro {
+    margin-top: 25px;
+  }
+  .helping-intro h1 {
+    font-size: 37px;
+  }
+  .help-options {
+    flex-direction: column;
+  }
+  .help-options button {
+    justify-content: flex-start;
+  }
+  .rotation-suggestion {
+    gap: 12px;
+    font-size: 12px;
+  }
+  .rotation-suggestion button {
+    flex-shrink: 0;
+    max-width: 125px;
+  }
+  .adventure-invitation {
+    padding: 13px;
+    gap: 10px;
+    border-radius: 18px;
+  }
+  .adventure-invitation strong {
+    font-size: 18px;
+  }
+  .adventure-invitation small {
+    font-size: 11px;
+    line-height: 1.4;
+  }
+  .invitation-moon {
+    width: 39px;
+    height: 39px;
+  }
+  .invitation-moon svg {
+    width: 22px;
+  }
+  .reward-ticket-book {
+    padding: 12px 0 25px;
+  }
+  .real-reward-ticket {
+    padding: 18px 12px;
+    gap: 12px;
+  }
+  .real-ticket-art {
+    flex-basis: 45px;
+  }
+  .real-ticket-art .prize-miniature {
+    width: 45px;
+    height: 45px;
+  }
+  .real-ticket-art .prize-custom svg {
+    width: 43px;
+  }
+  .real-ticket-content {
+    padding-inline-start: 9px;
+  }
+  .real-reward-ticket::before {
+    inset-inline-start: 66px;
+  }
+  .real-ticket-content h3 {
+    font-size: 20px;
+  }
+  .ticket-status {
+    font-size: 12px;
+  }
+  .ticket-actions {
+    gap: 5px 11px;
+  }
+  .ticket-actions .play-link {
+    font-size: 12px;
+  }
+  .play-notice {
+    align-items: flex-start;
+    font-size: 13px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .play-chapter {
+    animation: none;
+  }
+  .play-button,
+  .adventure-progress span {
+    transition: none;
+  }
+}

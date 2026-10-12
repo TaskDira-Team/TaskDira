@@ -18,6 +18,7 @@ import { useAuth } from "../context/AuthContext";
 import { useApp } from "../context/AppContext";
 import { useRoute } from "../context/RouteContext";
 import useSavedChores from "../hooks/useSavedChores";
+import { AdventureInvitation } from "../components/world/PlayBits";
 import FamilyWorld from "../components/world/FamilyWorld";
 import QuestPath from "../components/board/QuestPath";
 import QuestDetailDialog from "../components/board/QuestDetailDialog";
@@ -244,6 +245,7 @@ export default function HomeDashboard() {
               </button>
             )}
           </div>
+          <AdventureInvitation />
           <div className="quests-full">
             <section className="world-panel quest-panel">
               <div className="world-section-heading">

@@ -1,3 +1,4 @@
+import RewardTickets from "../components/rewards/RewardTickets";
 import PrizeArt, { TOY_EMOJI } from "../components/rewards/PrizeArt";
 import { useState } from "react";
 import {
@@ -277,6 +278,7 @@ export default function Rewards() {
           <span className="shop-window-shelf" />
         </div>
       </header>
+      <RewardTickets />
       <div className="shop-shelf-heading">
         <div>
           <h2>

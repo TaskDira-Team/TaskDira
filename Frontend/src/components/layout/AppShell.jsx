@@ -80,7 +80,9 @@ export default function AppShell({ children }) {
       ]
     : items;
   const me = users.find((u) => u.id === user?.id) || user;
-  const active = navItems.find((item) => item[0] === path);
+  const active = path.startsWith("/adventures")
+    ? ["/adventures", Home, "Our adventures", "ההרפתקאות שלנו"]
+    : navItems.find((item) => item[0] === path);
   const go = (destination) => {
     setMenu(false);
     navigate(destination);
@@ -308,8 +310,8 @@ export default function AppShell({ children }) {
         {IS_DEMO_MODE && (
           <div className="world-preview-banner">
             {he
-              ? "בית לדוגמה · המשפחה ועיצוב העולם נשמרים בדפדפן · משימות לדוגמה מתאפסות ברענון"
-              : "Sample household · Family setup and world design stay in this browser; sample tasks reset on refresh"}
+              ? "בית לדוגמה · המשימות, המטבעות וההרפתקאות נשמרים בדפדפן הזה"
+              : "Sample household · Your missions, coins and adventures stay in this browser"}
           </div>
         )}
         <main id="workspace" className="world-main" tabIndex={-1}>

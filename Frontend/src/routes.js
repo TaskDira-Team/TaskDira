@@ -9,6 +9,7 @@ const Profile = lazy(() => import("./pages/Profile"));
 const Household = lazy(() => import("./pages/Household"));
 const AuthRoute = lazy(() => import("./pages/AuthRoute"));
 const FamilyEntry = lazy(() => import("./pages/FamilyEntry"));
+const FamilyAdventure = lazy(() => import("./pages/FamilyAdventure"));
 const Insights = lazy(() => import("./pages/Insights"));
 
 export function preloadPlayRoutes() {
@@ -23,6 +24,13 @@ export function preloadPlayRoutes() {
  * but the shell labels them so nobody mistakes the fixtures for live records.
  */
 export const ROUTES = [
+  {
+    key: "adventures",
+    path: "/adventures",
+    component: FamilyAdventure,
+    access: "private",
+    wired: true,
+  },
   {
     key: "join",
     path: "/join",

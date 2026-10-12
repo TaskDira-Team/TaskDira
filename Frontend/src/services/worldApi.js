@@ -74,15 +74,15 @@ function demoWorld(household, action, data = {}) {
 export const worldApi = {
   read: (household) =>
     USE_REAL_API.households
-      ? http.get(`/family/${household}/world`)
+      ? http.get(`/api/family/${household}/world`)
       : Promise.resolve().then(() => demoWorld(household, "read")),
   place: (household, data) =>
     USE_REAL_API.households
-      ? http.put(`/family/${household}/world/placement`, data)
+      ? http.put(`/api/family/${household}/world/placement`, data)
       : Promise.resolve().then(() => demoWorld(household, "placement", data)),
   support: (household, data) =>
     USE_REAL_API.households
-      ? http.put(`/family/${household}/world/support`, {
+      ? http.put(`/api/family/${household}/world/support`, {
           ...data,
           userId: Number(data.userId),
         })
