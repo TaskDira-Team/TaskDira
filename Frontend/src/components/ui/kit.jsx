@@ -109,6 +109,7 @@ export function Dialog({
   footer,
   accent = "lime",
   size = "md",
+  className = "",
   children,
 }) {
   const panelRef = useDialogFocus(open, onClose);
@@ -144,7 +145,7 @@ export function Dialog({
             aria-modal="true"
             aria-labelledby={title ? titleId : undefined}
             tabIndex={-1}
-            className={`relative flex max-h-[90vh] w-full flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-gradient-to-b from-panel-2/95 to-abyss/95 backdrop-blur-md sm:rounded-3xl ${width}`}
+            className={`world-kit-dialog ${className} relative flex max-h-[90vh] w-full flex-col overflow-hidden rounded-t-3xl border border-white/10 bg-gradient-to-b from-panel-2/95 to-abyss/95 backdrop-blur-md sm:rounded-3xl ${width}`}
             style={{ boxShadow: `0 0 0 1px ${c}22, 0 30px 80px -30px ${c}55` }}
           >
             {(title || onClose) && (
@@ -356,11 +357,6 @@ export function LimeButton({
       onClick={onClick}
       disabled={disabled}
       className={`world-kit-primary group relative overflow-hidden rounded-xl bg-lime font-extrabold text-[#152007] transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:translate-y-0 ${pad} ${className}`}
-      style={
-        disabled
-          ? undefined
-          : { boxShadow: "0 0 0 1px #d6ff9a, 0 14px 38px -12px #104f46cc" }
-      }
     >
       <span className="relative z-10">{children}</span>
     </button>
@@ -452,18 +448,16 @@ export function Avatar({
 
 export function XPBar({ value, accent = "lime", height = 10, label }) {
   const c = ACCENTS[accent];
-  const ref = useRef(null);
-  const shown = useReveal(ref);
   return (
-    <div ref={ref} className="w-full">
+    <div className="w-full">
       <div
         className="world-kit-progress relative w-full overflow-hidden rounded-full bg-hairline"
         style={{ height }}
       >
         <div
-          className="h-full rounded-full transition-[width] duration-[1400ms] ease-out"
+          className="h-full rounded-full transition-[width] duration-200 ease-out"
           style={{
-            width: `${Math.max(0, Math.min(100, shown ? value : 0))}%`,
+            width: `${Math.max(0, Math.min(100, value))}%`,
             background: `linear-gradient(90deg, ${c}88, ${c})`,
             boxShadow: `0 0 16px -2px ${c}`,
           }}
@@ -480,11 +474,8 @@ export function XPRing({ value, size = 176, accent = "lime", children }) {
   const c = ACCENTS[accent];
   const r = size / 2 - 8;
   const circ = 2 * Math.PI * r;
-  const ref = useRef(null);
-  const shown = useReveal(ref);
   return (
     <div
-      ref={ref}
       className="relative grid place-items-center"
       style={{ width: size, height: size }}
     >
@@ -506,9 +497,9 @@ export function XPRing({ value, size = 176, accent = "lime", children }) {
           strokeWidth={8}
           strokeLinecap="round"
           strokeDasharray={circ}
-          strokeDashoffset={circ * (1 - (shown ? value : 0) / 100)}
+          strokeDashoffset={circ * (1 - value / 100)}
           style={{
-            transition: "stroke-dashoffset 1.6s cubic-bezier(.2,.8,.2,1)",
+            transition: "stroke-dashoffset 0.2s cubic-bezier(.2,.8,.2,1)",
             filter: `drop-shadow(0 0 10px ${c})`,
           }}
         />
@@ -545,29 +536,12 @@ export function CountUp({
   prefix = "",
   className = "",
 }) {
-  const ref = useRef(null);
-  const shown = useReveal(ref);
-  const [n, setN] = useState(0);
-
-  useEffect(() => {
-    if (!shown) return;
-    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      setN(to);
-      return;
-    }
-    let raf = 0;
-    const t0 = performance.now();
-    const tick = (t) => {
-      const p = Math.min(1, (t - t0) / duration);
-      setN(to * (1 - Math.pow(1 - p, 3)));
-      if (p < 1) raf = requestAnimationFrame(tick);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [shown, to, duration]);
+  // Progress is information, not a loading animation. Show the real value on
+  // the first frame, including when revisiting a route.
+  const n = Number(to) || 0;
 
   return (
-    <span ref={ref} className={`num ${className}`}>
+    <span className={`num ${className}`}>
       {prefix}
       {n.toLocaleString("en-US", {
         minimumFractionDigits: decimals,

@@ -258,3 +258,25 @@ The sidebar has no independent scrolling. Height breakpoints tighten navigation 
 
 
 Authentication now fits standard laptop and phone viewports using compact field groups and a Look/Color/Badge avatar chooser. All choices remain available; profile editing keeps its full chooser. The explicit sample-home link sits in the header. Very short windows, browser zoom and software keyboards retain natural overflow so controls cannot be clipped.
+
+## Living family world
+
+The signed-in home now uses the open scene and mission composition defined in [design/FAMILY-WORLD.md](design/FAMILY-WORLD.md). Its reusable surface styles are in `Frontend/src/components/world/familyWorld.css`. Native Three.js clubhouse and garden objects extend the existing house scene; no new raster assets are introduced. Children see My world, My missions and My treasures navigation; grown-ups retain household management views.
+
+
+## Tactile controls and open toy town · 12 October 2026
+
+The current user direction explicitly calls for Duolingo-like dimensional controls. Shared signed-in controls use a visible lower edge, 44–48px touch targets, 120ms press feedback and stable labels. The canvas is pale sky; colour belongs to toys and actions instead of large background glows. Native selects have aligned arrows and padding in both directions. World placement and support settings use direct button choices.
+
+The reward shop presents floating prize tokens on an open surface, a small striped shop counter, clear prices, search, and Everything / I can get these / Saving up / Claimed filters. Controls remain still while token art moves; claimed prizes show the family member when available. Existing redemption and permission semantics remain authoritative.
+
+Progress values render immediately, without replaying zero-to-value animations on navigation. Authenticated page Suspense stays inside the persistent app shell, likely play routes warm after sign-in, and hash navigation uses a React transition. The in-memory adapter has no artificial network sleeps.
+
+
+## Mission workshop and miniature treasures
+- New/edit missions use a two-stage notebook: choose a starter, name it and edit its steps; then assign a hero, set the existing XP/coin value, and optionally schedule it. The same permission checks and save payload remain authoritative.
+- Mission guides show a numbered step trail. Editing, bookmarking and deletion live in a Quest tools disclosure; completion/photo approval remain separate from checking a step.
+- The reward shop uses a transparent clay-toy sprite atlas on open display plinths. The same art appears in the reward reveal. See `design/TREASURE-ART.md` for provenance and prompts. Custom reward types retain a gift illustration fallback.
+- Household members appear before goals and settings, in compact rows; member management remains an explicit disclosure with its existing confirmation flow.
+- Support is selected per person with one compact three-choice row per skill. These choices change guidance only, not rewards or access.
+- The house camera has explicit zoom out/in and Whole house controls. Public and signed-in room flights take 0.5 seconds (instant with reduced motion). Concurrent scene updates coalesce into one animation-frame render, and pending frames are cancelled on disposal.

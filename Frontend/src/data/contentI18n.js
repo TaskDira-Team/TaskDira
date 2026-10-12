@@ -1,3 +1,4 @@
+import { PREVIEW_EN, PREVIEW_HE } from "./previewCatalog.js";
 export const CONTENT_EN = {
   'שטיפת כלים': 'Wash the Dishes',
   'לשטוף כלים אחרי ארוחת ערב': 'Wash the dishes after dinner',
@@ -41,7 +42,10 @@ export const CONTENT_EN = {
 };
 
 export function translateContent(text, lang) {
-  if (!text || lang !== 'en') return text;
+  if (!text) return text;
+  if (lang === 'he') return PREVIEW_HE[text] || text;
+  if (PREVIEW_EN[text]) return PREVIEW_EN[text];
+  if (lang !== 'en') return text;
   if (CONTENT_EN[text]) return CONTENT_EN[text];
 
   const daysMatch = text.match(/^⏳ בעוד (\d+) ימים$/);

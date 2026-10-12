@@ -30,6 +30,7 @@ import { IS_DEMO_MODE } from "../../services/config";
 import useDialogFocus from "../../hooks/useDialogFocus";
 import "../../world.css";
 import "../../game-world.css";
+import "../../play-controls.css";
 
 const items = [
   ["/", LayoutDashboard, "Play home", "מבט על הבית"],
@@ -71,8 +72,15 @@ export default function AppShell({ children }) {
     return () => media.removeEventListener("change", change);
   }, []);
   const he = lang === "he";
+  const navItems = user?.isManagedProfile
+    ? [
+        ["/", Home, "My world", "העולם שלי"],
+        ["/tasks", ListTodo, "My missions", "המשימות שלי"],
+        ["/rewards", Gift, "My treasures", "האוצרות שלי"],
+      ]
+    : items;
   const me = users.find((u) => u.id === user?.id) || user;
-  const active = items.find((item) => item[0] === path);
+  const active = navItems.find((item) => item[0] === path);
   const go = (destination) => {
     setMenu(false);
     navigate(destination);
@@ -157,7 +165,7 @@ export default function AppShell({ children }) {
           aria-label={he ? "ניווט ראשי" : "Main navigation"}
           className="world-nav"
         >
-          {items.map(([href, Icon, en, heb]) => (
+          {navItems.map(([href, Icon, en, heb]) => (
             <button
               key={href}
               onClick={() => go(href)}
@@ -300,8 +308,8 @@ export default function AppShell({ children }) {
         {IS_DEMO_MODE && (
           <div className="world-preview-banner">
             {he
-              ? "בית לדוגמה · נתונים להמחשה בלבד · שינויים מתאפסים ברענון"
-              : "Sample household · Family setup stays in this browser; other demo changes reset on refresh"}
+              ? "בית לדוגמה · המשפחה ועיצוב העולם נשמרים בדפדפן · משימות לדוגמה מתאפסות ברענון"
+              : "Sample household · Family setup and world design stay in this browser; sample tasks reset on refresh"}
           </div>
         )}
         <main id="workspace" className="world-main" tabIndex={-1}>
@@ -335,9 +343,14 @@ export default function AppShell({ children }) {
       <nav
         inert={compact && menu}
         className="world-bottom-nav"
+        style={
+          user?.isManagedProfile
+            ? { gridTemplateColumns: "repeat(4, 1fr)" }
+            : undefined
+        }
         aria-label={he ? "קיצורי דרך" : "Quick navigation"}
       >
-        {items.slice(0, 4).map(([href, Icon, en, heb]) => (
+        {navItems.slice(0, 4).map(([href, Icon, en, heb]) => (
           <button
             key={href}
             onClick={() => go(href)}

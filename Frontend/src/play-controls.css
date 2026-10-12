@@ -1,0 +1,194 @@
+/* Shared button language: a visible edge, short travel, no glowing pills. */
+.world-app {
+  --play-green: #87d953;
+  --play-edge: #4d982d;
+  --play-ink: #285018;
+  background: #f2f7fa;
+}
+.world-app :is(.world-button, .world-kit-primary, .community-reward-action) {
+  background: var(--play-green);
+  color: var(--play-ink);
+  border: 2px solid #74c442;
+  border-radius: 15px;
+  box-shadow: 0 5px 0 var(--play-edge);
+  min-height: 48px;
+  padding: 11px 20px;
+  font-size: 14px;
+  font-weight: 900;
+  letter-spacing: 0.005em;
+  transition:
+    transform 0.12s,
+    box-shadow 0.12s,
+    background 0.12s;
+  text-shadow: none;
+}
+.world-app
+  :is(.world-button, .world-kit-primary, .community-reward-action)::before,
+.world-app
+  :is(.world-button, .world-kit-primary, .community-reward-action)::after {
+  display: none;
+}
+.world-app
+  :is(.world-button, .world-kit-primary, .community-reward-action):hover:not(
+    :disabled
+  ) {
+  background: #99e46b;
+  transform: translateY(-1px);
+}
+.world-app
+  :is(.world-button, .world-kit-primary, .community-reward-action):active:not(
+    :disabled
+  ) {
+  transform: translateY(4px);
+  box-shadow: 0 1px 0 var(--play-edge);
+}
+.world-app :is(.world-button.secondary, .world-kit-ghost) {
+  background: #fff;
+  border: 2px solid #d3e0e6;
+  color: #416174;
+  box-shadow: 0 4px 0 #c4d5de;
+  border-radius: 14px;
+  min-height: 44px;
+}
+.world-app
+  :is(.world-button, .world-kit-primary, .community-reward-action):disabled {
+  opacity: 1;
+  background: #e5ecee;
+  color: #5c707b;
+  border-color: #d4dfe3;
+  box-shadow: 0 3px 0 #c4d1d7;
+  cursor: not-allowed;
+}
+.world-app :is(button, a, input, select):focus-visible {
+  outline: 3px solid #7655bb;
+  outline-offset: 4px;
+}
+.world-app select {
+  appearance: none;
+  border: 2px solid #cadce3;
+  border-radius: 13px;
+  color: #35586b;
+  background-color: #fff;
+  padding: 11px 38px 11px 13px;
+  min-height: 46px;
+  line-height: 1.3;
+  font-weight: 750;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='18' height='18' viewBox='0 0 24 24' fill='none' stroke='%23416174' stroke-width='2.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+}
+.world-app[dir="rtl"] select {
+  padding: 11px 13px 11px 38px;
+  background-position: left 12px center;
+}
+.world-app .world-tabs {
+  gap: 8px;
+  flex-wrap: wrap;
+  background: none;
+  border: 0;
+  padding: 0 0 4px;
+}
+.world-app .world-tabs button {
+  min-height: 44px;
+  padding: 9px 15px;
+  background: #fff;
+  border: 2px solid #d8e3e8;
+  border-radius: 13px;
+  box-shadow: 0 3px 0 #c8d9df;
+  color: #496574;
+}
+.world-app .world-tabs button[aria-pressed="true"] {
+  background: #e3f4d8;
+  border-color: #99c878;
+  color: #356526;
+  box-shadow: 0 3px 0 #83b565;
+}
+.world-app .quest-view button {
+  min-width: 44px;
+  min-height: 44px;
+  border-radius: 12px;
+}
+.world-app .quest-tools {
+  gap: 18px;
+}
+.world-app .quests-full .quest-panel {
+  background: transparent;
+  box-shadow: none;
+  border: 0;
+}
+.world-app .quest-path-intro {
+  background: #e4f2e0;
+  color: #416e31;
+  border-radius: 16px;
+  box-shadow: none;
+}
+.world-app .quest-search {
+  min-width: 0;
+  gap: 12px;
+}
+.world-app .quest-search input {
+  font-size: 15px;
+  caret-color: #4e8f30;
+}
+.world-app .quest-search select {
+  min-width: 150px;
+}
+.page-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  color: #416174;
+  min-height: 35vh;
+  font-weight: 800;
+}
+.world-app ::selection {
+  color: #254319;
+  background: #c9eaa8;
+}
+@media (max-width: 600px) {
+  .world-app .quest-search {
+    flex-wrap: wrap;
+  }
+  .world-app .quest-search select {
+    width: 100%;
+  }
+  .world-app .world-tabs button {
+    padding: 9px 11px;
+    font-size: 12px;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .world-app :is(.world-button, .world-kit-primary, .community-reward-action) {
+    transition: none;
+  }
+}
+
+.world-app .quest-content strong {
+  font-size: 16px;
+}
+.world-app .quest-content > span {
+  font-size: 12px;
+}
+.world-app .quest-row {
+  min-height: 94px;
+}
+.world-app .quest-assignee-name {
+  font-size: 12px;
+  color: #496777;
+  min-width: 46px;
+  font-weight: 800;
+}
+.world-app .quest-step-summary {
+  color: #557646;
+}
+@media (max-width: 600px) {
+  .world-app .quest-assignee-name {
+    display: none;
+  }
+  .world-app .quest-content strong {
+    font-size: 14px;
+  }
+}
+
+@media (max-width:1023px) { .world-sidebar[inert] { visibility:hidden; } }

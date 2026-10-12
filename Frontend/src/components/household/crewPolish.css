@@ -1,0 +1,375 @@
+.crew-page {
+  max-width: 1100px;
+}
+.crew-page .crew-heading {
+  margin-bottom: 20px;
+  gap: 20px;
+  align-items: center;
+}
+.crew-page .crew-heading h1 {
+  font-size: clamp(29px, 3vw, 42px);
+  line-height: 1.13;
+}
+.crew-heading p {
+  font-size: 14px;
+}
+.crew-house-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px 24px;
+  font-size: 13px;
+  font-weight: 800;
+  padding: 0 0 22px;
+  color: #597481;
+}
+.crew-house-line > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.crew-list-title {
+  font-size: 21px !important;
+  margin: 0 0 14px !important;
+}
+.crew-page .community-member-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.crew-page .community-member {
+  display: grid;
+  grid-template-columns:
+    minmax(210px, 1.5fr) minmax(130px, 1fr) minmax(120px, 0.7fr)
+    auto;
+  align-items: center;
+  gap: 14px 20px;
+  padding: 16px 20px;
+  border: 0;
+  background: white;
+  border-radius: 18px;
+  position: relative;
+  box-shadow: 0 4px 0 #dce8ed;
+}
+.crew-page .community-member > div:first-child {
+  min-width: 0;
+}
+.crew-page .community-member h3 {
+  font:
+    550 23px/1.15 "Fredoka Variable",
+    sans-serif;
+}
+.crew-page .community-member > .community-note {
+  margin: 0;
+  font-size: 12px;
+}
+.crew-page .community-member > .mt-4 {
+  margin: 0;
+}
+.crew-page .community-member .community-chip {
+  padding: 3px 8px;
+  font-size: 10px;
+  min-height: 23px;
+}
+.crew-page .community-member .community-progress {
+  height: 9px;
+  background: #e8eff2;
+}
+.crew-member-menu {
+  position: relative;
+}
+.crew-member-menu summary {
+  list-style: none;
+  min-height: 42px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 11px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: 850;
+  color: #587687;
+  background: #edf3f6;
+  cursor: pointer;
+}
+.crew-member-menu summary::-webkit-details-marker {
+  display: none;
+}
+.crew-member-menu .community-member-actions {
+  position: absolute;
+  inset-inline-end: 0;
+  top: 42px;
+  min-width: 190px;
+  z-index: 4;
+  background: white;
+  box-shadow: 0 8px 30px #233c4830;
+  border-radius: 14px;
+  padding: 9px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin: 0;
+}
+.crew-member-menu .community-member-actions button {
+  min-height: 44px;
+  text-align: start;
+}
+.crew-page .community-member > .mt-3 {
+  grid-column: 1/-1;
+}
+.crew-page .community-team-goal {
+  margin-top: 28px;
+  padding: 20px 23px;
+  background: #e6f0df;
+  border-radius: 18px;
+  border: 0;
+  box-shadow: none;
+}
+.crew-page .community-team-goal .community-progress {
+  height: 12px;
+  background: #cfdfc4;
+}
+.crew-page .community-team-goal .community-progress > span {
+  background: #79b355;
+}
+.crew-page .community-team-goal h2 {
+  font:
+    550 22px "Fredoka Variable",
+    sans-serif;
+}
+.crew-page .community-team-goal p {
+  font-size: 12px;
+}
+.crew-page .crew-settings {
+  background: transparent !important;
+  padding: 20px 3px;
+  gap: 13px;
+}
+.crew-settings h2 {
+  font-size: 15px;
+}
+.crew-settings p {
+  font-size: 12px;
+}
+.crew-page button:focus-visible,
+.crew-page summary:focus-visible {
+  outline: 3px solid #9272b6;
+  outline-offset: 3px;
+}
+.world-app .crew-join-dialog {
+  border: 0 !important;
+  background: #fffef9 !important;
+  border-radius: 24px !important;
+  box-shadow: 0 24px 80px #18374640 !important;
+}
+.crew-join-dialog > div:first-child {
+  background: #e8f3f8;
+  padding: 19px 24px;
+}
+.crew-join-dialog > div:first-child h2 {
+  font:
+    550 27px "Fredoka Variable",
+    sans-serif;
+  color: #365967;
+}
+.crew-join-dialog .family-tabs {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 7px;
+  margin-bottom: 20px;
+}
+.crew-join-dialog .family-tabs button {
+  border-radius: 12px;
+  border: 2px solid #dbe7eb;
+  background: #fff;
+  min-height: 54px;
+  padding: 8px;
+  flex-direction: column;
+  font-size: 11px;
+  line-height: 1.2;
+}
+.crew-join-dialog .family-tabs button[aria-pressed="true"] {
+  background: #e9dcfb;
+  border-color: #bc9cdb;
+  color: #634686;
+  box-shadow: 0 3px 0 #b899d1;
+}
+.crew-join-dialog .family-intro {
+  gap: 14px;
+  margin-bottom: 16px;
+}
+.crew-join-dialog .family-intro img {
+  width: 76px;
+  height: 76px;
+}
+.crew-join-dialog .family-intro h2 {
+  font-size: 25px;
+  margin-bottom: 7px;
+}
+.crew-join-dialog .family-intro p {
+  font-size: 13px;
+}
+.crew-join-dialog .family-flow form > div,
+.crew-join-dialog .family-flow form > fieldset {
+  margin-bottom: 16px;
+}
+.crew-join-dialog .family-avatars {
+  gap: 8px;
+}
+.crew-join-dialog .family-avatars button {
+  width: 44px;
+  height: 44px;
+  font-size: 26px;
+}
+.crew-join-dialog .family-demo {
+  font-size: 11px;
+  line-height: 1.45;
+  margin-top: 17px;
+  padding-top: 12px;
+}
+.crew-join-dialog .family-flow .world-kit-primary {
+  display: inline-flex;
+  gap: 8px;
+  align-items: center;
+}
+.stars-page .community-rank-row {
+  border: 0;
+  border-radius: 17px;
+  box-shadow: 0 4px 0 #dce7ed;
+  padding: 19px 20px;
+}
+.stars-page .community-rank-row.is-you {
+  background: #e7f3d9;
+  box-shadow: 0 4px 0 #c5d9b1;
+}
+.stars-page .community-rank-number {
+  width: 35px;
+  height: 35px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: #edf1f6;
+  font:
+    550 21px "Fredoka Variable",
+    sans-serif;
+  color: #56727d;
+}
+.stars-page .community-rank-row:first-child .community-rank-number {
+  background: #ffdb78;
+  color: #775a1b;
+}
+.stars-page .community-rank-name h3 {
+  font:
+    550 23px "Fredoka Variable",
+    sans-serif;
+}
+.stars-page .community-team-cheer {
+  border-radius: 22px;
+  background: #f9e7b9 !important;
+  box-shadow: none;
+}
+.stars-page .community-podium-step {
+  border-radius: 16px 16px 5px 5px;
+  border-bottom: 7px solid #ffffff70;
+  font:
+    550 40px "Fredoka Variable",
+    sans-serif;
+}
+.stars-page .community-podium-person h3 {
+  font-family: "Fredoka Variable", sans-serif;
+}
+@media (max-width: 850px) {
+  .crew-page .community-member {
+    grid-template-columns: minmax(150px, 1fr) minmax(100px, 0.7fr) auto;
+    gap: 12px;
+  }
+  .crew-page .community-member > .community-note {
+    display: none;
+  }
+  .crew-page .crew-heading {
+    align-items: flex-start;
+  }
+  .crew-page .crew-heading h1 {
+    font-size: 31px;
+  }
+}
+@media (max-width: 560px) {
+  .crew-page .crew-heading {
+    flex-direction: column;
+    gap: 14px;
+    margin-bottom: 18px;
+  }
+  .crew-page .crew-heading h1 {
+    font-size: 29px;
+  }
+  .crew-heading p {
+    font-size: 13px;
+  }
+  .crew-page .crew-heading .world-kit-primary {
+    width: auto;
+    min-height: 44px;
+  }
+  .crew-house-line {
+    font-size: 11px;
+    gap: 9px 14px;
+    padding-bottom: 18px;
+  }
+  .crew-page .community-member {
+    grid-template-columns: 1fr auto;
+    padding: 15px;
+    gap: 13px 12px;
+  }
+  .crew-page .community-member h3 {
+    font-size: 23px;
+  }
+  .crew-page .community-member > .mt-4 {
+    grid-column: 1;
+    grid-row: 2;
+    max-width: 240px;
+    padding-inline-start: 74px;
+    font-size: 11px;
+  }
+  .crew-member-menu {
+    grid-column: 2;
+    grid-row: 1;
+  }
+  .crew-page .community-team-goal {
+    margin-top: 23px;
+    padding: 18px;
+  }
+  .crew-page .community-team-goal .mb-3 {
+    gap: 7px;
+  }
+  .crew-page .community-team-goal h2 {
+    font-size: 20px;
+  }
+  .crew-join-dialog .family-tabs {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .crew-join-dialog .family-tabs button {
+    flex-direction: row;
+    min-height: 44px;
+  }
+  .crew-join-dialog .family-intro img {
+    width: 60px;
+    height: 60px;
+  }
+  .crew-join-dialog .family-intro h2 {
+    font-size: 22px;
+  }
+  .crew-join-dialog .family-intro p {
+    font-size: 12px;
+  }
+  .stars-page .community-rank-row {
+    padding: 16px 13px;
+  }
+  .stars-page .community-rank-name h3 {
+    font-size: 21px;
+  }
+}
+
+.crew-join-dialog .world-kit-primary > span {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}

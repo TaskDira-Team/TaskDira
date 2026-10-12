@@ -1,5 +1,13 @@
 # Family profiles and invitations
 
+## Living family world (October 2026)
+
+The signed-in home now opens on a shared 3D world. Open **Make it ours** to place earned decorations. The clubhouse grows from distinct completed household tasks; no coins are deducted. Under **Grown-up corner**, household admins can choose Together, With hints or Independent separately for each member and skill. Open a mission to follow its existing checklist, request in-person help, or use browser read-aloud. **Make a mission → Start with little steps** provides editable starter checklists.
+
+Before deploying this version, apply PostgreSQL `007_family_world.sql` after 006, or SQL Server `004_family_world.sql` after 003. These add world progress, placements and support tables plus `neondb_stp_family_world`. Only the fixed local SQL Server test database is migrated by tests; hosted data has not been changed. The `/api/family/{household}/world` API requires membership; only admins may set skill support. Managed children may place unlocked decorations in their own home.
+
+The demo saves world design, support and credited task IDs in browser storage. Sample task changes still reset on refresh. Real mode uses database persistence across devices. See [the family-world design and behavior notes](design/FAMILY-WORLD.md).
+
 Open **My team → Grow your crew** in the redesigned app.
 
 - **Little hero:** a parent/admin creates a child with a nickname and character. No child email or password is requested. The child is a real household member with their own task assignments, XP and wallet.

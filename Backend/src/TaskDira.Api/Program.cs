@@ -97,6 +97,8 @@ builder.Services.AddScoped<IRegistrationRepository, RegistrationRepository>();
 
 builder.Services.AddScoped<IFamilyRepository, FamilyRepository>();
 builder.Services.AddScoped<IFamilyService, FamilyService>();
+builder.Services.AddScoped<IWorldRepository, WorldRepository>();
+builder.Services.AddScoped<IWorldService, WorldService>();
 
 var app = builder.Build();
 

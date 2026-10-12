@@ -106,6 +106,7 @@ export default function GrowCrew({ open, onClose, initialMode = "child" }) {
   ];
   return (
     <Dialog
+      className="crew-join-dialog"
       open={open}
       onClose={busy ? () => {} : onClose}
       title={say("Grow your crew", "הנבחרת שלנו גדלה")}

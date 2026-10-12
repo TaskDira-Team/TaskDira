@@ -75,6 +75,7 @@ export default function RewardFormDialog({
 
   return (
     <Dialog
+      className="treasure-editor"
       open={open}
       onClose={onClose}
       title={isEdit ? t("dialog.editReward") : t("dialog.newReward")}

@@ -37,7 +37,8 @@ export const store = {
 
 store.household = store.households[0];
 
-export const delay = (ms = 400) => new Promise((resolve) => setTimeout(resolve, ms));
+// Local records are already available. Keep the async contract without fake latency.
+export const delay = () => Promise.resolve();
 
 export const generateId = (prefix) =>
   `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;

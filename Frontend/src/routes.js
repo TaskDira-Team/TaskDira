@@ -2,13 +2,18 @@ import { lazy } from "react";
 import Landing from "./pages/Landing";
 const HomeDashboard = lazy(() => import("./pages/HomeDashboard"));
 const Leaderboard = lazy(() => import("./pages/Leaderboard"));
-const Rewards = lazy(() => import("./pages/Rewards"));
+const loadRewards = () => import("./pages/Rewards");
+const Rewards = lazy(loadRewards);
 const Achievements = lazy(() => import("./pages/Achievements"));
 const Profile = lazy(() => import("./pages/Profile"));
 const Household = lazy(() => import("./pages/Household"));
 const AuthRoute = lazy(() => import("./pages/AuthRoute"));
 const FamilyEntry = lazy(() => import("./pages/FamilyEntry"));
 const Insights = lazy(() => import("./pages/Insights"));
+
+export function preloadPlayRoutes() {
+  return Promise.allSettled([loadRewards(), import("./pages/HomeDashboard")]);
+}
 
 /**
  * One table drives routing and navigation.
