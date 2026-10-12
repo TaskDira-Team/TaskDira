@@ -492,9 +492,6 @@
 .game-onboarding .go-input:focus {
   border-color: #087963;
 }
-.game-onboarding select.go-input {
-  padding-block: 10px;
-}
 .game-onboarding .go-home-preview {
   position: relative;
   padding: 17px 0;

@@ -280,3 +280,10 @@ Progress values render immediately, without replaying zero-to-value animations o
 - Household members appear before goals and settings, in compact rows; member management remains an explicit disclosure with its existing confirmation flow.
 - Support is selected per person with one compact three-choice row per skill. These choices change guidance only, not rewards or access.
 - The house camera has explicit zoom out/in and Whole house controls. Public and signed-in room flights take 0.5 seconds (instant with reduced motion). Concurrent scene updates coalesce into one animation-frame render, and pending frames are cancelled on disposal.
+
+
+### Shared dropdowns
+
+All app choice dropdowns use `components/ui/PlaySelect.jsx`: room filters, mission categories and status, statistics members, reward times, child-device pairing and sign-up roles. Preserve the approved room picker's warm surface, mint selected row, lilac keyboard highlight, coloured icon tiles, clear checkmark and roomy touch targets. Member options use real name initials; other options use Lucide icons from the existing system.
+
+The trigger retains keyboard focus while arrows, Home/End and typed prefixes explore the list. Enter or Space selects; Escape cancels, and Tab or clicking outside dismisses. Escape inside a dropdown must leave the containing dialog open. Menus use the browser's top layer where supported so scrollable dialogs do not clip them, with a positioned portal fallback. Lists adapt above/below the trigger, wrap long labels, remain inside the viewport, and respect RTL and reduced motion. Empty lists disable the trigger with contextual guidance. Business validation and permission checks remain with their existing forms.

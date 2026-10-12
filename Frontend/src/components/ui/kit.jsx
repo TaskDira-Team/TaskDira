@@ -66,13 +66,8 @@ export function ScreenShell({
 export const fieldClass =
   "world-kit-input w-full min-w-0 rounded-xl border border-hairline bg-white px-4 py-2.5 text-sm text-ink placeholder:text-ink-faint outline-none transition focus:border-lime/60 disabled:cursor-not-allowed disabled:opacity-50";
 
-/** Native pickers (date, select popups) follow color-scheme, not our CSS —
- * without this the calendar and dropdown render as white system widgets. */
+/** Keep native date controls consistent with the light form surfaces. */
 export const darkControlStyle = { colorScheme: "light" };
-
-/** Windows renders <option> with the OS background regardless of the parent,
- * so each option needs its colours set directly. */
-export const darkOptionStyle = { background: "#fffefa", color: "#173e3b" };
 
 export function Field({ label, hint, htmlFor, className = "", children }) {
   return (

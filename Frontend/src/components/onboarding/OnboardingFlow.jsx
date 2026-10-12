@@ -7,10 +7,14 @@ import {
   ChevronRight,
   Loader2,
   Check,
+  Heart,
+  HandHeart,
+  Smile,
 } from "lucide-react";
 import { FAMILY_ROLES } from "../../data/gamification";
 import { DEFAULT_AVATAR_CONFIG } from "../../data/mockData";
 import AvatarCreator from "./AvatarCreator";
+import PlaySelect from "../ui/PlaySelect";
 import { useI18n } from "../../context/I18nContext";
 import "./gameOnboarding.css";
 
@@ -36,7 +40,6 @@ const GAME_THEME = {
   label: "go-label",
   labelMuted: "go-optional",
   input: "go-input",
-  select: "go-input",
   previewBox: "go-home-preview",
   previewLabel: "go-preview-label",
   previewText: "go-preview-name",
@@ -204,18 +207,29 @@ export default function OnboardingFlow({
                 <label htmlFor="onboard-role" className={th.label}>
                   {t("onboard.role")}
                 </label>
-                <select
+                <PlaySelect
                   id="onboard-role"
                   value={form.familyRole}
-                  onChange={(e) => update("familyRole", e.target.value)}
-                  className={th.select}
-                >
-                  {FAMILY_ROLES.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {role(r.id, r.label)}
-                    </option>
-                  ))}
-                </select>
+                  onChange={(value) => update("familyRole", value)}
+                  label={t("onboard.role")}
+                  dir={dir}
+                  disabled={submitting}
+                  options={FAMILY_ROLES.map((r, index) => ({
+                    value: r.id,
+                    label: role(r.id, r.label),
+                    icon: {
+                      dad: Heart,
+                      mom: Heart,
+                      kid: Smile,
+                      roommate: Home,
+                      partner: Heart,
+                      helper: HandHeart,
+                    }[r.id],
+                    tone: ["sky", "peach", "gold", "mint", "lilac", "mint"][
+                      index
+                    ],
+                  }))}
+                />
               </div>
 
               <div>

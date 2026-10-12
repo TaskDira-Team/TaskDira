@@ -12,6 +12,7 @@ import {
 } from "lucide-react";
 import QRCode from "qrcode";
 import { Dialog, LimeButton, GhostButton, Field, fieldClass } from "../ui/kit";
+import PlaySelect from "../ui/PlaySelect";
 import {
   AVATAR_ICONS,
   DEFAULT_AVATAR_CONFIG,
@@ -437,6 +438,10 @@ export default function GrowCrew({ open, onClose, initialMode = "child" }) {
                     const selected = data.children.find(
                       (k) => String(k.userId) === child,
                     );
+                    if (!selected)
+                      throw new Error(
+                        say("Choose a hero first.", "קודם בוחרים גיבור."),
+                      );
                     await familyApi.approve(
                       household.id,
                       selected.userId,
@@ -465,22 +470,26 @@ export default function GrowCrew({ open, onClose, initialMode = "child" }) {
                   label={say("Who is this device for?", "למי המכשיר?")}
                   htmlFor="pair-child"
                 >
-                  <select
+                  <PlaySelect
                     id="pair-child"
                     value={child}
-                    onChange={(e) => setChild(e.target.value)}
+                    onChange={setChild}
                     required
-                    className={fieldClass}
-                  >
-                    <option value="">
-                      {say("Choose a hero", "בחירת גיבור")}
-                    </option>
-                    {data.children.map((kid) => (
-                      <option key={kid.userId} value={kid.userId}>
-                        {kid.fullName}
-                      </option>
-                    ))}
-                  </select>
+                    disabled={busy}
+                    dir={he ? "rtl" : "ltr"}
+                    label={say("Who is this device for?", "למי המכשיר?")}
+                    placeholder={
+                      data.children.length
+                        ? say("Choose a hero", "בחירת גיבור")
+                        : say("Add a hero first", "קודם מוסיפים גיבור")
+                    }
+                    options={data.children.map((kid, index) => ({
+                      value: kid.userId,
+                      label: kid.fullName,
+                      initial: kid.fullName.slice(0, 1),
+                      tone: ["lilac", "peach", "sky", "gold"][index % 4],
+                    }))}
+                  />
                 </Field>
                 <Field
                   label={say("Code on their screen", "הקוד על המסך שלהם")}

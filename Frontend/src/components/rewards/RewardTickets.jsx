@@ -1,16 +1,27 @@
 import { useState } from "react";
-import { CalendarDays, Check, Ticket, ArrowDown, ArrowUp } from "lucide-react";
+import {
+  CalendarDays,
+  Check,
+  Ticket,
+  ArrowDown,
+  ArrowUp,
+  Sunrise,
+  Sun,
+  Moon,
+  HeartHandshake,
+} from "lucide-react";
 import { usePlay } from "../../context/PlayContext";
 import { useApp } from "../../context/AppContext";
 import { useAuth } from "../../context/AuthContext";
 import { useI18n } from "../../context/I18nContext";
 import { PlayNotice } from "../world/PlayBits";
 import PrizeArt from "./PrizeArt";
+import PlaySelect from "../ui/PlaySelect";
 const TIMES = [
-  ["morning", "In the morning", "בבוקר"],
-  ["afternoon", "In the afternoon", "אחר הצהריים"],
-  ["after-dinner", "After dinner", "אחרי ארוחת הערב"],
-  ["anytime", "We’ll choose together", "נבחר יחד"],
+  ["morning", "In the morning", "בבוקר", Sunrise, "peach"],
+  ["afternoon", "In the afternoon", "אחר הצהריים", Sun, "gold"],
+  ["after-dinner", "After dinner", "אחרי ארוחת הערב", Moon, "lilac"],
+  ["anytime", "We’ll choose together", "נבחר יחד", HeartHandshake, "mint"],
 ];
 
 function TicketItem({ ticket }) {
@@ -63,7 +74,7 @@ function TicketItem({ ticket }) {
               className="play-button small"
               onClick={() => {
                 setDate(ticket.date || "");
-                setWhen(ticket.when);
+                setWhen(ticket.when || "after-dinner");
                 setEditing(true);
               }}
             >
@@ -123,13 +134,19 @@ function TicketItem({ ticket }) {
             </label>
             <label>
               {he ? "מתי ביום?" : "When that day?"}
-              <select value={when} onChange={(e) => setWhen(e.target.value)}>
-                {TIMES.map((t) => (
-                  <option key={t[0]} value={t[0]}>
-                    {he ? t[2] : t[1]}
-                  </option>
-                ))}
-              </select>
+              <PlaySelect
+                value={when}
+                onChange={setWhen}
+                dir={he ? "rtl" : "ltr"}
+                label={he ? "מתי ביום?" : "When that day?"}
+                disabled={busy}
+                options={TIMES.map(([value, en, heb, icon, tone]) => ({
+                  value,
+                  label: he ? heb : en,
+                  icon,
+                  tone,
+                }))}
+              />
             </label>
             <div className="ticket-actions">
               <button className="play-button small" disabled={busy}>

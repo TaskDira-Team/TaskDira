@@ -9,6 +9,18 @@ import {
   Utensils,
   Shirt,
   CalendarDays,
+  Armchair,
+  BedDouble,
+  ShoppingBasket,
+  Sparkles,
+  ChefHat,
+  BookOpen,
+  PawPrint,
+  Wrench,
+  ListTodo,
+  Play,
+  Clock,
+  CircleCheck,
 } from "lucide-react";
 import { motion } from "framer-motion";
 import { MISSION_TEMPLATES } from "../../utils/familyWorld";
@@ -19,12 +31,25 @@ import {
 } from "../../utils/dateFormat";
 import { modalVariants, overlayVariants } from "../../utils/motion";
 import { fieldClass } from "../ui/kit";
+import PlaySelect from "../ui/PlaySelect";
 import SubItemsChecklist from "../tasks/SubItemsChecklist";
 import { useI18n } from "../../context/I18nContext";
 import useDialogFocus from "../../hooks/useDialogFocus";
 import "./missionWorkshop.css";
 
 const starterIcons = [Blocks, Utensils, Shirt];
+const categoryLooks = {
+  kitchen: [Utensils, "peach"],
+  living: [Armchair, "gold"],
+  shopping: [ShoppingBasket, "mint"],
+  cleaning: [Sparkles, "sky"],
+  cooking: [ChefHat, "peach"],
+  room: [BedDouble, "lilac"],
+  homework: [BookOpen, "sky"],
+  pet: [PawPrint, "mint"],
+  maintenance: [Wrench, "lilac"],
+  other: [ListTodo, "sky"],
+};
 export default function TaskModal({
   task,
   users,
@@ -227,18 +252,20 @@ export default function TaskModal({
                 <div className="workshop-fields">
                   <label className="workshop-field" htmlFor="quest-category">
                     {t("categoryLabel")}
-                    <select
+                    <PlaySelect
                       id="quest-category"
                       value={form.category}
-                      onChange={(e) => change("category", e.target.value)}
-                      className={fieldClass}
-                    >
-                      {CATEGORIES.map((c) => (
-                        <option key={c.id} value={c.id}>
-                          {categoryLabel(c.id, c.label)}
-                        </option>
-                      ))}
-                    </select>
+                      onChange={(value) => change("category", value)}
+                      label={t("categoryLabel")}
+                      dir={dir}
+                      disabled={submitting}
+                      options={CATEGORIES.map((c) => ({
+                        value: c.id,
+                        label: categoryLabel(c.id, c.label),
+                        icon: categoryLooks[c.id]?.[0],
+                        tone: categoryLooks[c.id]?.[1],
+                      }))}
+                    />
                   </label>
                   <details
                     className="workshop-note"
@@ -373,25 +400,40 @@ export default function TaskModal({
                 {task && (isAdmin || permissions?.canReassign) && (
                   <label className="workshop-field" htmlFor="quest-status">
                     {t("statusLabel")}
-                    <select
+                    <PlaySelect
                       id="quest-status"
                       value={form.status}
-                      onChange={(e) => change("status", e.target.value)}
-                      className={fieldClass}
-                    >
-                      <option value={TASK_STATUSES.TODO}>
-                        {t("status.todo")}
-                      </option>
-                      <option value="InProgress">
-                        {say("In progress", "בעבודה")}
-                      </option>
-                      <option value={TASK_STATUSES.PENDING_APPROVAL}>
-                        {t("status.pending")}
-                      </option>
-                      <option value={TASK_STATUSES.DONE}>
-                        {t("status.done")}
-                      </option>
-                    </select>
+                      onChange={(value) => change("status", value)}
+                      label={t("statusLabel")}
+                      dir={dir}
+                      disabled={submitting}
+                      options={[
+                        {
+                          value: TASK_STATUSES.TODO,
+                          label: t("status.todo"),
+                          icon: ListTodo,
+                          tone: "sky",
+                        },
+                        {
+                          value: "InProgress",
+                          label: say("In progress", "בעבודה"),
+                          icon: Play,
+                          tone: "lilac",
+                        },
+                        {
+                          value: TASK_STATUSES.PENDING_APPROVAL,
+                          label: t("status.pending"),
+                          icon: Clock,
+                          tone: "gold",
+                        },
+                        {
+                          value: TASK_STATUSES.DONE,
+                          label: t("status.done"),
+                          icon: CircleCheck,
+                          tone: "mint",
+                        },
+                      ]}
+                    />
                   </label>
                 )}
               </>
