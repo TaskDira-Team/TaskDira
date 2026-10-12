@@ -130,9 +130,6 @@
   font-size: 15px;
   caret-color: #4e8f30;
 }
-.world-app .quest-search select {
-  min-width: 150px;
-}
 .page-loading {
   display: flex;
   align-items: center;
@@ -149,9 +146,6 @@
 @media (max-width: 600px) {
   .world-app .quest-search {
     flex-wrap: wrap;
-  }
-  .world-app .quest-search select {
-    width: 100%;
   }
   .world-app .world-tabs button {
     padding: 9px 11px;

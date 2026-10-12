@@ -1,0 +1,208 @@
+/* A room is a recognisable place, with the same toy colours as the quest path. */
+.world-app .quest-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.quest-search-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 54px;
+  padding-inline: 15px;
+  background: #fffef9;
+  border: 2px solid #d5e1de;
+  border-radius: 16px;
+  color: #52736d;
+}
+.quest-search-field > svg {
+  flex-shrink: 0;
+}
+.world-app .quest-search-field > input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 0;
+  border: 0;
+  background: transparent;
+  color: #244c49;
+}
+.quest-search-field > input::placeholder {
+  color: #60776f;
+  opacity: 1;
+}
+.quest-search-field:focus-within {
+  outline: 3px solid #7655bb;
+  outline-offset: 3px;
+}
+.world-app .quest-search-field > input:focus-visible {
+  outline: none;
+}
+.room-picker {
+  position: relative;
+  width: 218px;
+  flex-shrink: 0;
+}
+.room-picker-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 54px;
+  padding: 6px 12px 6px 8px;
+  padding-inline: 8px 12px;
+  background: #fffef9;
+  border: 2px solid #cbded6;
+  border-radius: 16px;
+  box-shadow: 0 3px 2px #c2d6ce;
+  color: #244c49;
+  text-align: start;
+  font-size: 14px;
+  line-height: 1.3;
+  font-weight: 850;
+  cursor: pointer;
+  transition:
+    background 0.16s,
+    border-color 0.16s,
+    box-shadow 0.16s;
+}
+.room-picker-trigger:hover {
+  background: #f5faf4;
+  border-color: #a5c5b5;
+}
+.room-picker-trigger[aria-expanded="true"] {
+  border-color: #8d77b4;
+  box-shadow: 0 3px 2px #cabbdf;
+}
+.room-picker-chevron {
+  margin-inline-start: auto;
+  flex-shrink: 0;
+  transition: transform 0.18s;
+}
+.room-picker-trigger[aria-expanded="true"] .room-picker-chevron {
+  transform: rotate(180deg);
+}
+.room-picker-icon {
+  display: grid;
+  place-items: center;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  border-radius: 12px 12px 10px 10px;
+}
+.room-picker-icon-all {
+  background: #d6eddd;
+  color: #246849;
+}
+.room-picker-icon-kitchen {
+  background: #ffdfcc;
+  color: #97502d;
+}
+.room-picker-icon-living {
+  background: #fff0b2;
+  color: #81621c;
+}
+.room-picker-icon-room {
+  background: #e9ddfb;
+  color: #6a4798;
+}
+.room-picker-icon-other {
+  background: #dceef9;
+  color: #39677f;
+}
+.room-picker-menu {
+  position: absolute;
+  z-index: 35;
+  inset-inline-end: 0;
+  top: calc(100% + 9px);
+  width: max(100%, 250px);
+  padding: 8px;
+  border-radius: 20px;
+  background: #fffef9;
+  box-shadow:
+    0 10px 28px #244c4929,
+    0 3px 5px #244c4912;
+  transform-origin: top center;
+  animation: room-picker-unfold 0.17s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.room-picker-menu[data-above="true"] {
+  top: auto;
+  bottom: calc(100% + 9px);
+  transform-origin: bottom center;
+}
+.room-picker-options {
+  position: relative;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-width: thin;
+  scrollbar-color: #b0ccbd #f3f7ef;
+}
+.room-picker-option {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  min-height: 54px;
+  padding: 8px;
+  border-radius: 12px;
+  color: #244c49;
+  text-align: start;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+  user-select: none;
+}
+.room-picker-option + .room-picker-option {
+  margin-top: 3px;
+}
+.room-picker-option.is-highlighted {
+  background: #f0e9fa;
+  outline: 2px solid #d1bee9;
+  outline-offset: -2px;
+}
+.room-picker-option[aria-selected="true"] {
+  background: #e6f3e5;
+}
+.room-picker-check {
+  margin-inline-start: auto;
+  flex-shrink: 0;
+  visibility: hidden;
+  color: #317548;
+}
+.room-picker-option[aria-selected="true"] .room-picker-check {
+  visibility: visible;
+}
+@keyframes room-picker-unfold {
+  from {
+    opacity: 0.75;
+    transform: scaleY(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scaleY(1);
+  }
+}
+@media (max-width: 600px) {
+  .world-app .quest-search {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .room-picker {
+    width: 100%;
+  }
+  .room-picker-menu {
+    width: 100%;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .room-picker-menu {
+    animation: none;
+  }
+  .room-picker-trigger,
+  .room-picker-chevron {
+    transition: none;
+  }
+}

@@ -741,15 +741,6 @@
   outline: none;
   padding: 12px 0;
 }
-.quest-search > select {
-  max-width: 140px;
-  border: 0;
-  border-inline-start: 1px solid #dce3dc;
-  background: transparent;
-  padding: 6px 10px;
-  font-size: 12px;
-  color: #526963;
-}
 .quest-row {
   display: flex;
   align-items: center;
@@ -1790,12 +1781,6 @@
   }
   .quest-search > input {
     padding: 6px 0;
-  }
-  .quest-search > select {
-    width: 100%;
-    max-width: 100%;
-    border-inline-start: 0;
-    border-top: 1px solid #dce3dc;
   }
   .world-topbar strong {
     font-size: 12px;

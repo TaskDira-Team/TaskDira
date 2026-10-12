@@ -21,6 +21,7 @@ import useSavedChores from "../hooks/useSavedChores";
 import { AdventureInvitation } from "../components/world/PlayBits";
 import FamilyWorld from "../components/world/FamilyWorld";
 import QuestPath from "../components/board/QuestPath";
+import RoomPicker from "../components/board/RoomPicker";
 import QuestDetailDialog from "../components/board/QuestDetailDialog";
 import { getQuickCompletionAction } from "../utils/questActions";
 import TaskModal from "../components/board/TaskModal";
@@ -57,13 +58,6 @@ export default function HomeDashboard() {
   );
   const [search, setSearch] = useState("");
   const [room, setRoom] = useState("all");
-  const rooms = [
-    ["all", Home, "Every room", "כל החדרים"],
-    ["kitchen", Utensils, "Kitchen", "מטבח"],
-    ["living", Armchair, "Living room", "סלון"],
-    ["room", BedDouble, "Bedroom", "חדר שינה"],
-    ["other", ListTodo, "Around the house", "ברחבי הבית"],
-  ];
   const [view, setView] = useState("path");
   const [editor, setEditor] = useState(undefined);
   const [detailId, setDetailId] = useState(null);
@@ -306,27 +300,21 @@ export default function HomeDashboard() {
               </div>
               {tasksPage && (
                 <div className="quest-search">
-                  <Search size={17} />
-                  <label className="sr-only" htmlFor="quest-search">
-                    {he ? "חיפוש משימות" : "Search quests"}
-                  </label>
-                  <input
-                    id="quest-search"
-                    value={search}
-                    onChange={(e) => setSearch(e.target.value)}
-                    placeholder={he ? "חיפוש משימה…" : "Search your missions…"}
-                  />
-                  <select
-                    aria-label={he ? "סינון לפי חדר" : "Filter by room"}
-                    value={room}
-                    onChange={(e) => setRoom(e.target.value)}
-                  >
-                    {rooms.map(([id, , en, heb]) => (
-                      <option key={id} value={id}>
-                        {he ? heb : en}
-                      </option>
-                    ))}
-                  </select>
+                  <div className="quest-search-field">
+                    <Search size={19} aria-hidden="true" />
+                    <label className="sr-only" htmlFor="quest-search">
+                      {he ? "חיפוש משימות" : "Search quests"}
+                    </label>
+                    <input
+                      id="quest-search"
+                      value={search}
+                      onChange={(e) => setSearch(e.target.value)}
+                      placeholder={
+                        he ? "חיפוש משימה…" : "Search your missions…"
+                      }
+                    />
+                  </div>
+                  <RoomPicker value={room} onChange={setRoom} he={he} />
                 </div>
               )}
               <div className="quest-list">
