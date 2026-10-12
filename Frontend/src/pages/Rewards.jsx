@@ -1,3 +1,5 @@
+import RewardTickets from "../components/rewards/RewardTickets";
+import PrizeArt, { TOY_EMOJI } from "../components/rewards/PrizeArt";
 import { useState } from "react";
 import {
   Check,
@@ -6,31 +8,22 @@ import {
   LockKeyhole,
   Pencil,
   Plus,
-  Sparkles,
   Star,
   Trash2,
+  Search,
+  MoreHorizontal,
 } from "lucide-react";
 import { useI18n } from "../context/I18nContext";
 import { useAuth } from "../context/AuthContext";
 import { useApp } from "../context/AppContext";
-import {
-  ConfirmDialog,
-  CountUp,
-  LimeButton,
-  ScreenShell,
-} from "../components/ui/kit";
+import { ConfirmDialog, ScreenShell } from "../components/ui/kit";
 import RewardFormDialog from "../components/rewards/RewardFormDialog";
 import RewardReveal from "../components/rewards/RewardReveal";
 import useVisibleMotion from "../hooks/useVisibleMotion";
+
 import "../components/rewards/floatingShop.css";
 import "../components/ui/community.css";
-
-const FILLS = [
-  "var(--community-coral)",
-  "var(--community-lilac)",
-  "var(--community-gold)",
-  "var(--community-mint)",
-];
+import "../components/rewards/treasureShop.css";
 
 function RewardCard({
   reward,
@@ -42,6 +35,7 @@ function RewardCard({
   isAdmin,
   onEdit,
   onDelete,
+  claimedBy,
 }) {
   const { t, lang, tx } = useI18n();
   const en = lang === "en";
@@ -53,14 +47,17 @@ function RewardCard({
     <article
       ref={ref}
       data-motion-running={running}
-      className={`community-reward ${reward.claimed ? "is-claimed" : !reward.unlocked ? "is-locked" : ""}`}
+      className={`community-reward treasure-ticket ${reward.claimed ? "is-claimed" : !reward.unlocked ? "is-locked" : ""}`}
       style={{
-        "--reward-fill": FILLS[index % FILLS.length],
+        "--reward-fill":
+          ["#ffe7bf", "#e8ddfa", "#d8eedc", "#dceef7"][
+            TOY_EMOJI.indexOf(reward.emoji) % 4
+          ] || "#e5edf4",
         "--float-delay": `${index * -0.85}s`,
       }}
     >
       <div className="community-reward-art">
-        <span aria-hidden="true">{reward.emoji || "🎁"}</span>
+        <PrizeArt reward={reward} />
         <div className="community-price">
           <Coins size={16} aria-hidden="true" />
           {reward.cost.toLocaleString()}
@@ -68,14 +65,9 @@ function RewardCard({
       </div>
       <div className="community-reward-body">
         <h2>{tx(reward.title)}</h2>
-        <p>
-          {tx(reward.description) ||
-            (en
-              ? "A little something to make your hard work feel extra good."
-              : "משהו קטן שיהפוך את המאמץ שלכם לשווה עוד יותר.")}
-        </p>
+        <p>{tx(reward.description)}</p>
         {!reward.claimed && !reward.unlocked && (
-          <div className="mb-3 flex items-center gap-2 text-sm text-ink-dim">
+          <div className="treasure-status">
             <LockKeyhole size={15} aria-hidden="true" />
             {xpGap.toLocaleString()} XP {en ? "to unlock" : "לפתיחה"}
           </div>
@@ -83,7 +75,9 @@ function RewardCard({
         {reward.claimed ? (
           <div className="community-chip justify-center py-3">
             <Check size={18} aria-hidden="true" />
-            {t("rewards.claimedNote")}
+            {claimedBy
+              ? `${en ? "Claimed by" : "מומש על ידי"} ${claimedBy}`
+              : t("rewards.claimedNote")}
           </div>
         ) : (
           <button
@@ -98,32 +92,39 @@ function RewardCard({
                 : "מממשים…"
               : !reward.unlocked
                 ? en
-                  ? "Keep earning XP"
+                  ? "Not unlocked yet"
                   : "ממשיכים לצבור XP"
                 : affordable
-                  ? t("rewards.redeem")
+                  ? `${en ? "Get for" : "מימוש תמורת"} ${reward.cost} ${en ? "coins" : "מטבעות"}`
                   : `${shortBy.toLocaleString()} ${en ? "more coins needed" : "מטבעות נוספים נדרשים"}`}
           </button>
         )}
         {isAdmin && (
-          <div className="reward-admin-tools">
-            <button
-              type="button"
-              onClick={onEdit}
-              className="community-icon-button"
-              aria-label={`${en ? "Edit" : "עריכה"} ${tx(reward.title)}`}
+          <details className="reward-admin-tools">
+            <summary
+              aria-label={`${en ? "Manage" : "ניהול"} ${tx(reward.title)}`}
             >
-              <Pencil size={17} />
-            </button>
-            <button
-              type="button"
-              onClick={onDelete}
-              className="community-icon-button"
-              aria-label={`${en ? "Delete" : "מחיקה"} ${tx(reward.title)}`}
-            >
-              <Trash2 size={17} />
-            </button>
-          </div>
+              <MoreHorizontal size={20} />
+            </summary>
+            <div>
+              <button
+                type="button"
+                onClick={onEdit}
+                className="community-icon-button"
+                aria-label={`${en ? "Edit" : "עריכה"} ${tx(reward.title)}`}
+              >
+                <Pencil size={17} />
+              </button>
+              <button
+                type="button"
+                onClick={onDelete}
+                className="community-icon-button"
+                aria-label={`${en ? "Delete" : "מחיקה"} ${tx(reward.title)}`}
+              >
+                <Trash2 size={17} />
+              </button>
+            </div>
+          </details>
         )}
       </div>
     </article>
@@ -150,6 +151,8 @@ export default function Rewards() {
   const [editing, setEditing] = useState(null);
   const [deleting, setDeleting] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [filter, setFilter] = useState("all");
+  const [search, setSearch] = useState("");
 
   const me = users.find((u) => u.id === user?.id) || user;
   const xp = me?.points ?? 0;
@@ -210,72 +213,116 @@ export default function Rewards() {
     }
   };
 
-  const nextLocked = rewards
-    .filter((r) => !r.unlocked && !r.claimed)
-    .sort((a, b) => a.requiredPoints - b.requiredPoints)[0];
+  const matches = (reward, value) =>
+    value === "all" ||
+    (value === "ready"
+      ? !reward.claimed && reward.unlocked && reward.affordable
+      : value === "saving"
+        ? !reward.claimed && (!reward.unlocked || !reward.affordable)
+        : reward.claimed);
+  const visible = rewards.filter(
+    (r) =>
+      matches(r, filter) &&
+      `${tx(r.title)} ${tx(r.description)}`
+        .toLowerCase()
+        .includes(search.toLowerCase()),
+  );
+  const filters = [
+    ["all", "Everything", "הכל"],
+    ["ready", "I can get these", "אפשר לממש"],
+    ["saving", "Saving up", "חוסכים בשבילם"],
+    ["claimed", "Claimed", "מומשו"],
+  ];
 
   return (
     <ScreenShell
       dir={dir}
       width="max-w-7xl"
-      className="community-page floating-shop"
+      className="community-page treasure-shop"
     >
-      <div className="community-heading">
-        <div>
+      <header className="shop-front">
+        <div className="shop-front-copy">
           <h1>
-            {en ? "Welcome to the happy shop!" : "ברוכים הבאים לחנות הכיף!"}
+            {en ? "Little shop. Big smiles." : "חנות קטנה. חיוכים גדולים."}
           </h1>
           <p>
             {en
-              ? "Turn the little things you do at home into something to look forward to."
-              : "הופכים את הדברים הקטנים שעושים בבית למשהו שכיף לצפות לו."}
+              ? "You helped your home. Now pick a little happy."
+              : "עזרתם לבית. עכשיו בוחרים משהו משמח."}
+          </p>
+          <div
+            className="shop-purse"
+            aria-label={en ? "Your wallet" : "הארנק שלכם"}
+          >
+            <span className="shop-wallet-coin" aria-hidden="true">
+              <Star size={27} fill="currentColor" />
+            </span>
+            <div>
+              <strong>
+                {balance.toLocaleString()}{" "}
+                <small>{en ? "coins to spend" : "מטבעות למימוש"}</small>
+              </strong>
+              <p>
+                {xp.toLocaleString()} XP ·{" "}
+                {en ? "Your XP is yours to keep." : "הניסיון נשאר שלכם."}
+              </p>
+            </div>
+          </div>
+        </div>
+        <div className="shop-window" aria-hidden="true">
+          {rewards.slice(0, 3).map((reward, index) => (
+            <div key={reward.id} className={`shop-window-toy toy-${index}`}>
+              <PrizeArt reward={reward} />
+            </div>
+          ))}
+          <span className="shop-window-shelf" />
+        </div>
+      </header>
+      <RewardTickets />
+      <div className="shop-shelf-heading">
+        <div>
+          <h2>
+            {en ? "Pick your next happy moment" : "בוחרים את הרגע המשמח הבא"}
+          </h2>
+          <p>
+            {rewards.filter((r) => matches(r, "ready")).length}{" "}
+            {en ? "treasures ready for your coins" : "אוצרות שאפשר לממש עכשיו"}
           </p>
         </div>
         {isAdmin && (
-          <LimeButton onClick={handleCreate}>
-            <span className="inline-flex items-center gap-2">
-              <Plus size={18} />
-              {t("addReward")}
-            </span>
-          </LimeButton>
+          <button className="shop-add" onClick={handleCreate}>
+            <Plus size={17} />
+            {t("addReward")}
+          </button>
         )}
       </div>
-      <section className="community-feature shop-intro">
-        <div>
-          <Gift className="mb-4" size={32} aria-hidden="true" />
-          <h2>
-            {en ? "Little chores. BIG treats!" : "משימות קטנות. כיף גדול!"}
-          </h2>
-          <p>
-            {en
-              ? "XP unlocks new rewards. Spendable coins make them yours. Your lifetime XP stays with you."
-              : "XP פותח פרסים חדשים. מטבעות מאפשרים לממש אותם. הניסיון שצברתם נשאר שלכם."}
-          </p>
+      <div className="shop-toolbar">
+        <div
+          className="shop-tabs"
+          role="group"
+          aria-label={en ? "Browse treasures" : "סינון אוצרות"}
+        >
+          {filters.map(([id, english, hebrew]) => (
+            <button
+              key={id}
+              aria-pressed={filter === id}
+              onClick={() => setFilter(id)}
+            >
+              {en ? english : hebrew}
+              <span>{rewards.filter((r) => matches(r, id)).length}</span>
+            </button>
+          ))}
         </div>
-        <div className="community-wallet">
-          <span className="community-big-coin" aria-hidden="true">
-            <Star size={38} fill="currentColor" strokeWidth={2.5} />
-          </span>
-          <div>
-            <strong>
-              <CountUp to={balance} />
-            </strong>
-            <small>{en ? "Spendable coins" : "מטבעות למימוש"}</small>
-            <small>
-              {xp.toLocaleString()} {en ? "lifetime XP" : "XP שנצברו"}
-            </small>
-          </div>
-        </div>
-      </section>
-      <div className="mb-5 flex items-center justify-between gap-3">
-        <h2 className="text-xl font-extrabold">{t("rewardsStore")}</h2>
-        <span className="community-chip">
-          {
-            rewards.filter((r) => !r.claimed && r.unlocked && r.affordable)
-              .length
-          }{" "}
-          {en ? "ready to redeem" : "זמינים למימוש"}
-        </span>
+        <label className="shop-search">
+          <Search size={18} />
+          <input
+            type="search"
+            aria-label={en ? "Search treasures" : "חיפוש אוצרות"}
+            placeholder={en ? "Find a treasure…" : "מחפשים אוצר…"}
+            value={search}
+            onChange={(e) => setSearch(e.target.value)}
+          />
+        </label>
       </div>
       {rewards.length === 0 ? (
         <div className="community-empty">
@@ -295,7 +342,7 @@ export default function Rewards() {
         </div>
       ) : (
         <div className="community-rewards">
-          {rewards.map((reward, index) => (
+          {visible.map((reward, index) => (
             <RewardCard
               key={reward.id}
               reward={reward}
@@ -307,23 +354,31 @@ export default function Rewards() {
               isAdmin={isAdmin}
               onEdit={() => handleEdit(reward)}
               onDelete={() => setDeleting(reward)}
+              claimedBy={
+                users.find((u) => u.id === reward.claimedByUserId)?.fullName
+              }
             />
           ))}
         </div>
       )}
-      {nextLocked && (
-        <div className="shop-next-unlock">
-          <Sparkles
-            size={22}
-            className="shrink-0 text-gold"
-            aria-hidden="true"
-          />
-          <p className="text-sm text-ink-dim">
-            {en ? "Your next unlock: " : "הפרס הבא שייפתח: "}
-            <strong className="text-ink">{tx(nextLocked.title)}</strong> ·{" "}
-            {Math.max(0, nextLocked.requiredPoints - xp).toLocaleString()} XP{" "}
-            {en ? "to go" : "נותרו"}
+      {rewards.length > 0 && visible.length === 0 && (
+        <div className="shop-empty">
+          <Gift size={36} />
+          <h2>{en ? "No treasures in this view" : "אין אוצרות בתצוגה הזאת"}</h2>
+          <p>
+            {en
+              ? "Try another filter or a different search."
+              : "נסו סינון אחר או חיפוש שונה."}
           </p>
+          <button
+            className="world-button secondary"
+            onClick={() => {
+              setSearch("");
+              setFilter("all");
+            }}
+          >
+            {en ? "Show everything" : "מציגים הכל"}
+          </button>
         </div>
       )}
 

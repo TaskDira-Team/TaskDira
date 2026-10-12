@@ -1,111 +1,55 @@
 import { useState } from "react";
-import { X, Calendar, Clock, Shield, ChevronLeft } from "lucide-react";
+import {
+  X,
+  ArrowRight,
+  ArrowLeft,
+  Check,
+  Star,
+  Blocks,
+  Utensils,
+  Shirt,
+  CalendarDays,
+  Armchair,
+  BedDouble,
+  ShoppingBasket,
+  Sparkles,
+  ChefHat,
+  BookOpen,
+  PawPrint,
+  Wrench,
+  ListTodo,
+  Play,
+  Clock,
+  CircleCheck,
+} from "lucide-react";
 import { motion } from "framer-motion";
+import { MISSION_TEMPLATES } from "../../utils/familyWorld";
 import { CATEGORIES, TASK_STATUSES } from "../../data/mockData";
 import {
   toDatetimeLocalValue,
   fromDatetimeLocalValue,
 } from "../../utils/dateFormat";
 import { modalVariants, overlayVariants } from "../../utils/motion";
-import { darkControlStyle, darkOptionStyle, fieldClass } from "../ui/kit";
-import CategoryPickerModal from "../tasks/CategoryPickerModal";
+import { fieldClass } from "../ui/kit";
+import PlaySelect from "../ui/PlaySelect";
 import SubItemsChecklist from "../tasks/SubItemsChecklist";
 import { useI18n } from "../../context/I18nContext";
 import useDialogFocus from "../../hooks/useDialogFocus";
+import "./missionWorkshop.css";
 
-const emptyForm = {
-  title: "",
-  description: "",
-  category: "kitchen",
-  points: 10,
-  assigneeId: "",
-  status: TASK_STATUSES.TODO,
-  dueAt: "",
-  subItems: [],
+const starterIcons = [Blocks, Utensils, Shirt];
+const categoryLooks = {
+  kitchen: [Utensils, "peach"],
+  living: [Armchair, "gold"],
+  shopping: [ShoppingBasket, "mint"],
+  cleaning: [Sparkles, "sky"],
+  cooking: [ChefHat, "peach"],
+  room: [BedDouble, "lilac"],
+  homework: [BookOpen, "sky"],
+  pet: [PawPrint, "mint"],
+  maintenance: [Wrench, "lilac"],
+  other: [ListTodo, "sky"],
 };
-
-const LIGHT_INPUT =
-  "w-full min-w-0 rounded-xl border border-slate-200 px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-500";
-
-/**
- * Both themes live here rather than in a forked component so the form logic
- * stays single-sourced. The light branch reproduces the original classes
- * exactly — the legacy Dashboard renders identically to before.
- */
-const THEMES = {
-  light: {
-    overlay: "absolute inset-0 bg-black/50 backdrop-blur-sm",
-    panel:
-      "relative bg-white rounded-t-3xl sm:rounded-2xl shadow-2xl w-full max-w-full sm:max-w-lg max-h-[90vh] overflow-y-auto overflow-x-hidden",
-    panelStyle: undefined,
-    header:
-      "flex items-center justify-between px-4 py-4 border-b border-slate-100 sticky top-0 bg-white z-10 rounded-t-3xl",
-    title: "text-lg font-bold text-slate-900",
-    badge: "text-xs text-slate-500 flex items-center gap-1 mt-0.5",
-    close: "p-2 rounded-lg hover:bg-slate-100",
-    label: "block text-sm font-medium text-slate-700 mb-1.5",
-    input: LIGHT_INPUT,
-    textarea: `${LIGHT_INPUT} resize-none`,
-    number: `${LIGHT_INPUT} disabled:bg-slate-50`,
-    select: `w-full rounded-xl border border-slate-200 px-4 py-2.5 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500`,
-    catButton:
-      "w-full flex items-center gap-3 rounded-xl border border-slate-200 px-3 py-3 hover:bg-slate-50 touch-manipulation",
-    catFallback: "bg-slate-100",
-    catText: "flex-1 text-start text-sm font-semibold text-slate-800",
-    chevron: "h-4 w-4 text-slate-400",
-    calendarIcon: "h-4 w-4 text-indigo-500",
-    dueHint: "text-xs text-sky-600 mt-1 flex items-center gap-1",
-    groceryBox: "rounded-xl border border-emerald-100 bg-emerald-50/40 p-3",
-    groceryTitle: "text-sm font-semibold text-slate-800 mb-2",
-    checklistLink: "text-xs font-medium text-indigo-600",
-    cancel:
-      "flex-1 py-2.5 rounded-xl border border-slate-200 text-sm font-medium text-slate-600",
-    submit:
-      "flex-1 py-2.5 rounded-xl bg-indigo-600 text-white text-sm font-medium disabled:opacity-60",
-    submitStyle: undefined,
-    controlStyle: undefined,
-    optionStyle: undefined,
-  },
-  dark: {
-    overlay: "absolute inset-0 bg-black/60 backdrop-blur-sm",
-    panel:
-      "relative w-full max-w-full sm:max-w-lg max-h-[90vh] overflow-y-auto overflow-x-hidden rounded-t-3xl sm:rounded-3xl border border-white/10 bg-gradient-to-b from-panel-2/95 to-abyss/95 backdrop-blur-md",
-    panelStyle: {
-      boxShadow: "0 0 0 1px #b8f06a22, 0 30px 80px -30px #b8f06a55",
-    },
-    header:
-      "flex items-center justify-between px-5 py-4 border-b border-white/8 sticky top-0 bg-abyss/90 backdrop-blur-md z-10 rounded-t-3xl",
-    title: "text-base font-black text-ink",
-    badge: "text-xs text-ink-faint flex items-center gap-1 mt-0.5",
-    close:
-      "p-2 rounded-lg text-ink-faint transition hover:bg-white/8 hover:text-ink",
-    label: "block text-sm font-bold text-ink-dim mb-1.5",
-    input: fieldClass,
-    textarea: `${fieldClass} resize-none`,
-    number: fieldClass,
-    select: fieldClass,
-    catButton:
-      "w-full flex items-center gap-3 rounded-xl border border-white/12 bg-black/30 px-3 py-3 transition hover:border-white/25 touch-manipulation",
-    catFallback: "bg-white/10",
-    catText: "flex-1 text-start text-sm font-bold text-ink",
-    chevron: "h-4 w-4 text-ink-faint",
-    calendarIcon: "h-4 w-4 text-lime",
-    dueHint: "text-xs text-sky mt-1 flex items-center gap-1",
-    groceryBox: "rounded-xl border border-lime/25 bg-lime/8 p-3",
-    groceryTitle: "text-sm font-bold text-ink mb-2",
-    checklistLink: "text-xs font-bold text-lime",
-    cancel:
-      "flex-1 py-2.5 rounded-xl border border-white/12 text-sm font-bold text-ink-dim transition hover:border-white/25 hover:text-ink",
-    submit:
-      "flex-1 py-2.5 rounded-xl bg-gradient-to-b from-lime to-lime-deep text-[#152007] text-sm font-extrabold disabled:opacity-60",
-    submitStyle: {
-      boxShadow: "0 0 0 1px #d6ff9a, 0 14px 38px -12px #8fd53acc",
-    },
-    controlStyle: darkControlStyle,
-    optionStyle: darkOptionStyle,
-  },
-};
-
 export default function TaskModal({
   task,
   users,
@@ -113,13 +57,15 @@ export default function TaskModal({
   currentUserId,
   onSave,
   onClose,
-  variant = "light",
 }) {
+  const { t, dir, lang, category: categoryLabel } = useI18n();
+  const he = lang === "he";
+  const say = (en, heb) => (he ? heb : en);
   const isAdmin = permissions?.isAdmin;
+  const [page, setPage] = useState(0);
+  const [starter, setStarter] = useState("");
+  const [submitting, setSubmitting] = useState(false);
   const [saveError, setSaveError] = useState("");
-  const { t, dir, lang, category: categoryLabel, role } = useI18n();
-  const th = THEMES[variant] ?? THEMES.light;
-
   const [form, setForm] = useState(
     task
       ? {
@@ -131,30 +77,54 @@ export default function TaskModal({
             task.assigneeId || task.assignedUserId || currentUserId || "",
           status: task.status,
           dueAt: toDatetimeLocalValue(task.dueAt || task.dueDate),
-          subItems: Array.isArray(task.subItems)
-            ? task.subItems.map((s) => ({ ...s }))
-            : [],
+          subItems: (task.subItems || []).map((s) => ({ ...s })),
         }
-      : { ...emptyForm, assigneeId: currentUserId || users[0]?.id || "" },
+      : {
+          title: "",
+          description: "",
+          category: "kitchen",
+          points: 10,
+          assigneeId: currentUserId || users[0]?.id || "",
+          status: TASK_STATUSES.TODO,
+          dueAt: "",
+          subItems: [],
+        },
   );
-  const [submitting, setSubmitting] = useState(false);
-  const [categoryOpen, setCategoryOpen] = useState(false);
-  const dialogRef = useDialogFocus(!categoryOpen, onClose);
-
-  const selectedCat = CATEGORIES.find((c) => c.id === form.category);
-  const showGrocery =
-    form.category === "shopping" || (form.subItems && form.subItems.length > 0);
-
-  const handleChange = (field, value) =>
+  const close = () => {
+    if (!submitting) onClose();
+  };
+  const dialogRef = useDialogFocus(true, close);
+  const change = (field, value) =>
     setForm((prev) => ({ ...prev, [field]: value }));
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+  const chooseStarter = (template) => {
+    setStarter(template.id);
+    setForm((prev) => ({
+      ...prev,
+      title: he ? template.he : template.en,
+      category: template.category,
+      subItems: template.steps.map((step, index) => ({
+        id: `si-${Date.now()}-${index}`,
+        text: step[he ? 1 : 0],
+        isCompleted: false,
+      })),
+    }));
+  };
+  const submit = async (event) => {
+    event.preventDefault();
+    if (!form.title.trim()) {
+      setPage(0);
+      return;
+    }
+    if (page === 0) {
+      setPage(1);
+      return;
+    }
     setSaveError("");
     setSubmitting(true);
     try {
       await onSave({
         ...form,
+        title: form.title.trim(),
         points: Number(form.points),
         pointsValue: Number(form.points),
         dueAt: form.dueAt ? fromDatetimeLocalValue(form.dueAt) : null,
@@ -162,7 +132,7 @@ export default function TaskModal({
         assigneeId: form.assigneeId || null,
         assignedUserId: form.assigneeId || null,
         categoryId: form.category,
-        subItems: (form.subItems || []).filter((s) => (s.text || "").trim()),
+        subItems: form.subItems.filter((s) => (s.text || "").trim()),
       });
     } catch (error) {
       setSaveError(error.message);
@@ -170,279 +140,332 @@ export default function TaskModal({
       setSubmitting(false);
     }
   };
-
   return (
-    <div className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-4 overflow-x-hidden">
+    <div className="quest-workshop-wrap" dir={dir}>
       <motion.div
         variants={overlayVariants}
         initial="hidden"
         animate="visible"
-        className={th.overlay}
-        onClick={onClose}
+        className="quest-workshop-scrim"
+        onClick={close}
       />
-
       <motion.div
         variants={modalVariants}
-        ref={dialogRef}
-        inert={categoryOpen}
-        role="dialog"
-        aria-modal="true"
-        aria-label={
-          lang === "he"
-            ? task
-              ? "עריכת משימה"
-              : "משימה חדשה"
-            : task
-              ? "Edit quest"
-              : "New quest"
-        }
-        tabIndex={-1}
         initial="hidden"
         animate="visible"
-        className={th.panel}
-        style={th.panelStyle}
-        dir={dir}
+        ref={dialogRef}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="workshop-title"
+        tabIndex={-1}
+        className="quest-workshop"
       >
-        {saveError && (
-          <p role="alert" className="px-5 py-3 text-coral">
-            {saveError}
-          </p>
-        )}
-        <div className={th.header}>
-          <div className="min-w-0">
-            <h3 className={th.title}>{task ? t("editTask") : t("addTask")}</h3>
-            {!isAdmin && (
-              <p className={th.badge}>
-                <Shield className="h-3 w-3" /> {t("memberBadge")}
-              </p>
-            )}
+        <header className="workshop-header">
+          <div>
+            <h2 id="workshop-title">
+              {task
+                ? say("Remix this mission", "משדרגים את המשימה")
+                : say("Let’s make a mission!", "יוצרים משימה חדשה!")}
+            </h2>
+            <p>
+              {say(
+                "A small job. A chance to feel big.",
+                "משימה קטנה. תחושה גדולה.",
+              )}
+            </p>
           </div>
           <button
             type="button"
-            onClick={onClose}
+            className="workshop-close"
+            onClick={close}
+            disabled={submitting}
             aria-label={t("close")}
-            className={th.close}
           >
-            <X className="h-5 w-5" />
+            <X size={21} />
           </button>
-        </div>
-
-        <form
-          onSubmit={handleSubmit}
-          className="p-4 space-y-4 w-full max-w-full"
+        </header>
+        <ol
+          className="workshop-progress"
+          aria-label={say("Mission setup", "יצירת משימה")}
         >
-          <div>
-            <label htmlFor="quest-title" className={th.label}>
-              {t("titleLabel")}
-            </label>
-            <input
-              type="text"
-              id="quest-title"
-              name="title"
-              value={form.title}
-              onChange={(e) => handleChange("title", e.target.value)}
-              required
-              placeholder={t("titlePlaceholder")}
-              className={th.input}
-            />
-          </div>
-
-          <div>
-            <label htmlFor="quest-description" className={th.label}>
-              {t("descriptionLabel")}
-            </label>
-            <textarea
-              id="quest-description"
-              name="description"
-              value={form.description}
-              onChange={(e) => handleChange("description", e.target.value)}
-              rows={2}
-              className={th.textarea}
-            />
-          </div>
-
-          <div>
-            <label className={th.label}>{t("categoryLabel")}</label>
-            <button
-              type="button"
-              onClick={() => setCategoryOpen(true)}
-              aria-label={t("categoryLabel")}
-              className={th.catButton}
+          {[
+            say("The adventure", "ההרפתקה"),
+            say("The hero & the reward", "הגיבור והפרס"),
+          ].map((label, index) => (
+            <li
+              key={label}
+              aria-current={page === index ? "step" : undefined}
+              className={page >= index ? "is-current" : ""}
             >
-              <span
-                className={`w-12 h-12 rounded-full flex items-center justify-center text-xl ${
-                  selectedCat?.circle || th.catFallback
-                }`}
-              >
-                {selectedCat?.icon || "📌"}
-              </span>
-              <span className={th.catText}>
-                {selectedCat
-                  ? categoryLabel(selectedCat.id, selectedCat.label)
-                  : t("pickCategory")}
-              </span>
-              <ChevronLeft className={th.chevron} />
-            </button>
-          </div>
-
-          <div>
-            <label htmlFor="quest-points" className={th.label}>
-              {t("pointsLabel")}
-            </label>
-            <input
-              type="number"
-              min={1}
-              max={100}
-              id="quest-points"
-              name="points"
-              value={form.points}
-              onChange={(e) => handleChange("points", e.target.value)}
-              required
-              disabled={!permissions?.canChangePoints && !isAdmin}
-              className={th.number}
-              style={th.controlStyle}
-            />
-          </div>
-
-          <div>
-            <label
-              htmlFor="quest-due"
-              className={`${th.label} flex items-center gap-1.5`}
-            >
-              <Calendar className={th.calendarIcon} />
-              {t("dueDateTime")}
-            </label>
-            <input
-              type="datetime-local"
-              id="quest-due"
-              name="dueAt"
-              value={form.dueAt}
-              onChange={(e) => handleChange("dueAt", e.target.value)}
-              dir="ltr"
-              className={th.input}
-              style={th.controlStyle}
-            />
-            {form.dueAt && (
-              <p className={th.dueHint}>
-                <Clock className="h-3 w-3" />
-                {new Date(form.dueAt).toLocaleString(
-                  lang === "he" ? "he-IL" : "en-US",
-                  {
-                    weekday: "short",
-                    day: "numeric",
-                    month: "short",
-                    hour: "2-digit",
-                    minute: "2-digit",
-                  },
-                )}
+              <span>{page > index ? <Check size={16} /> : index + 1}</span>
+              {label}
+            </li>
+          ))}
+        </ol>
+        <form onSubmit={submit}>
+          <div className="workshop-body">
+            {saveError && (
+              <p role="alert" className="workshop-error">
+                {saveError}
               </p>
             )}
+            {page === 0 ? (
+              <>
+                {!task && (
+                  <div
+                    className="workshop-starters"
+                    role="group"
+                    aria-label={say("Mission starters", "רעיונות למשימה")}
+                  >
+                    {MISSION_TEMPLATES.map((template, index) => {
+                      const Icon = starterIcons[index];
+                      return (
+                        <button
+                          type="button"
+                          key={template.id}
+                          aria-pressed={starter === template.id}
+                          onClick={() => chooseStarter(template)}
+                        >
+                          <Icon size={25} />
+                          <span>{he ? template.he : template.en}</span>
+                        </button>
+                      );
+                    })}
+                  </div>
+                )}
+                <label className="workshop-field" htmlFor="quest-title">
+                  {say("What’s the adventure?", "מה ההרפתקה?")}
+                  <input
+                    id="quest-title"
+                    name="title"
+                    value={form.title}
+                    onChange={(e) => change("title", e.target.value)}
+                    required
+                    maxLength={200}
+                    placeholder={say(
+                      "Give the toys a home…",
+                      "מחזירים צעצועים הביתה…",
+                    )}
+                    className={fieldClass}
+                  />
+                </label>
+                <div className="workshop-fields">
+                  <label className="workshop-field" htmlFor="quest-category">
+                    {t("categoryLabel")}
+                    <PlaySelect
+                      id="quest-category"
+                      value={form.category}
+                      onChange={(value) => change("category", value)}
+                      label={t("categoryLabel")}
+                      dir={dir}
+                      disabled={submitting}
+                      options={CATEGORIES.map((c) => ({
+                        value: c.id,
+                        label: categoryLabel(c.id, c.label),
+                        icon: categoryLooks[c.id]?.[0],
+                        tone: categoryLooks[c.id]?.[1],
+                      }))}
+                    />
+                  </label>
+                  <details
+                    className="workshop-note"
+                    open={form.description ? true : undefined}
+                  >
+                    <summary>
+                      {say("Add a helpful note", "מוסיפים הסבר קצר")}
+                    </summary>
+                    <textarea
+                      aria-label={t("descriptionLabel")}
+                      value={form.description}
+                      onChange={(e) => change("description", e.target.value)}
+                      rows={2}
+                      className={fieldClass}
+                    />
+                  </details>
+                </div>
+                <div className="workshop-steps">
+                  <h3>
+                    {say("Little steps, big win", "צעדים קטנים, הצלחה גדולה")}
+                  </h3>
+                  <p>
+                    {say(
+                      "Keep each step short. Read it together before you begin.",
+                      "כל צעד קצר וברור. קוראים ביחד לפני שמתחילים.",
+                    )}
+                  </p>
+                  <SubItemsChecklist
+                    editable
+                    variant="dark"
+                    items={form.subItems}
+                    onChange={(next) => change("subItems", next)}
+                    placeholder={say(
+                      "One small thing to do…",
+                      "דבר קטן אחד לעשות…",
+                    )}
+                  />
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="workshop-mission-preview">
+                  <Check size={24} />
+                  <strong>{form.title}</strong>
+                  <span>
+                    {form.subItems.filter((s) => s.text?.trim()).length}{" "}
+                    {say("steps", "צעדים")}
+                  </span>
+                </div>
+                {(permissions?.canReassign || isAdmin) && (
+                  <fieldset className="workshop-heroes">
+                    <legend>{say("Who’s the hero?", "מי הגיבור?")}</legend>
+                    <div>
+                      {[
+                        {
+                          id: "",
+                          name: say("Anyone", "כל אחד"),
+                          avatar: { emoji: "" },
+                        },
+                        ...users,
+                      ].map((u) => (
+                        <button
+                          type="button"
+                          key={u.id}
+                          aria-pressed={
+                            String(form.assigneeId) === String(u.id)
+                          }
+                          onClick={() => change("assigneeId", u.id)}
+                        >
+                          <span aria-hidden="true">
+                            {u.avatar?.emoji || <Blocks size={23} />}
+                          </span>
+                          {u.fullName || u.name}
+                          {String(form.assigneeId) === String(u.id) && (
+                            <Check size={16} />
+                          )}
+                        </button>
+                      ))}
+                    </div>
+                  </fieldset>
+                )}
+                <fieldset
+                  className="workshop-points"
+                  disabled={!permissions?.canChangePoints && !isAdmin}
+                >
+                  <legend>
+                    <Star size={18} />
+                    {say("Coins + XP for finishing", "מטבעות וניסיון בסיום")}
+                  </legend>
+                  <div>
+                    {[5, 10, 15, 20].map((points) => (
+                      <button
+                        type="button"
+                        aria-pressed={Number(form.points) === points}
+                        key={points}
+                        onClick={() => change("points", points)}
+                      >
+                        {points}
+                      </button>
+                    ))}
+                    <label htmlFor="quest-points">
+                      {say("Custom", "אחר")}
+                      <input
+                        id="quest-points"
+                        type="number"
+                        min={1}
+                        max={100}
+                        required
+                        value={form.points}
+                        onChange={(e) => change("points", e.target.value)}
+                      />
+                    </label>
+                  </div>
+                </fieldset>
+                <label className="workshop-field" htmlFor="quest-due">
+                  <span>
+                    <CalendarDays size={17} />
+                    {say(
+                      "When? Leave empty for any time.",
+                      "מתי? משאירים ריק לכל זמן.",
+                    )}
+                  </span>
+                  <input
+                    type="datetime-local"
+                    id="quest-due"
+                    value={form.dueAt}
+                    onChange={(e) => change("dueAt", e.target.value)}
+                    dir="ltr"
+                    className={fieldClass}
+                  />
+                </label>
+                {task && (isAdmin || permissions?.canReassign) && (
+                  <label className="workshop-field" htmlFor="quest-status">
+                    {t("statusLabel")}
+                    <PlaySelect
+                      id="quest-status"
+                      value={form.status}
+                      onChange={(value) => change("status", value)}
+                      label={t("statusLabel")}
+                      dir={dir}
+                      disabled={submitting}
+                      options={[
+                        {
+                          value: TASK_STATUSES.TODO,
+                          label: t("status.todo"),
+                          icon: ListTodo,
+                          tone: "sky",
+                        },
+                        {
+                          value: "InProgress",
+                          label: say("In progress", "בעבודה"),
+                          icon: Play,
+                          tone: "lilac",
+                        },
+                        {
+                          value: TASK_STATUSES.PENDING_APPROVAL,
+                          label: t("status.pending"),
+                          icon: Clock,
+                          tone: "gold",
+                        },
+                        {
+                          value: TASK_STATUSES.DONE,
+                          label: t("status.done"),
+                          icon: CircleCheck,
+                          tone: "mint",
+                        },
+                      ]}
+                    />
+                  </label>
+                )}
+              </>
+            )}
           </div>
-
-          {showGrocery && (
-            <div className={th.groceryBox}>
-              <p className={th.groceryTitle}>{t("groceryList")}</p>
-              <SubItemsChecklist
-                items={form.subItems}
-                editable
-                variant={variant}
-                onChange={(next) => handleChange("subItems", next)}
-              />
-            </div>
-          )}
-
-          {!showGrocery && (
+          <footer className="workshop-footer">
             <button
               type="button"
-              onClick={() =>
-                handleChange("subItems", [
-                  { id: `si-${Date.now()}`, text: "", isCompleted: false },
-                ])
-              }
-              className={th.checklistLink}
+              className="workshop-back"
+              disabled={submitting}
+              onClick={page ? () => setPage(0) : close}
             >
-              {t("addChecklist")}
-            </button>
-          )}
-
-          {(permissions?.canReassign || isAdmin) && (
-            <div>
-              <label htmlFor="quest-assigneeId" className={th.label}>
-                {t("assignee")}
-              </label>
-              <select
-                id="quest-assigneeId"
-                name="assigneeId"
-                value={form.assigneeId || ""}
-                onChange={(e) => handleChange("assigneeId", e.target.value)}
-                className={th.select}
-                style={th.controlStyle}
-              >
-                <option value="" style={th.optionStyle}>
-                  {t("unassigned")}
-                </option>
-                {users.map((u) => (
-                  <option key={u.id} value={u.id} style={th.optionStyle}>
-                    {u.name} ({role(u.familyRole, u.familyRoleLabel)})
-                  </option>
-                ))}
-              </select>
-            </div>
-          )}
-
-          {task && (isAdmin || permissions?.canReassign) && (
-            <div>
-              <label htmlFor="quest-status" className={th.label}>
-                {t("statusLabel")}
-              </label>
-              <select
-                id="quest-status"
-                name="status"
-                value={form.status}
-                onChange={(e) => handleChange("status", e.target.value)}
-                className={th.select}
-                style={th.controlStyle}
-              >
-                <option value={TASK_STATUSES.TODO} style={th.optionStyle}>
-                  {t("status.todo")}
-                </option>
-                <option
-                  value={TASK_STATUSES.PENDING_APPROVAL}
-                  style={th.optionStyle}
-                >
-                  {t("status.pending")}
-                </option>
-                <option value={TASK_STATUSES.DONE} style={th.optionStyle}>
-                  {t("status.done")}
-                </option>
-              </select>
-            </div>
-          )}
-
-          <div className="flex gap-3 pt-2">
-            <button type="button" onClick={onClose} className={th.cancel}>
-              {t("cancel")}
+              {page ? <ArrowLeft size={18} /> : null}
+              {page ? say("Back", "חזרה") : t("cancel")}
             </button>
             <button
               type="submit"
+              className="workshop-primary"
               disabled={submitting}
-              className={th.submit}
-              style={submitting ? undefined : th.submitStyle}
             >
-              {submitting ? t("saving") : task ? t("update") : t("createTask")}
+              {submitting
+                ? t("saving")
+                : page === 0
+                  ? say("Choose your hero", "בוחרים גיבור")
+                  : task
+                    ? t("update")
+                    : say("Let’s put it on the road!", "מוסיפים למסלול!")}
+              {page === 0 ? <ArrowRight size={18} /> : <Check size={18} />}
             </button>
-          </div>
+          </footer>
         </form>
       </motion.div>
-
-      {categoryOpen && (
-        <CategoryPickerModal
-          selectedId={form.category}
-          variant={variant}
-          onSelect={(id) => handleChange("category", id)}
-          onClose={() => setCategoryOpen(false)}
-        />
-      )}
     </div>
   );
 }

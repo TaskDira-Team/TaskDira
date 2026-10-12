@@ -1,3 +1,4 @@
+import PrizeArt from "./PrizeArt";
 import { createPortal } from "react-dom";
 import { Star, X, Coins, ArrowRight } from "lucide-react";
 import { useI18n } from "../../context/I18nContext";
@@ -44,7 +45,7 @@ export default function RewardReveal({ celebration, onClose }) {
               fill="currentColor"
             />
           ))}
-          <span>{reward?.emoji || "🎁"}</span>
+          <PrizeArt reward={reward || {}} />
         </div>
         <h2 id="reward-reveal-title">
           {he ? "יש! זה שלכם!" : "YAY! It’s yours!"}

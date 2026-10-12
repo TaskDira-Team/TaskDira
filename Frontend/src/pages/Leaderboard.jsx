@@ -6,6 +6,7 @@ import { useApp } from "../context/AppContext";
 import { getRingAccent } from "../data/avatars";
 import { ACCENTS, Avatar, ScreenShell } from "../components/ui/kit";
 import "../components/ui/community.css";
+import "../components/household/crewPolish.css";
 import { deriveMilestoneProgress } from "../utils/milestoneProgress";
 
 export default function Leaderboard() {
@@ -39,7 +40,11 @@ export default function Leaderboard() {
   const myRank = players.find((p) => p.you)?.rank;
   const podium = players.length >= 3 && players[0].xp > 0;
   return (
-    <ScreenShell dir={dir} width="max-w-7xl" className="community-page">
+    <ScreenShell
+      dir={dir}
+      width="max-w-7xl"
+      className="community-page stars-page"
+    >
       <header className="community-heading">
         <div>
           <h1>{en ? "Meet the home heroes!" : "קבלו את גיבורי הבית!"}</h1>

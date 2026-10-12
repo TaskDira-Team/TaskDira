@@ -7,6 +7,12 @@ import {
   ArrowUpRight,
   Loader2,
   Clock3,
+  Utensils,
+  BedDouble,
+  Armchair,
+  PawPrint,
+  BookOpen,
+  Leaf,
 } from "lucide-react";
 import { taskPoints, isDone } from "../../utils/insights";
 
@@ -38,7 +44,7 @@ export default function QuestPath({
       <div className="quest-path-intro">
         <Flag size={20} />
         <span>
-          {he ? "כל משימה היא צעד בהרפתקה!" : "Little quests. BIG adventures!"}
+          {he ? "בוחרים משימה ויוצאים לדרך" : "Pick a stop. Play at your pace."}
         </span>
         <Star size={20} fill="currentColor" />
       </div>
@@ -67,6 +73,16 @@ export default function QuestPath({
         </svg>
         {visible.map((task, i) => {
           const done = isDone(task);
+          const Icon =
+            {
+              kitchen: Utensils,
+              cooking: Utensils,
+              room: BedDouble,
+              living: Armchair,
+              pet: PawPrint,
+              homework: BookOpen,
+              other: Leaf,
+            }[task.categoryId] || Star;
           const permissions = getPermissions(task);
           const pending = task.status === "PendingApproval";
           const canFinish =
@@ -91,7 +107,7 @@ export default function QuestPath({
                 ) : pending ? (
                   <Clock3 size={32} strokeWidth={3} />
                 ) : (
-                  <Star size={36} strokeWidth={2.5} fill="currentColor" />
+                  <Icon size={35} strokeWidth={2.5} />
                 )}
                 <span className="checkpoint-number">{i + 1}</span>
               </button>

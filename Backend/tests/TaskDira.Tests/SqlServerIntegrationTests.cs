@@ -52,7 +52,7 @@ public partial class SqlServerIntegrationTests : IAsyncLifetime
         await using (var migration = new SqlConnection(SqlConnectionString))
         {
             await migration.OpenAsync();
-            var script = await File.ReadAllTextAsync(Path.Combine(root.FullName, "Backend", "db", "sqlserver", "003_family_access.sql"));
+            var script = await File.ReadAllTextAsync(Path.Combine(root.FullName, "Backend", "db", "sqlserver", "003_family_access.sql")) + "\nGO\n" + await File.ReadAllTextAsync(Path.Combine(root.FullName, "Backend", "db", "sqlserver", "004_family_world.sql")) + "\nGO\n" + await File.ReadAllTextAsync(Path.Combine(root.FullName, "Backend", "db", "sqlserver", "005_family_play.sql"));
             foreach (var batch in System.Text.RegularExpressions.Regex.Split(script, @"^GO\s*$", System.Text.RegularExpressions.RegexOptions.Multiline | System.Text.RegularExpressions.RegexOptions.IgnoreCase))
                 if (!string.IsNullOrWhiteSpace(batch)) await migration.ExecuteAsync(batch);
         }

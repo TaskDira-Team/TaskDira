@@ -1,0 +1,1015 @@
+/* A toy-town play surface: open scenery, readable controls, physical buttons. */
+.family-world {
+  --fw-ink: #22485c;
+  --fw-teal: #276237;
+  color: var(--fw-ink);
+  max-width: 1380px;
+  margin: auto;
+  padding: 8px 0 40px;
+}
+.family-world h1,
+.family-world h2,
+.family-world h3,
+.fw-mission strong {
+  font-family: "Fredoka Variable", sans-serif;
+  font-weight: 570;
+  letter-spacing: -0.02em;
+}
+.family-world h1 {
+  font-size: clamp(30px, 3.2vw, 46px);
+  line-height: 1.1;
+  margin: 0 0 9px;
+  text-wrap: balance;
+}
+.family-world h2 {
+  font-size: clamp(23px, 2.3vw, 30px);
+  line-height: 1.2;
+  margin: 0 0 8px;
+}
+.family-world p {
+  line-height: 1.55;
+}
+.fw-heading,
+.fw-section-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-bottom: 24px;
+}
+.fw-heading p,
+.fw-section-heading p {
+  margin: 0;
+  color: #4b6575;
+}
+.family-world button {
+  touch-action: manipulation;
+  cursor: pointer;
+}
+.family-world button:focus-visible {
+  outline: 3px solid #6246c5;
+  outline-offset: 5px;
+}
+.family-world button:disabled {
+  cursor: not-allowed;
+}
+.fw-quiet,
+.fw-primary,
+.fw-destinations button,
+.fw-place-button,
+.fw-room-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  min-height: 46px;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 850;
+  border-radius: 15px;
+  transition:
+    transform 0.12s,
+    box-shadow 0.12s,
+    background 0.12s;
+}
+.fw-quiet {
+  color: #355c6c;
+  background: white;
+  border: 2px solid #d9e5e9;
+  box-shadow: 0 3px 0 #cadadf;
+}
+.fw-primary {
+  color: #214818;
+  background: #90df59;
+  border: 2px solid #74c644;
+  box-shadow: 0 5px 0 #4e9a31;
+}
+.fw-primary:hover {
+  background: #a1ea6c;
+}
+.fw-primary:active,
+.fw-quiet:active,
+.fw-destinations button:active,
+.fw-place-button:active,
+.fw-room-button:active {
+  transform: translateY(3px);
+  box-shadow: 0 1px 0 #a8c3cb;
+}
+.fw-destinations {
+  display: flex;
+  gap: 12px;
+  margin: 0 0 26px;
+  flex-wrap: wrap;
+}
+.fw-destinations button {
+  background: #fff;
+  border: 2px solid #d8e4e9;
+  color: #3b6271;
+  box-shadow: 0 4px 0 #c6d8df;
+}
+.fw-destinations button:first-child {
+  background: #d8efff;
+  border-color: #88c8ec;
+  color: #226089;
+  box-shadow: 0 4px 0 #6eb1d6;
+}
+.fw-destinations b {
+  background: #e6f0e6;
+  padding: 1px 7px;
+  border-radius: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.fw-scene {
+  position: relative;
+  isolation: isolate;
+  background: #d6f0fc;
+  border-radius: 30px;
+  overflow: hidden;
+  padding: 18px 20px;
+  scroll-margin-top: 24px;
+}
+.fw-scene-title {
+  display: flex;
+  justify-content: space-between;
+  gap: 12px;
+  align-items: center;
+  position: relative;
+  z-index: 2;
+}
+.fw-house-name {
+  font-size: 14px;
+  font-weight: 900;
+  padding: 10px 15px;
+  background: #ffffffd9;
+  border-radius: 12px;
+  color: #325869;
+}
+.fw-scene-toggle {
+  width: 46px;
+  height: 46px;
+  display: grid;
+  place-items: center;
+  color: #9a6414;
+  background: #fff2bd;
+  border: 2px solid #f1d57d;
+  box-shadow: 0 3px 0 #dbc074;
+  border-radius: 16px;
+}
+.fw-scene-layout {
+  position: relative;
+  min-height: 450px;
+}
+.fw-house {
+  width: 100%;
+  height: clamp(450px, 43vw, 580px);
+  position: relative;
+}
+.fw-house .td-house-stage {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  aspect-ratio: auto;
+}
+.fw-house .td-house-hotspots button {
+  font-size: 12px;
+  width: 44px;
+  height: 44px;
+  padding: 4px;
+  background: #fff;
+  color: #36586a;
+  border: 2px solid #9bbfce;
+  border-radius: 16px;
+  box-shadow: 0 3px 0 #7ba0b2;
+  backdrop-filter: none;
+}
+.fw-house .td-house-hotspots button > span {
+  background: transparent;
+  width: 30px;
+  height: 30px;
+}
+.fw-house .td-house-hotspots button[aria-pressed="true"] {
+  background: #dff1d1;
+  border-color: #71a650;
+  color: #36621c;
+}
+.fw-house .td-house-hotspots button > strong {
+  display: none;
+}
+.fw-companion {
+  position: absolute;
+  inset-inline-start: 0;
+  bottom: 4px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  max-width: 270px;
+  pointer-events: none;
+}
+.fw-companion img {
+  width: 76px;
+  height: 88px;
+  object-fit: contain;
+}
+.fw-companion p {
+  font-size: 12px;
+  margin: 0;
+  padding: 12px 14px;
+  background: #fffffff0;
+  border-radius: 16px 16px 16px 2px;
+  color: #365a6c;
+  line-height: 1.4;
+}
+.fw-companion strong {
+  display: none;
+}
+.fw-scene-actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  align-items: center;
+  padding-top: 10px;
+  position: relative;
+}
+.fw-room-picker {
+  display: flex;
+  gap: 7px;
+  flex-wrap: wrap;
+  margin-inline-start: auto;
+}
+.fw-room-button {
+  background: #ffffffb8;
+  border: 2px solid transparent;
+  padding: 8px 10px;
+  font-size: 12px;
+  color: #37596e;
+}
+.fw-room-button[aria-pressed="true"] {
+  border-color: #77b4d4;
+  background: white;
+  box-shadow: 0 3px 0 #86bbd5;
+}
+.fw-build-summary {
+  display: grid;
+  grid-template-columns: 230px 1fr;
+  gap: 0 35px;
+  align-items: center;
+  padding: 26px 8px 22px;
+  border-bottom: 2px solid #dbe8eb;
+}
+.fw-build-summary > svg {
+  display: none;
+}
+.fw-build-summary h2 {
+  grid-column: 1;
+  font-size: 24px;
+}
+.fw-build-summary > p {
+  grid-column: 1;
+  font-size: 13px;
+  margin: 0 0 6px;
+  color: #466477;
+}
+.fw-build-summary .fw-project-count {
+  font-weight: 900;
+  color: #2e6c37;
+}
+.fw-build-trail {
+  grid-column: 2;
+  grid-row: 1 / span 3;
+  list-style: none;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  padding: 0;
+  margin: 0;
+}
+.fw-build-trail li {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  flex: 1;
+}
+.fw-build-trail li > span {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  border: 2px solid #c5d6dd;
+  border-radius: 12px;
+  color: #617b88;
+  flex-shrink: 0;
+  font-weight: 900;
+  background: #fff;
+}
+.fw-build-trail .is-built > span {
+  color: #2d641e;
+  background: #cef1ac;
+  border-color: #9ad176;
+}
+.fw-build-trail strong {
+  display: block;
+  font-size: 13px;
+}
+.fw-build-trail small {
+  display: block;
+  font-size: 12px;
+  margin-top: 3px;
+  color: #506c7c;
+}
+.fw-night {
+  background: #243c63;
+  color: #f5f8ff;
+}
+.fw-night .fw-house-name {
+  background: #344e72;
+  color: #fff;
+}
+.fw-decorations {
+  margin: 26px 0 8px;
+  padding: 24px;
+  background: #fff9e9;
+  border-radius: 24px;
+}
+.fw-decorations .fw-section-heading {
+  margin-bottom: 18px;
+}
+.fw-toy-shelf {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 18px;
+}
+.fw-toy {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 16px 12px;
+  min-width: 0;
+  border: 2px solid #e9dcc0;
+  border-radius: 18px;
+  background: #fffdf6;
+  color: #4b5540;
+  box-shadow: 0 4px 0 #e2d4b6;
+}
+.fw-toy[aria-pressed="true"] {
+  background: #e6f5ce;
+  border-color: #8cb76b;
+  box-shadow: 0 4px 0 #789e55;
+}
+.fw-toy:disabled {
+  opacity: 0.65;
+}
+.fw-toy-art {
+  height: 60px;
+  display: grid;
+  place-items: center;
+  color: #428347;
+}
+.fw-picnic .fw-toy-art {
+  color: #c66638;
+}
+.fw-observatory .fw-toy-art {
+  color: #7655ae;
+}
+.fw-toy strong {
+  font-family: "Fredoka Variable", sans-serif;
+  font-size: 19px;
+  font-weight: 550;
+}
+.fw-toy small {
+  font-size: 12px;
+  margin-top: 6px;
+}
+.fw-toy-check {
+  position: absolute;
+  top: 10px;
+  inset-inline-end: 10px;
+}
+.fw-placement,
+.fw-member-picker {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+.fw-place-button {
+  background: white;
+  color: #3b5864;
+  border: 2px solid #d7e1e5;
+  box-shadow: 0 3px 0 #cbd6dc;
+  min-width: 110px;
+}
+.fw-place-button[aria-pressed="true"] {
+  color: #315c21;
+  border-color: #91bf73;
+  background: #e5f6d5;
+  box-shadow: 0 3px 0 #90b575;
+}
+.fw-place-button:disabled {
+  color: #65747a;
+  background: #e7ecee;
+  box-shadow: none;
+}
+.fw-save-status {
+  min-height: 24px;
+  margin: 6px 8px;
+  font-size: 13px;
+  color: #276237;
+}
+.fw-missions {
+  padding: 20px 0 30px;
+  scroll-margin-top: 24px;
+}
+.fw-mission-choices {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 30px;
+  padding: 12px 0;
+}
+.fw-mission {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 0;
+  background: transparent;
+  color: #22485c;
+  padding: 10px;
+  min-width: 0;
+  border-radius: 18px;
+}
+.fw-mission-art {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 106px;
+  height: 96px;
+  border-radius: 32px;
+  background: #91db5c;
+  color: #285520;
+  box-shadow:
+    0 8px 0 #62ad40,
+    0 15px 16px #2b69361b;
+  transform: rotate(-6deg);
+  transition: transform 0.15s;
+}
+.fw-mission-1 .fw-mission-art {
+  background: #ffce64;
+  color: #85591c;
+  box-shadow:
+    0 8px 0 #d59e37,
+    0 15px 16px #85591c1b;
+  transform: rotate(5deg);
+}
+.fw-mission-2 .fw-mission-art {
+  background: #c8acf6;
+  color: #654397;
+  box-shadow:
+    0 8px 0 #9474c6,
+    0 15px 16px #6543971b;
+  transform: rotate(-3deg);
+}
+.fw-mission-art > span {
+  position: absolute;
+  top: -9px;
+  inset-inline-end: -8px;
+  border-radius: 10px;
+  background: #fff;
+  color: #36556a;
+  font-size: 13px;
+  padding: 5px 9px;
+  border: 2px solid #e0e9ed;
+  font-weight: 900;
+}
+.fw-mission:hover .fw-mission-art {
+  transform: translateY(-4px) rotate(0deg);
+}
+.fw-mission:active .fw-mission-art {
+  transform: translateY(4px) rotate(0deg);
+}
+.fw-mission-copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 9px;
+  margin-top: 24px;
+  width: 100%;
+  flex: 1;
+}
+.fw-mission-copy > small {
+  font-size: 12px;
+  font-weight: 750;
+  color: #587084;
+}
+.fw-mission-copy > strong {
+  font-size: 23px;
+  line-height: 1.2;
+  max-width: 20ch;
+}
+.fw-mission-reward {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 900;
+  color: #80591e;
+}
+.fw-mission-go {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  background: white;
+  width: 100%;
+  max-width: 230px;
+  min-height: 44px;
+  border: 2px solid #d7e2e7;
+  border-radius: 14px;
+  box-shadow: 0 4px 0 #c4d4dc;
+  padding: 10px 15px;
+  font-weight: 900;
+  font-size: 14px;
+  margin-top: auto;
+}
+.fw-more {
+  display: flex;
+  margin: 20px auto 0;
+}
+.fw-one-mission {
+  grid-template-columns: minmax(0, 340px);
+}
+.fw-finished {
+  text-align: center;
+  padding: 35px 12px;
+}
+.fw-finished h3 {
+  font-size: 25px;
+  margin: 15px 0;
+}
+.fw-finished p {
+  max-width: 55ch;
+  margin: auto;
+}
+.fw-pending {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 18px;
+}
+.fw-parent {
+  border-top: 2px solid #dbe8eb;
+  padding-top: 20px;
+}
+.fw-support {
+  padding: 25px 6px;
+}
+.fw-support p {
+  max-width: 65ch;
+}
+.fw-support-skills {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 24px;
+}
+.fw-support-skills fieldset {
+  min-width: 0;
+}
+.fw-support-skills legend {
+  font-weight: 900;
+  margin-bottom: 12px;
+}
+.fw-support-skills button {
+  width: 100%;
+  margin-bottom: 10px;
+}
+.fw-error {
+  background: #ffebe1;
+  color: #803922;
+  padding: 16px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+.fw-error button {
+  text-decoration: underline;
+  min-height: 44px;
+  font-weight: 900;
+}
+@media (max-width: 1000px) {
+  .fw-room-picker {
+    width: 100%;
+    margin: 4px 0 0;
+    justify-content: center;
+  }
+  .fw-build-summary {
+    grid-template-columns: 1fr;
+  }
+  .fw-build-trail {
+    grid-column: 1;
+    grid-row: auto;
+    margin-top: 18px;
+  }
+  .fw-build-summary > p {
+    max-width: none;
+  }
+  .fw-support-skills {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .fw-heading {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .family-world h1 {
+    font-size: 31px;
+  }
+  .fw-destinations {
+    gap: 8px;
+    flex-wrap: nowrap;
+  }
+  .fw-destinations button {
+    padding: 10px 9px;
+    font-size: 12px;
+    gap: 5px;
+    flex: 1;
+  }
+  .fw-destinations svg {
+    display: none;
+  }
+  .fw-scene {
+    margin-inline: -4px;
+    padding: 13px 10px;
+    border-radius: 24px;
+  }
+  .fw-scene-layout {
+    min-height: 370px;
+  }
+  .fw-house {
+    height: 380px;
+  }
+  .fw-companion {
+    bottom: 0;
+    max-width: 235px;
+  }
+  .fw-companion img {
+    width: 54px;
+    height: 62px;
+  }
+  .fw-companion p {
+    font-size: 11px;
+    padding: 9px;
+  }
+  .fw-scene-actions {
+    gap: 8px;
+  }
+  .fw-primary,
+  .fw-scene-actions > .fw-quiet {
+    flex: 1;
+    font-size: 12px;
+    padding: 10px 8px;
+  }
+  .fw-room-picker {
+    gap: 6px;
+  }
+  .fw-room-button {
+    flex: 1;
+    flex-direction: column;
+    font-size: 10px;
+    gap: 4px;
+    padding: 8px 4px;
+    min-width: 0;
+  }
+  .fw-build-summary {
+    padding: 23px 2px;
+  }
+  .fw-build-trail {
+    gap: 10px;
+  }
+  .fw-build-trail li {
+    flex-direction: column;
+    text-align: center;
+    gap: 8px;
+  }
+  .fw-build-trail strong {
+    font-size: 12px;
+  }
+  .fw-build-trail small {
+    font-size: 11px;
+  }
+  .fw-section-heading {
+    align-items: flex-start;
+    gap: 12px;
+  }
+  .fw-section-heading p {
+    font-size: 13px;
+  }
+  .fw-decorations {
+    padding: 18px 12px;
+  }
+  .fw-toy-shelf {
+    gap: 8px;
+  }
+  .fw-toy {
+    padding: 14px 6px;
+  }
+  .fw-toy strong {
+    font-size: 15px;
+  }
+  .fw-toy small {
+    font-size: 11px;
+  }
+  .fw-toy-art {
+    height: 52px;
+  }
+  .fw-toy-art svg {
+    width: 33px;
+  }
+  .fw-toy-check {
+    top: 6px;
+    inset-inline-end: 5px;
+    width: 13px;
+  }
+  .fw-placement {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .fw-place-button {
+    min-width: 0;
+    font-size: 12px;
+    padding: 10px 7px;
+  }
+  .fw-mission-choices {
+    gap: 12px;
+    grid-template-columns: 1fr;
+  }
+  .fw-mission {
+    flex-direction: row;
+    text-align: start;
+    gap: 20px;
+    padding: 16px 8px;
+  }
+  .fw-mission-art {
+    flex-shrink: 0;
+    width: 76px;
+    height: 76px;
+    border-radius: 24px;
+  }
+  .fw-mission-art > svg {
+    width: 35px;
+  }
+  .fw-mission-copy {
+    align-items: flex-start;
+    margin-top: 0;
+    gap: 7px;
+  }
+  .fw-mission-copy > strong {
+    font-size: 21px;
+  }
+  .fw-mission-go {
+    margin-top: 3px;
+    min-height: 42px;
+  }
+  .fw-support-skills {
+    gap: 12px;
+  }
+  .fw-missions .fw-section-heading {
+    flex-direction: column;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .family-world * {
+    animation: none !important;
+    transition: none !important;
+  }
+}
+.mission-guide {
+  padding: 20px 0;
+  color: #244e48;
+}
+.mission-guide .mg-level {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-weight: 900;
+  color: #6a4599;
+}
+.mg-step {
+  display: flex;
+  gap: 18px;
+  align-items: center;
+  margin: 22px 0;
+}
+.mg-step-icon {
+  width: 70px;
+  height: 70px;
+  border-radius: 25px;
+  background: #d8ebcf;
+  color: #285f47;
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+}
+.mg-step h3 {
+  font-family: "Fredoka Variable", sans-serif;
+  font-size: 23px;
+  line-height: 1.25;
+  margin-top: 6px;
+}
+.mg-actions {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+.mg-actions button {
+  min-height: 44px;
+  border-radius: 20px;
+  padding: 10px 16px;
+  background: #edf0e5;
+  font-size: 14px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.mg-actions button.mg-check {
+  background: #226c59;
+  color: white;
+}
+.mg-actions button:disabled {
+  opacity: 0.5;
+}
+.mg-actions button:focus-visible {
+  outline: 3px solid #713fd0;
+  outline-offset: 3px;
+}
+.mg-help {
+  background: #fff0cf;
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 18px;
+  line-height: 1.5;
+}
+.mg-checklist {
+  list-style: none;
+  padding: 0;
+  margin: 18px 0;
+}
+.mg-checklist label {
+  display: flex;
+  min-height: 48px;
+  align-items: center;
+  gap: 12px;
+}
+.mg-checklist input {
+  width: 22px;
+  height: 22px;
+  accent-color: #226c59;
+}
+.mg-checklist input:checked + span {
+  text-decoration: line-through;
+}
+
+.fw-support {
+  padding: 24px 0 8px;
+  max-width: 860px;
+}
+.fw-support h2 {
+  font-size: 28px;
+}
+.fw-support > p {
+  font-size: 14px;
+  margin-top: 8px;
+  max-width: 60ch;
+}
+.fw-support .fw-member-picker {
+  gap: 9px;
+  margin: 20px 0;
+}
+.fw-support .fw-member-picker button {
+  min-width: 90px;
+  min-height: 44px;
+  border-radius: 12px;
+}
+.fw-support-key {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px 22px;
+  margin: 20px 0;
+  color: #627785;
+  font-size: 12px;
+}
+.fw-support-key > span {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+}
+.fw-support .fw-support-skills {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  background: #fff;
+  border-radius: 18px;
+  padding: 5px 20px;
+}
+.fw-support .fw-support-skills fieldset {
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  position: relative;
+  min-width: 0;
+  padding: 14px 0 14px 150px;
+  border: 0;
+  border-bottom: 1px solid #e3ecef;
+  margin: 0;
+  min-height: 76px;
+}
+.fw-support .fw-support-skills fieldset:last-child {
+  border-bottom: 0;
+}
+.fw-support .fw-support-skills legend {
+  position: absolute;
+  inset-inline-start: 0;
+  top: 27px;
+  font:
+    550 18px "Fredoka Variable",
+    sans-serif;
+}
+.fw-support-options {
+  grid-column: 1/-1;
+  display: flex;
+  gap: 8px;
+}
+.fw-support .fw-support-options button {
+  flex: 1;
+  min-width: 0;
+  min-height: 44px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 12px;
+  border-radius: 11px;
+  padding: 9px;
+  background: #f2f5f7;
+  border: 2px solid transparent;
+  box-shadow: none;
+  margin: 0;
+}
+.fw-support .fw-support-options button[aria-pressed="true"] {
+  background: #eaddf9;
+  color: #664493;
+  border-color: #b296cd;
+  box-shadow: 0 3px 0 #ac8ac9;
+}
+.fw-support[dir="rtl"] .fw-support-skills fieldset,
+[dir="rtl"] .fw-support .fw-support-skills fieldset {
+  padding: 14px 150px 14px 0;
+}
+@media (max-width: 650px) {
+  .fw-support {
+    padding-top: 20px;
+  }
+  .fw-support h2 {
+    font-size: 25px;
+  }
+  .fw-support-key {
+    display: flex;
+    flex-direction: column;
+    gap: 9px;
+    font-size: 12px;
+  }
+  .fw-support .fw-support-skills {
+    padding: 4px 14px;
+  }
+  .fw-support .fw-support-skills fieldset,
+  .fw-support[dir="rtl"] .fw-support-skills fieldset,
+  [dir="rtl"] .fw-support .fw-support-skills fieldset {
+    display: block;
+    padding: 15px 0;
+  }
+  .fw-support .fw-support-skills legend {
+    position: static;
+    margin-bottom: 10px;
+    float: inline-start;
+    width: 100%;
+  }
+  .fw-support-options {
+    clear: both;
+    gap: 6px;
+  }
+  .fw-support .fw-support-options button {
+    font-size: 11px;
+    padding: 8px 5px;
+  }
+}
+
+@media (max-width: 700px) {
+  .fw-companion p {
+    display: none;
+  }
+}

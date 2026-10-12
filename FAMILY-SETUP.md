@@ -1,5 +1,19 @@
 # Family profiles and invitations
 
+## Adventures, rooms, help and reward tickets
+
+Open the adventure invitation on Play home or Quest road. The four tabs cover shared adventures, personal rooms, weekly mission picks and help requests. Claimed rewards now have dated tickets in the reward shop. See [the feature and persistence notes](design/FAMILY-ADVENTURES.md).
+
+Before a real deployment, also apply PostgreSQL migration **008_family_play.sql** after 006/007, or SQL Server migration **005_family_play.sql** after 003/004. No hosted database was changed. The local demo now preserves missions, reward claims and wallets together across refreshes.
+
+## Living family world (October 2026)
+
+The signed-in home now opens on a shared 3D world. Open **Make it ours** to place earned decorations. The clubhouse grows from distinct completed household tasks; no coins are deducted. Under **Grown-up corner**, household admins can choose Together, With hints or Independent separately for each member and skill. Open a mission to follow its existing checklist, request in-person help, or use browser read-aloud. **Make a mission → Start with little steps** provides editable starter checklists.
+
+Before deploying this version, apply PostgreSQL `007_family_world.sql` after 006, or SQL Server `004_family_world.sql` after 003. These add world progress, placements and support tables plus `neondb_stp_family_world`. Only the fixed local SQL Server test database is migrated by tests; hosted data has not been changed. The `/api/family/{household}/world` API requires membership; only admins may set skill support. Managed children may place unlocked decorations in their own home.
+
+The demo saves world design, support, credited task IDs, missions, reward claims and wallets in browser storage. Real mode uses database persistence across devices. See [the family-world design and behavior notes](design/FAMILY-WORLD.md).
+
 Open **My team → Grow your crew** in the redesigned app.
 
 - **Little hero:** a parent/admin creates a child with a nickname and character. No child email or password is requested. The child is a real household member with their own task assignments, XP and wallet.
@@ -13,7 +27,7 @@ The existing users table requires an email string. Managed profiles therefore ha
 
 ## Local preview
 
-The demo at port 3002 stores family setup in this browser’s local storage. Demo invitation links and pairing work between tabs sharing that storage. Use fictitious details. Other demo game changes still reset on reload. A localhost link cannot invite someone on another device over the internet.
+The demo at port 3002 stores family setup in this browser’s local storage. Demo invitation links and pairing work between tabs sharing that storage. Use fictitious details. Demo missions, claims and wallets also persist in this browser; they are sample records. A localhost link cannot invite someone on another device over the internet.
 
 ## Database changes before real deployment
 
@@ -39,7 +53,7 @@ $env:TASKDIRA_SQLSERVER_TESTS = '1'
 dotnet test
 ```
 
-The integration suite applies migration 003 to its fixed local test database, creates synthetic accounts, exercises real HTTP endpoints, and cleans up its records. It checks concurrent invite acceptance, expiry/revocation, child isolation, parent token revocation, correct quest earnings and single-use device pairing.
+The integration suite applies migrations 003–005 to its fixed local test database, creates synthetic accounts, exercises real HTTP endpoints, and cleans up its records. It checks concurrent invite acceptance, expiry/revocation, child isolation, parent token revocation, correct quest earnings and single-use device pairing.
 
 From `Backend/tools/family-postgres-tests`: `npm ci` then `npm test`. This uses an in-memory PostgreSQL engine (PGlite) to execute migration 006 and exercise consent, transaction rollback, expiry, child sessions and pairing. It does not connect to a hosted database or replace the SQL Server HTTP integration suite.
 

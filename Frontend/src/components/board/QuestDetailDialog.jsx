@@ -1,3 +1,5 @@
+import "./missionWorkshop.css";
+import MissionGuide from "../world/MissionGuide";
 import { useState } from "react";
 import {
   Bookmark,
@@ -113,6 +115,7 @@ export default function QuestDetailDialog({
   return (
     <div dir={dir}>
       <Dialog
+        className="mission-story-dialog"
         open
         title={tx(task.title)}
         onClose={close}
@@ -260,44 +263,12 @@ export default function QuestDetailDialog({
                 </span>
               )}
             </div>
-            {!!task.subItems?.length && (
-              <ul className="space-y-2">
-                {task.subItems.map((item) => (
-                  <li
-                    key={item.id}
-                    aria-busy={action === `checklist-${item.id}`}
-                  >
-                    <label className="flex min-h-11 cursor-pointer items-center gap-3 text-sm">
-                      <input
-                        type="checkbox"
-                        checked={!!item.isCompleted}
-                        disabled={busy || !permissions.canEdit}
-                        onChange={(event) =>
-                          run(
-                            `checklist-${item.id}`,
-                            () =>
-                              toggleSubItem(
-                                task.id,
-                                item.id,
-                                event.target.checked,
-                              ),
-                            false,
-                          )
-                        }
-                        className="h-5 w-5 shrink-0 accent-lime disabled:cursor-not-allowed"
-                      />
-                      <span
-                        className={
-                          item.isCompleted ? "text-ink-dim line-through" : ""
-                        }
-                      >
-                        {tx(item.title || item.text || "")}
-                      </span>
-                    </label>
-                  </li>
-                ))}
-              </ul>
-            )}
+            <MissionGuide
+              task={task}
+              permissions={permissions}
+              busy={busy}
+              run={run}
+            />
             {task.rejectedReason && (
               <p className="rounded-xl bg-coral/10 p-3 text-sm text-coral">
                 {he ? "עוד ניסיון קטן: " : "One more try: "}
@@ -386,97 +357,104 @@ export default function QuestDetailDialog({
                 />
               </Field>
             )}
-            <div className="flex flex-wrap gap-2 border-t border-ink/10 pt-4">
-              {permissions.canClaim && (
+            <details className="mission-tools">
+              <summary>{he ? "כלים למשימה" : "Quest tools"}</summary>
+              <div className="flex flex-wrap gap-2 pt-3">
+                {permissions.canClaim && (
+                  <GhostButton
+                    disabled={busy}
+                    onClick={() =>
+                      run("claim", () => claimTask(task.id), false)
+                    }
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      <UserPlus size={16} />
+                      {he ? "אני לוקח/ת את המשימה" : "Make it my quest"}
+                    </span>
+                  </GhostButton>
+                )}
+                {permissions.canEdit && (
+                  <GhostButton disabled={busy} onClick={() => onEdit(task)}>
+                    <span className="inline-flex items-center gap-2">
+                      <Pencil size={16} />
+                      {he ? "עריכה" : "Edit quest"}
+                    </span>
+                  </GhostButton>
+                )}
+                {permissions.canMove && task.status === "ToDo" && (
+                  <GhostButton
+                    disabled={busy}
+                    onClick={() =>
+                      run("start", () => moveTask(task.id, "InProgress"))
+                    }
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      <Play size={16} />
+                      {he ? "מתחילים" : "Start quest"}
+                    </span>
+                  </GhostButton>
+                )}
+                {done && permissions.canMove && (
+                  <GhostButton
+                    disabled={busy}
+                    onClick={() =>
+                      run("reopen", () => moveTask(task.id, "ToDo"))
+                    }
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      <RotateCcw size={16} />
+                      {he ? "פתיחה מחדש" : "Reopen quest"}
+                    </span>
+                  </GhostButton>
+                )}
+                {pending && permissions.canApprove && (
+                  <GhostButton
+                    disabled={busy}
+                    onClick={() => setRejecting(!rejecting)}
+                  >
+                    <span className="inline-flex items-center gap-2">
+                      <X size={16} />
+                      {rejecting
+                        ? he
+                          ? "ביטול"
+                          : "Cancel"
+                        : he
+                          ? "צריך עוד ניסיון"
+                          : "Needs another try"}
+                    </span>
+                  </GhostButton>
+                )}
                 <GhostButton
-                  disabled={busy}
-                  onClick={() => run("claim", () => claimTask(task.id), false)}
+                  disabled={busy || !savedReady}
+                  onClick={onToggleSaved}
                 >
                   <span className="inline-flex items-center gap-2">
-                    <UserPlus size={16} />
-                    {he ? "אני לוקח/ת את המשימה" : "Make it my quest"}
-                  </span>
-                </GhostButton>
-              )}
-              {permissions.canEdit && (
-                <GhostButton disabled={busy} onClick={() => onEdit(task)}>
-                  <span className="inline-flex items-center gap-2">
-                    <Pencil size={16} />
-                    {he ? "עריכה" : "Edit quest"}
-                  </span>
-                </GhostButton>
-              )}
-              {permissions.canMove && task.status === "Todo" && (
-                <GhostButton
-                  disabled={busy}
-                  onClick={() =>
-                    run("start", () => moveTask(task.id, "InProgress"))
-                  }
-                >
-                  <span className="inline-flex items-center gap-2">
-                    <Play size={16} />
-                    {he ? "מתחילים" : "Start quest"}
-                  </span>
-                </GhostButton>
-              )}
-              {done && permissions.canMove && (
-                <GhostButton
-                  disabled={busy}
-                  onClick={() => run("reopen", () => moveTask(task.id, "Todo"))}
-                >
-                  <span className="inline-flex items-center gap-2">
-                    <RotateCcw size={16} />
-                    {he ? "פתיחה מחדש" : "Reopen quest"}
-                  </span>
-                </GhostButton>
-              )}
-              {pending && permissions.canApprove && (
-                <GhostButton
-                  disabled={busy}
-                  onClick={() => setRejecting(!rejecting)}
-                >
-                  <span className="inline-flex items-center gap-2">
-                    <X size={16} />
-                    {rejecting
+                    <Bookmark
+                      size={16}
+                      fill={isSaved ? "currentColor" : "none"}
+                    />
+                    {isSaved
                       ? he
-                        ? "ביטול"
-                        : "Cancel"
+                        ? "ביטול שמירה"
+                        : "Unsave quest"
                       : he
-                        ? "צריך עוד ניסיון"
-                        : "Needs another try"}
+                        ? "שמירת המשימה"
+                        : "Save quest"}
                   </span>
                 </GhostButton>
-              )}
-              <GhostButton
-                disabled={busy || !savedReady}
-                onClick={onToggleSaved}
-              >
-                <span className="inline-flex items-center gap-2">
-                  <Bookmark
-                    size={16}
-                    fill={isSaved ? "currentColor" : "none"}
-                  />
-                  {isSaved
-                    ? he
-                      ? "ביטול שמירה"
-                      : "Unsave quest"
-                    : he
-                      ? "שמירת המשימה"
-                      : "Save quest"}
-                </span>
-              </GhostButton>
-              {permissions.canDelete && (
-                <GhostButton
-                  disabled={busy}
-                  onClick={() => setConfirmDelete(true)}
-                >
-                  <span className="inline-flex items-center gap-2 text-coral">
-                    <Trash2 size={16} />
-                    {he ? "מחיקה" : "Delete quest"}
-                  </span>
-                </GhostButton>
-              )}
-            </div>
+                {permissions.canDelete && (
+                  <GhostButton
+                    disabled={busy}
+                    onClick={() => setConfirmDelete(true)}
+                  >
+                    <span className="inline-flex items-center gap-2 text-coral">
+                      <Trash2 size={16} />
+                      {he ? "מחיקה" : "Delete quest"}
+                    </span>
+                  </GhostButton>
+                )}
+              </div>
+            </details>
             {proofNeeded && permissions.isAdmin && permissions.canMove && (
               <GhostButton
                 disabled={busy}

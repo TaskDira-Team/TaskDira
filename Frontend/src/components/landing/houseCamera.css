@@ -1,0 +1,55 @@
+.td-camera-tools {
+  position: absolute;
+  bottom: 18px;
+  inset-inline-end: 18px;
+  display: flex;
+  gap: 6px;
+  z-index: 8;
+  pointer-events: auto;
+}
+.td-camera-tools button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-width: 42px;
+  min-height: 42px;
+  background: #fffefb;
+  color: #365a68;
+  border: 2px solid #d2e1e7;
+  border-radius: 12px;
+  box-shadow: 0 3px 0 #adc5cf;
+  font:
+    850 12px "Nunito Variable",
+    sans-serif;
+  padding: 8px;
+  cursor: pointer;
+}
+.td-camera-tools button:last-child {
+  padding-inline: 12px;
+}
+.td-camera-tools button:active {
+  transform: translateY(2px);
+  box-shadow: 0 1px 0 #adc5cf;
+}
+.td-camera-tools button:focus-visible {
+  outline: 3px solid #8564b5;
+  outline-offset: 3px;
+}
+@media (max-width: 600px) {
+  .td-camera-tools {
+    bottom: 12px;
+    inset-inline-end: 10px;
+    gap: 5px;
+  }
+  .td-camera-tools button {
+    min-width: 40px;
+    min-height: 40px;
+  }
+  .td-camera-tools button:last-child {
+    padding-inline: 9px;
+  }
+  .td-camera-tools span {
+    font-size: 11px;
+  }
+}

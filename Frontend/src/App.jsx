@@ -3,10 +3,10 @@ import { MotionConfig } from "framer-motion";
 import { Loader2 } from "lucide-react";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import { HouseholdProvider } from "./context/HouseholdContext";
-import { I18nProvider } from "./context/I18nContext";
+import { I18nProvider, useI18n } from "./context/I18nContext";
 import { RouteProvider, useRoute } from "./context/RouteContext";
 import { USE_NEW_UI } from "./services/config";
-import { findRoute } from "./routes";
+import { findRoute, preloadPlayRoutes } from "./routes";
 import Landing from "./pages/Landing";
 import AccessibilityWidget from "./components/ui/AccessibilityWidget";
 
@@ -52,6 +52,12 @@ function NewUiRouter() {
   const route = findRoute(path);
 
   useEffect(() => {
+    if (!user) return;
+    const id = window.setTimeout(preloadPlayRoutes, 250);
+    return () => window.clearTimeout(id);
+  }, [user?.id]);
+
+  useEffect(() => {
     if (loading) return;
     const current = findRoute(path);
     if (!user && current?.access !== "public" && current?.access !== "shared")
@@ -79,7 +85,9 @@ function NewUiRouter() {
     return (
       <HouseholdProvider key={user.id}>
         <AppShell>
-          <Home />
+          <Suspense fallback={<PageLoading />}>
+            <Home />
+          </Suspense>
         </AppShell>
       </HouseholdProvider>
     );
@@ -89,9 +97,21 @@ function NewUiRouter() {
   return (
     <HouseholdProvider key={user.id}>
       <AppShell>
-        <Screen />
+        <Suspense fallback={<PageLoading />}>
+          <Screen />
+        </Suspense>
       </AppShell>
     </HouseholdProvider>
+  );
+}
+
+function PageLoading() {
+  const { lang } = useI18n();
+  return (
+    <div className="page-loading" role="status">
+      <Loader2 size={22} className="animate-spin" />
+      {lang === "he" ? "פותחים את העמוד…" : "Opening this page…"}
+    </div>
   );
 }
 

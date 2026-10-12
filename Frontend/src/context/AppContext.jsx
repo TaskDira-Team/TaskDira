@@ -9,7 +9,9 @@ import {
 import { api } from "../services/api";
 import { getLocalMonthlyEarnedXp } from "../services/usersApi";
 import { fetchMonthlyEarnedXp } from "../services/pointsRemote";
-import { USE_REAL_API } from "../services/config";
+import { USE_REAL_API, IS_DEMO_MODE } from "../services/config";
+import { savePreviewProgress } from "../services/previewProgress";
+import { store } from "../services/store";
 import { completedThisMonth } from "../utils/monthlyStats";
 import { STATUS_LABELS, TASK_STATUSES } from "../data/mockData";
 import { useAuth } from "./AuthContext";
@@ -151,6 +153,7 @@ export function AppProvider({ children }) {
       setLeaderboard(leaderboardData);
       setRewards(rewardsData);
       setMembers(membersData);
+      if (IS_DEMO_MODE) savePreviewProgress(store);
       setLoadError(null);
     } catch (error) {
       setLoadError(error.message || "Could not load household data.");

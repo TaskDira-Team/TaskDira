@@ -3,6 +3,7 @@ import { Activity, CheckCheck, Sparkles, Users, Download } from "lucide-react";
 import { useApp } from "../context/AppContext";
 import { useI18n } from "../context/I18nContext";
 import { buildInsights } from "../utils/insights";
+import PlaySelect from "../components/ui/PlaySelect";
 import {
   ActivityChart,
   ContributionChart,
@@ -70,20 +71,26 @@ export default function Insights() {
             </button>
           ))}
         </div>
-        <label>
-          <Users size={17} />
-          <span className="sr-only">
-            {he ? "סינון לפי חבר" : "Filter by member"}
-          </span>
-          <select value={member} onChange={(e) => setMember(e.target.value)}>
-            <option value="">{he ? "כל הבית" : "Whole household"}</option>
-            {users.map((u) => (
-              <option value={u.id} key={u.id}>
-                {u.fullName || u.name}
-              </option>
-            ))}
-          </select>
-        </label>
+        <PlaySelect
+          value={member}
+          onChange={setMember}
+          dir={he ? "rtl" : "ltr"}
+          label={he ? "סינון לפי חבר" : "Filter by member"}
+          options={[
+            {
+              value: "",
+              label: he ? "כל הבית" : "Whole household",
+              icon: Users,
+              tone: "mint",
+            },
+            ...users.map((u, index) => ({
+              value: u.id,
+              label: u.fullName || u.name,
+              initial: (u.fullName || u.name).slice(0, 1),
+              tone: ["peach", "lilac", "sky", "gold"][index % 4],
+            })),
+          ]}
+        />
       </div>
       <div className="world-stats">
         <div className="world-stat mint">

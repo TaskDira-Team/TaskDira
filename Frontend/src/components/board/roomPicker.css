@@ -1,0 +1,59 @@
+/* A room is a recognisable place, with the same toy colours as the quest path. */
+.world-app .quest-search {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: start;
+  gap: 12px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+.quest-search-field {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+  min-height: 54px;
+  padding-inline: 15px;
+  background: #fffef9;
+  border: 2px solid #d5e1de;
+  border-radius: 16px;
+  color: #52736d;
+}
+.quest-search-field > svg {
+  flex-shrink: 0;
+}
+.world-app .quest-search-field > input {
+  width: 100%;
+  min-width: 0;
+  padding: 12px 0;
+  border: 0;
+  background: transparent;
+  color: #244c49;
+}
+.quest-search-field > input::placeholder {
+  color: #60776f;
+  opacity: 1;
+}
+.quest-search-field:focus-within {
+  outline: 3px solid #7655bb;
+  outline-offset: 3px;
+}
+.world-app .quest-search-field > input:focus-visible {
+  outline: none;
+}
+.room-picker {
+  position: relative;
+  width: 218px;
+  flex-shrink: 0;
+}
+
+@media (max-width: 600px) {
+  .world-app .quest-search {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 10px;
+  }
+  .room-picker {
+    width: 100%;
+  }
+}

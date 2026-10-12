@@ -1,7 +1,8 @@
 import GrowCrew from "../components/household/GrowCrew";
 import { useMemo, useState } from "react";
-import { Home, Plus, ShieldCheck, Users } from "lucide-react";
+import { Plus, ShieldCheck, Users } from "lucide-react";
 import "../components/ui/community.css";
+import "../components/household/crewPolish.css";
 import { useI18n } from "../context/I18nContext";
 import { useAuth } from "../context/AuthContext";
 import { useApp } from "../context/AppContext";
@@ -123,91 +124,44 @@ export default function Household() {
   };
 
   return (
-    <ScreenShell dir={dir} width="max-w-7xl" className="community-page">
-      <header className="community-heading">
+    <ScreenShell
+      dir={dir}
+      width="max-w-7xl"
+      className="community-page crew-page"
+    >
+      <header className="community-heading crew-heading">
         <div>
-          <h1>{en ? "One home. A super squad!" : "בית אחד. נבחרת על!"}</h1>
+          <h1>{householdName(household?.displayName || household?.name)}</h1>
           <p>
             {en
-              ? "Different people, shared space, one little world to look after."
-              : "אנשים שונים, מקום משותף ועולם קטן אחד לדאוג לו."}
+              ? "This is your crew. Everyone brings a little magic."
+              : "זאת הנבחרת שלכם. כל אחד מוסיף קצת קסם."}
           </p>
         </div>
         {isAdmin && (
           <LimeButton onClick={() => setInviteOpen(true)} disabled={busy}>
             <span className="inline-flex items-center gap-2">
               <Plus size={18} />
-              {en ? "Grow your crew" : "\u05d4\u05e0\u05d1\u05d7\u05e8\u05ea \u05e9\u05dc\u05e0\u05d5 \u05d2\u05d3\u05dc\u05d4"}
+              {en ? "Grow your crew" : "מגדילים את הנבחרת"}
             </span>
           </LimeButton>
         )}
       </header>
-      <div className="community-household-top">
-        <section className="community-feature">
-          <div>
-            <Home size={36} aria-hidden="true" className="mb-4" />
-            <h2>{householdName(household?.displayName || household?.name)}</h2>
-            {household?.address && <p>{household.address}</p>}
-            <p>
-              {managedBy ||
-                (en
-                  ? "A home that works better together."
-                  : "בית שמתנהל טוב יותר ביחד.")}
-            </p>
-          </div>
-          <div className="flex -space-x-3 rtl:space-x-reverse">
-            {rows.slice(0, 3).map((m) => (
-              <Avatar
-                key={m.userId}
-                emoji={m.emoji}
-                ring={m.accent}
-                size={52}
-              />
-            ))}
-          </div>
-        </section>
-        <div className="community-house-stats">
-          <div className="community-house-stat">
-            <span className="community-muted">
-              {t("household.membersStat")}
-            </span>
-            <strong>{rows.length}</strong>
-          </div>
-          <div className="community-house-stat">
-            <span className="community-muted">{t("household.familyXp")}</span>
-            <strong>{familyXp.toLocaleString()}</strong>
-          </div>
-          <div className="community-house-stat">
-            <span className="community-muted">{t("household.monthTasks")}</span>
-            <strong>{monthlyDone}</strong>
-          </div>
-        </div>
+      <div className="crew-house-line">
+        <span>
+          <Users size={18} />
+          {rows.length} {en ? "people, one team" : "אנשים, קבוצה אחת"}
+        </span>
+        <span>
+          {familyXp.toLocaleString()}{" "}
+          {en ? "XP earned together" : "נקודות ניסיון ביחד"}
+        </span>
+        <span>
+          {monthlyDone} {en ? "missions this month" : "משימות החודש"}
+        </span>
       </div>
-      <section className="community-team-goal">
-        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
-          <h2 className="text-lg font-extrabold">{t("monthlyGoal")}</h2>
-          <span className="text-sm font-bold text-lime">
-            {monthlyXp.toLocaleString()} / {goal.toLocaleString()} XP
-          </span>
-        </div>
-        <div
-          className="community-progress"
-          role="progressbar"
-          aria-label={t("monthlyGoal")}
-          aria-valuemin={0}
-          aria-valuemax={100}
-          aria-valuenow={goalPct}
-        >
-          <span style={{ width: `${goalPct}%` }} />
-        </div>
-        <p className="community-note mt-3">
-          {en
-            ? "One shared goal. Every earned point moves your household forward."
-            : "מטרה משותפת אחת. כל נקודה שנצברת מקדמת את הבית שלכם."}
-        </p>
-      </section>
       <section>
-        <h2 className="community-section-title flex items-center gap-2">
+        <h2 className="community-section-title crew-list-title flex items-center gap-2">
           <Users size={22} />
           {t("household.membersTitle")}
         </h2>
@@ -217,13 +171,16 @@ export default function Household() {
               <li
                 key={m.userId}
                 className="community-member"
-                style={{ "--member-tint": `${ACCENTS[m.accent]}18` }}
+                style={{
+                  "--member-tint": `${ACCENTS[m.accent]}18`,
+                  "--member-accent": ACCENTS[m.accent],
+                }}
               >
                 <div className="flex items-center gap-3">
                   <Avatar
                     emoji={m.emoji}
                     ring={m.accent}
-                    size={74}
+                    size={62}
                     level={m.level}
                   />
                   <div className="min-w-0 flex-1">
@@ -274,32 +231,39 @@ export default function Household() {
                   </strong>
                 </div>
                 {(isAdmin || (m.isSelf && !user?.isManagedProfile)) && (
-                  <div className="community-member-actions">
-                    {isAdmin && !m.isSelf && !m.managed && (
+                  <details className="crew-member-menu">
+                    <summary
+                      aria-label={`${en ? "Manage" : "ניהול"} ${m.name}`}
+                    >
+                      {en ? "Manage" : "ניהול"}
+                    </summary>
+                    <div className="community-member-actions">
+                      {isAdmin && !m.isSelf && !m.managed && (
+                        <button
+                          type="button"
+                          onClick={() =>
+                            setEditing(editing === m.userId ? null : m.userId)
+                          }
+                          disabled={busy}
+                          aria-expanded={editing === m.userId}
+                        >
+                          {t("household.changeRole")}
+                        </button>
+                      )}
                       <button
                         type="button"
-                        onClick={() =>
-                          setEditing(editing === m.userId ? null : m.userId)
-                        }
+                        onClick={() => setRemoving(m)}
                         disabled={busy}
-                        aria-expanded={editing === m.userId}
+                        className="text-coral"
                       >
-                        {t("household.changeRole")}
+                        {m.isSelf
+                          ? en
+                            ? "Leave household"
+                            : "עזיבת הבית"
+                          : t("remove")}
                       </button>
-                    )}
-                    <button
-                      type="button"
-                      onClick={() => setRemoving(m)}
-                      disabled={busy}
-                      className="text-coral"
-                    >
-                      {m.isSelf
-                        ? en
-                          ? "Leave household"
-                          : "עזיבת הבית"
-                        : t("remove")}
-                    </button>
-                  </div>
+                    </div>
+                  </details>
                 )}
                 {editing === m.userId && (
                   <div className="mt-3 flex gap-2">
@@ -336,8 +300,31 @@ export default function Household() {
           </div>
         )}
       </section>
+      <section className="community-team-goal">
+        <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+          <h2 className="text-lg font-extrabold">{t("monthlyGoal")}</h2>
+          <span className="text-sm font-bold text-lime">
+            {monthlyXp.toLocaleString()} / {goal.toLocaleString()} XP
+          </span>
+        </div>
+        <div
+          className="community-progress"
+          role="progressbar"
+          aria-label={t("monthlyGoal")}
+          aria-valuemin={0}
+          aria-valuemax={100}
+          aria-valuenow={goalPct}
+        >
+          <span style={{ width: `${goalPct}%` }} />
+        </div>
+        <p className="community-note mt-3">
+          {en
+            ? "One shared goal. Every earned point moves your household forward."
+            : "מטרה משותפת אחת. כל נקודה שנצברת מקדמת את הבית שלכם."}
+        </p>
+      </section>
       <section
-        className="community-house-rules mt-8 flex items-center gap-4 p-6"
+        className="community-house-rules crew-settings flex items-center gap-4"
         style={{ background: "var(--community-lilac)" }}
       >
         <ShieldCheck
@@ -347,9 +334,13 @@ export default function Household() {
         />
         <div className="flex-1">
           <h2 className="text-lg font-extrabold">
-            {t("household.adminControls")}
+            {en ? "Photo checks" : "בדיקת תמונות"}
           </h2>
-          <p className="community-note mt-1">{t("household.ctrl1")}</p>
+          <p className="community-note mt-1">
+            {en
+              ? "A grown-up checks mission photos before completion is approved."
+              : "מבוגר בודק את תמונת המשימה לפני אישור ההשלמה."}
+          </p>
         </div>
         <span className="community-chip">
           {household?.requireProofApproval ? t("on") : t("off")}

@@ -956,11 +956,6 @@
   background: #fffbee;
   box-shadow: 0 3px 0 #d9cfb4;
 }
-.insights-filters select {
-  border: 2px solid #dfd5bb;
-  border-radius: 15px;
-  background: #fffdf5;
-}
 .world-empty,
 .quest-empty {
   background: transparent;

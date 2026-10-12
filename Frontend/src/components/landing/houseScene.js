@@ -2,11 +2,12 @@ import * as THREE from "three";
 import { OrbitControls } from "three/addons/controls/OrbitControls.js";
 import { RoundedBoxGeometry } from "three/addons/geometries/RoundedBoxGeometry.js";
 import { gsap } from "gsap";
+import { createFrameScheduler } from "../../utils/frameScheduler";
 
 // A real, locally generated model. No remote model service or texture downloads.
 export function createHouseScene(
   host,
-  { onProject = () => {}, onInteract = () => {} } = {},
+  { onProject = () => {}, onInteract = () => {}, worldMode = false } = {},
 ) {
   const scene = new THREE.Scene();
   const camera = new THREE.PerspectiveCamera(37, 1, 0.1, 80);
@@ -14,13 +15,13 @@ export function createHouseScene(
   const renderer = new THREE.WebGLRenderer({
     alpha: true,
     antialias: true,
-    powerPreference: "low-power",
+    powerPreference: "high-performance",
   });
   renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 1.5));
   renderer.shadowMap.enabled = true;
   renderer.shadowMap.type = THREE.PCFShadowMap;
   renderer.toneMapping = THREE.ACESFilmicToneMapping;
-  renderer.toneMappingExposure = 1.35;
+  renderer.toneMappingExposure = worldMode ? 1.05 : 1.35;
   renderer.domElement.setAttribute("aria-label", "Interactive miniature home");
   renderer.domElement.style.touchAction = "pan-y";
   host.appendChild(renderer.domElement);
@@ -41,7 +42,7 @@ export function createHouseScene(
     bedroom: new THREE.Vector3(1.2, 3.85, 0.3),
   };
   let explodedAmount = 0;
-  const render = () => {
+  const frames = createFrameScheduler(() => {
     renderer.render(scene, camera);
     const points = {};
     for (const [id, original] of Object.entries(hotspotPositions)) {
@@ -59,7 +60,8 @@ export function createHouseScene(
       };
     }
     onProject(points);
-  };
+  });
+  const render = frames.request;
   controls.addEventListener("change", render);
   const ambient = new THREE.HemisphereLight("#fff5df", "#b3b8a1", 2.5);
   scene.add(ambient);
@@ -255,7 +257,8 @@ export function createHouseScene(
   // Bedroom upstairs, books, pillows and a woven-style basket.
   box(1.65, 0.25, 2.5, palette.wood, house, 1.25, 3.02, -0.25, 0.06);
   box(1.59, 0.24, 2.44, palette.cream, house, 1.25, 3.22, -0.25, 0.1);
-  box(1.61, 0.15, 1.52, palette.lilac, house, 1.25, 3.4, 0.2, 0.09);
+  const bedroomPaint = material("#b084e4");
+  box(1.61, 0.15, 1.52, bedroomPaint, house, 1.25, 3.4, 0.2, 0.09);
   box(1.68, 0.8, 0.16, palette.wood, house, 1.25, 3.37, -1.47, 0.08);
   for (const x of [0.82, 1.63])
     box(0.61, 0.16, 0.47, palette.cream, house, x, 3.41, -1.07, 0.1);
@@ -418,12 +421,378 @@ export function createHouseScene(
     if (object !== roof && object !== upperFloor && object.position.y >= 2.6)
       upperFloor.attach(object);
   }
+  let currentRoom = "home";
+  let initializedView = false;
   const positions = {
     home: { eye: [8, 7.4, 10], target: [0, 2, 0] },
+    clubhouse: { eye: [-7, 5.5, 8], target: [-4.1, 1.5, 1.5] },
     kitchen: { eye: [-4.5, 3.3, 6.2], target: [-1.4, 1.45, -0.15] },
     living: { eye: [4.2, 2.15, 6.4], target: [1.25, 1.05, -0.2] },
     bedroom: { eye: [4.5, 5.6, 6.6], target: [1.2, 3.6, 0] },
   };
+  const personalDecor = {};
+  for (const id of ["cushion", "lamp", "plant", "cup", "moon"]) {
+    personalDecor[id] = new THREE.Group();
+    personalDecor[id].visible = false;
+    house.add(personalDecor[id]);
+  }
+  sphere(
+    0.3,
+    palette.cream,
+    personalDecor.cushion,
+    1.2,
+    3.57,
+    0.65,
+    [1.5, 0.4, 1],
+  );
+  sphere(
+    0.19,
+    palette.cream,
+    personalDecor.cushion,
+    1.02,
+    3.6,
+    0.63,
+    [1, 0.5, 1],
+  );
+  cylinder(0.12, 0.2, 0.08, palette.gold, personalDecor.lamp, 0.25, 2.91, -1.2);
+  cylinder(
+    0.025,
+    0.025,
+    0.58,
+    palette.gold,
+    personalDecor.lamp,
+    0.25,
+    3.23,
+    -1.2,
+  );
+  sphere(0.24, palette.cream, personalDecor.lamp, 0.25, 3.6, -1.2, [1, 0.9, 1]);
+  const roomPlant = plant(2.5, 2.85, 1.15, 0.9);
+  personalDecor.plant.add(roomPlant);
+  box(0.42, 0.09, 0.4, palette.wood, personalDecor.cup, 2.52, 3.0, 0.05);
+  cylinder(0.15, 0.1, 0.24, palette.gold, personalDecor.cup, 2.52, 3.2, 0.05);
+  mesh(
+    new THREE.TorusGeometry(0.14, 0.028, 8, 18),
+    palette.gold,
+    personalDecor.cup,
+    2.36,
+    3.25,
+    0.05,
+  );
+  cylinder(
+    0.012,
+    0.012,
+    0.45,
+    palette.wood,
+    personalDecor.moon,
+    1.1,
+    4.65,
+    -1.5,
+  );
+  const roomMoon = mesh(
+    new THREE.TorusGeometry(0.27, 0.09, 12, 24, Math.PI * 1.55),
+    palette.gold,
+    personalDecor.moon,
+    1.1,
+    4.2,
+    -1.5,
+  );
+  roomMoon.rotation.z = 0.75;
+  function setPersonalRoom(room) {
+    bedroomPaint.color.set(
+      { mint: "#72c7ae", peach: "#efa98c", lilac: "#b397dc", sky: "#89bddf" }[
+        room.color
+      ] || "#b397dc",
+    );
+    for (const [id, group] of Object.entries(personalDecor))
+      group.visible = room.items?.includes(id) || false;
+    render();
+  }
+  const worldDecor = new THREE.Group();
+  scene.add(worldDecor);
+  worldDecor.visible = false;
+  const lawn = cylinder(
+    6.8,
+    7,
+    0.22,
+    material("#86c65c"),
+    worldDecor,
+    0,
+    -0.34,
+    0,
+  );
+  lawn.scale.z = 0.85;
+  // A thick toy island, rather than a flat disc beneath the house.
+  const island = cylinder(
+    6.85,
+    6.3,
+    0.65,
+    material("#c89c68"),
+    worldDecor,
+    0,
+    -0.75,
+    0,
+  );
+  island.scale.z = 0.85;
+  const islandLip = cylinder(
+    7,
+    6.85,
+    0.15,
+    material("#5da43f"),
+    worldDecor,
+    0,
+    -0.49,
+    0,
+  );
+  islandLip.scale.z = 0.85;
+  const pathStone = material("#f6ddb2");
+  for (let i = 0; i < 6; i++) {
+    const stone = cylinder(
+      0.29,
+      0.32,
+      0.07,
+      pathStone,
+      worldDecor,
+      0.25 + Math.sin(i * 0.9) * 0.25,
+      -0.16,
+      2.6 + i * 0.4,
+    );
+    stone.scale.x = 1.5;
+  }
+  // Trees and a white garden fence give the model a readable silhouette.
+  const foliage = [
+    material("#4a9d62"),
+    material("#72bd54"),
+    material("#badb65"),
+  ];
+  for (const [x, z, height] of [
+    [-5, -2.6, 1.7],
+    [4.9, -1.8, 2.1],
+    [2.8, -3.4, 1.5],
+  ]) {
+    cylinder(
+      0.12,
+      0.19,
+      height,
+      palette.wood,
+      worldDecor,
+      x,
+      height / 2 - 0.15,
+      z,
+    );
+    for (const [dx, dy, dz, r] of [
+      [0, 0, 0, 0.75],
+      [-0.38, -0.35, 0.2, 0.5],
+      [0.4, -0.22, 0.15, 0.55],
+    ])
+      sphere(
+        r,
+        foliage[Math.abs(Math.round(x + dy)) % 3],
+        worldDecor,
+        x + dx,
+        height + dy,
+        z + dz,
+        [1, 1.2, 1],
+      );
+  }
+  for (let i = 0; i < 10; i++)
+    box(
+      0.13,
+      0.72,
+      0.12,
+      palette.cream,
+      worldDecor,
+      -3.4 + i * 0.55,
+      0.15,
+      -3.45,
+    );
+  for (const y of [0.05, 0.4])
+    box(5.25, 0.1, 0.12, palette.cream, worldDecor, -0.95, y, -3.42);
+  // A small pond, stepping stones and a mailbox are permanent world details.
+  const pondRim = cylinder(
+    0.88,
+    0.98,
+    0.12,
+    pathStone,
+    worldDecor,
+    3.8,
+    -0.13,
+    3.35,
+  );
+  pondRim.scale.z = 0.7;
+  const pondWater = cylinder(
+    0.8,
+    0.8,
+    0.025,
+    material("#49bada", { roughness: 0.22 }),
+    worldDecor,
+    3.8,
+    -0.055,
+    3.35,
+  );
+  pondWater.scale.z = 0.7;
+  sphere(0.13, palette.gold, worldDecor, 3.6, 0.05, 3.35, [1.2, 0.75, 0.75]);
+  sphere(0.085, palette.gold, worldDecor, 3.72, 0.17, 3.35);
+  box(0.09, 0.04, 0.07, palette.orange, worldDecor, 3.81, 0.16, 3.35);
+  cylinder(0.07, 0.09, 0.85, palette.wood, worldDecor, -1.3, 0.2, 3.65);
+  box(0.56, 0.4, 0.42, palette.sage, worldDecor, -1.3, 0.72, 3.65, 0.1);
+  box(0.3, 0.035, 0.03, palette.dark, worldDecor, -1.3, 0.75, 3.88);
+  box(0.04, 0.3, 0.04, palette.cream, worldDecor, -0.97, 0.83, 3.65);
+  box(0.2, 0.13, 0.04, palette.orange, worldDecor, -0.89, 0.95, 3.65);
+  for (const [x, z] of [
+    [-2.3, 3.9],
+    [2.2, 3.3],
+    [-5.3, 0.8],
+    [5.1, 0.4],
+    [-3.6, -2.5],
+  ]) {
+    for (let i = 0; i < 3; i++)
+      sphere(
+        0.1,
+        [palette.orange, palette.gold, palette.lilac][i],
+        worldDecor,
+        x + i * 0.14,
+        -0.1,
+        z + Math.sin(i) * 0.2,
+      );
+  }
+
+  const clubhouse = new THREE.Group();
+  worldDecor.add(clubhouse);
+  clubhouse.position.set(-4.1, 0, 1.5);
+  const clubhouseStages = [
+    new THREE.Group(),
+    new THREE.Group(),
+    new THREE.Group(),
+  ];
+  clubhouseStages.forEach((group) => clubhouse.add(group));
+  for (const x of [-0.6, 0.6])
+    for (const z of [-0.6, 0.6])
+      cylinder(0.1, 0.13, 1.7, palette.wood, clubhouseStages[0], x, 0.7, z);
+  box(1.7, 0.16, 1.7, palette.lightwood, clubhouseStages[0], 0, 1.45, 0);
+  box(1.6, 1.2, 0.14, palette.sage, clubhouseStages[1], 0, 2.1, -0.7);
+  box(0.14, 1.2, 1.5, palette.sage, clubhouseStages[1], -0.73, 2.1, 0);
+  for (let i = 0; i < 5; i++)
+    box(
+      0.5,
+      0.08,
+      0.17,
+      palette.wood,
+      clubhouseStages[0],
+      0.45,
+      i * 0.28,
+      0.98,
+    );
+  for (const side of [-1, 1]) {
+    const roof = box(
+      1.05,
+      0.13,
+      1.85,
+      palette.lilac,
+      clubhouseStages[2],
+      side * 0.42,
+      2.86,
+      0,
+    );
+    roof.rotation.z = -side * 0.4;
+  }
+  cylinder(0.035, 0.035, 0.75, palette.cream, clubhouseStages[2], 0, 3.35, 0);
+  box(0.5, 0.3, 0.035, palette.orange, clubhouseStages[2], 0.23, 3.6, 0);
+  for (const z of [-0.63, 0.63])
+    box(1.5, 0.07, 0.07, palette.cream, clubhouseStages[1], 0, 1.95, z);
+  for (const x of [-0.65, 0.65])
+    cylinder(
+      0.045,
+      0.045,
+      0.55,
+      palette.cream,
+      clubhouseStages[1],
+      x,
+      1.73,
+      0.65,
+    );
+  const decorationGroups = {};
+  for (const name of ["garden", "picnic", "observatory"]) {
+    const group = new THREE.Group();
+    worldDecor.add(group);
+    decorationGroups[name] = group;
+  }
+  const garden = decorationGroups.garden;
+  box(1.65, 0.23, 1.05, palette.wood, garden, 0, 0, 0);
+  for (let i = 0; i < 5; i++) {
+    const x = (i - 2) * 0.3,
+      z = i % 2 ? 0.2 : -0.2;
+    cylinder(0.025, 0.03, 0.5, palette.green, garden, x, 0.34, z);
+    sphere(
+      0.17,
+      [palette.orange, palette.gold, palette.lilac][i % 3],
+      garden,
+      x,
+      0.64,
+      z,
+    );
+  }
+  const picnic = decorationGroups.picnic;
+  box(1.6, 0.12, 0.85, palette.orange, picnic, 0, 0.6, 0);
+  for (const x of [-0.5, 0.5])
+    box(0.13, 0.65, 0.7, palette.wood, picnic, x, 0.25, 0);
+  for (const z of [-0.66, 0.66])
+    box(1.75, 0.12, 0.3, palette.gold, picnic, 0, 0.28, z);
+  sphere(0.16, palette.lilac, picnic, 0.35, 0.8, 0);
+  const telescope = decorationGroups.observatory;
+  cylinder(0.72, 0.8, 0.15, palette.lilac, telescope, 0, 0, 0);
+  cylinder(0.07, 0.12, 0.9, palette.metal, telescope, 0, 0.5, 0);
+  const tube = cylinder(0.18, 0.22, 1.1, palette.sage, telescope, 0, 1.1, 0);
+  tube.rotation.z = Math.PI / 3;
+  sphere(0.15, palette.gold, telescope, -0.49, 1.39, 0);
+  function setWorld(world) {
+    const firstWorld = !worldDecor.visible;
+    worldDecor.visible = true;
+    const count = Number(world.completed) || 0;
+    clubhouseStages.forEach((group, index) => {
+      const wasVisible = group.visible;
+      group.visible = count >= [1, 4, 8][index];
+      if (group.visible && !wasVisible && !firstWorld) {
+        group.scale.setScalar(0.6);
+        animate(group.scale, { x: 1, y: 1, z: 1, ease: "back.out(1.4)" });
+      }
+    });
+    const slots = {
+      left: [-4.2, 0, 3.65],
+      right: [4.5, 0, 1],
+      back: [-4.3, 0, -1.2],
+    };
+    const occupied = {};
+    for (const [name, group] of Object.entries(decorationGroups)) {
+      const slot = world.placements?.[name];
+      const wasVisible = group.visible;
+      group.visible =
+        !!slots[slot] &&
+        count >= { garden: 3, picnic: 8, observatory: 15 }[name];
+      if (group.visible) {
+        const offset = occupied[slot] ?? 0;
+        group.position.set(...slots[slot]);
+        group.position.z += offset * 0.8;
+        group.position.x += offset * 0.2;
+        group.scale.setScalar(0.85);
+        if (!wasVisible && !firstWorld) {
+          group.scale.setScalar(0.3);
+          animate(group.scale, {
+            x: 0.85,
+            y: 0.85,
+            z: 0.85,
+            ease: "back.out(1.4)",
+          });
+        }
+        occupied[slot] = offset + 1;
+      }
+    }
+    fitWorldCamera();
+    if (firstWorld && currentRoom === "home") {
+      initializedView = false;
+      setRoom("home");
+    }
+    render();
+  }
   let disposed = false,
     opened = false,
     previousCompleted = new Set(),
@@ -433,7 +802,7 @@ export function createHouseScene(
     window.matchMedia("(prefers-reduced-motion: reduce)").matches ||
     document.documentElement.classList.contains("a11y-stop-animations")
       ? 0
-      : 1.45;
+      : 0.5;
   const track = (tween) => {
     animations.add(tween);
     const finish = tween.eventCallback("onComplete");
@@ -473,6 +842,14 @@ export function createHouseScene(
   }
   function moveCamera(eye, target) {
     flightTween?.kill();
+    if (!initializedView) {
+      camera.position.set(...eye);
+      controls.target.set(...target);
+      controls.update();
+      initializedView = true;
+      render();
+      return;
+    }
     const flight = {
       x: camera.position.x,
       y: camera.position.y,
@@ -497,13 +874,27 @@ export function createHouseScene(
     });
   }
   function setRoom(id) {
+    currentRoom = id;
     const view = positions[id] || positions.home;
     if (id !== "home" && !opened) setOpen(true);
     moveCamera(view.eye, view.target);
   }
+  function zoomBy(factor) {
+    flightTween?.kill();
+    const offset = camera.position.clone().sub(controls.target);
+    const distance = THREE.MathUtils.clamp(
+      offset.length() * factor,
+      3.5,
+      worldMode ? 48 : 30,
+    );
+    camera.position.copy(controls.target).add(offset.setLength(distance));
+    controls.update();
+    onInteract();
+    render();
+  }
   function setNight(value) {
-    animate(ambient, { intensity: value ? 0.55 : 2.5 });
-    animate(sunlight, { intensity: value ? 0.38 : 4 });
+    animate(ambient, { intensity: value ? 0.55 : worldMode ? 1.8 : 2.5 });
+    animate(sunlight, { intensity: value ? 0.38 : worldMode ? 2.8 : 4 });
     animate(fill, { intensity: value ? 0.75 : 1.4 });
     animate(
       sunlight.color,
@@ -598,18 +989,39 @@ export function createHouseScene(
     previousCompleted = done;
     render();
   }
+  function fitWorldCamera() {
+    if (!worldMode) return;
+    const ratio = host.clientWidth / Math.max(1, host.clientHeight);
+    const distance = Math.max(1, 1.15 / ratio);
+    positions.home.eye = [10 * distance, 10 * distance, 15 * distance];
+    positions.home.target = [0, 1, 0];
+  }
   const resize = () => {
     if (disposed || !host.clientWidth || !host.clientHeight) return;
     renderer.setSize(host.clientWidth, host.clientHeight, false);
     camera.aspect = host.clientWidth / host.clientHeight;
     camera.fov = camera.aspect < 0.95 ? 44 : 37;
     camera.updateProjectionMatrix();
+    fitWorldCamera();
+    if (worldMode && currentRoom === "home") {
+      flightTween?.kill();
+      camera.position.set(...positions.home.eye);
+      controls.target.set(...positions.home.target);
+      controls.update();
+    }
     render();
   };
   const observer = new ResizeObserver(resize);
   observer.observe(host);
   resize();
   return {
+    zoomBy,
+    resetView() {
+      fitWorldCamera();
+      setRoom("home");
+    },
+    setWorld,
+    setPersonalRoom,
     setRoom,
     setOpen,
     setNight,
@@ -627,6 +1039,7 @@ export function createHouseScene(
     dispose() {
       if (disposed) return;
       disposed = true;
+      frames.dispose();
       observer.disconnect();
       animations.forEach((animation) => animation.kill());
       animations.clear();
