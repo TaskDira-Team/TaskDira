@@ -66,9 +66,10 @@ function RewardCard({
             title={`${xpGap.toLocaleString()} XP ${en ? "to go" : "לפתיחה"}`}
           >
             <LockKeyhole size={15} aria-hidden="true" />
-            {en
-              ? `Unlocks at ${reward.requiredPoints} XP`
-              : `נפתח ב-${reward.requiredPoints} XP`}
+            <span className="reward-lock-word">
+              {en ? "Unlocks at " : "נפתח ב-"}
+            </span>
+            {reward.requiredPoints} XP
           </div>
         )}
       </div>
@@ -77,7 +78,8 @@ function RewardCard({
         <p>{tx(reward.description)}</p>
         <div className="community-price">
           <Coins size={16} aria-hidden="true" />
-          {reward.cost.toLocaleString()} {en ? "coins" : "מטבעות"}
+          {reward.cost.toLocaleString()}
+          <span className="reward-price-word"> {en ? "coins" : "מטבעות"}</span>
         </div>
         {reward.claimed ? (
           <div className="community-chip justify-center py-3">
@@ -93,19 +95,36 @@ function RewardCard({
             onClick={onClaim}
             className="community-reward-action"
           >
-            {claiming
-              ? en
-                ? "Redeeming…"
-                : "מממשים…"
-              : !reward.unlocked
+            <span className="reward-label-full">
+              {claiming
                 ? en
-                  ? "Not unlocked yet"
-                  : "ממשיכים לצבור XP"
-                : affordable
-                  ? `${en ? "Get for" : "מימוש תמורת"} ${reward.cost} ${en ? "coins" : "מטבעות"}`
-                  : en
-                    ? `${shortBy.toLocaleString()} more coins`
-                    : `עוד ${shortBy.toLocaleString()} מטבעות`}
+                  ? "Redeeming…"
+                  : "מממשים…"
+                : !reward.unlocked
+                  ? en
+                    ? "Not unlocked yet"
+                    : "ממשיכים לצבור XP"
+                  : affordable
+                    ? `${en ? "Get for" : "מימוש תמורת"} ${reward.cost} ${en ? "coins" : "מטבעות"}`
+                    : en
+                      ? `${shortBy.toLocaleString()} more coins`
+                      : `עוד ${shortBy.toLocaleString()} מטבעות`}
+            </span>
+            <span className="reward-label-short" aria-hidden="true">
+              {claiming
+                ? "…"
+                : !reward.unlocked
+                  ? en
+                    ? "Locked"
+                    : "נעול"
+                  : affordable
+                    ? en
+                      ? "Get it"
+                      : "מימוש"
+                    : en
+                      ? `${shortBy.toLocaleString()} more`
+                      : `עוד ${shortBy.toLocaleString()}`}
+            </span>
           </button>
         )}
         {isAdmin && (

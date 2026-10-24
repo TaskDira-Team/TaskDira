@@ -29,8 +29,11 @@ export function PlayProvider({ children }) {
     try {
       const next = await playApi.read(householdId);
       if (id === generation.current) {
-        current.current = next;
-        setState(next);
+        const same = JSON.stringify(current.current) === JSON.stringify(next);
+        if (!same) {
+          current.current = next;
+          setState(next);
+        }
         setError("");
       }
     } catch {
@@ -63,13 +66,15 @@ export function PlayProvider({ children }) {
     };
     window.addEventListener("focus", focus);
     window.addEventListener("storage", storage);
+    window.addEventListener("taskdira:live", focus);
     document.addEventListener("visibilitychange", visibility);
     const poll = window.setInterval(() => {
       if (!document.hidden) refresh();
-    }, 30000);
+    }, 5000);
     return () => {
       clearInterval(poll);
       window.removeEventListener("focus", focus);
+      window.removeEventListener("taskdira:live", focus);
       window.removeEventListener("storage", storage);
       document.removeEventListener("visibilitychange", visibility);
     };

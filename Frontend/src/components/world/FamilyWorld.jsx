@@ -88,7 +88,9 @@ export default function FamilyWorld({ onOpen, onNew }) {
     try {
       const result = await worldApi.read(householdId);
       if (request === generation.current) {
-        setWorld(result);
+        setWorld((prev) =>
+          JSON.stringify(prev) === JSON.stringify(result) ? prev : result,
+        );
         setError("");
       }
     } catch {
@@ -110,7 +112,7 @@ export default function FamilyWorld({ onOpen, onNew }) {
   }, [householdId]);
   useEffect(() => {
     if (!loading) refresh();
-  }, [refresh, tasks, loading]);
+  }, [refresh, tasks, users, loading]);
   useEffect(() => {
     const focus = () => refresh();
     const storage = (event) => {
@@ -118,8 +120,14 @@ export default function FamilyWorld({ onOpen, onNew }) {
     };
     window.addEventListener("focus", focus);
     window.addEventListener("storage", storage);
+    window.addEventListener("taskdira:live", focus);
+    const poll = window.setInterval(() => {
+      if (!document.hidden) refresh();
+    }, 5000);
     return () => {
+      clearInterval(poll);
       window.removeEventListener("focus", focus);
+      window.removeEventListener("taskdira:live", focus);
       window.removeEventListener("storage", storage);
     };
   }, [refresh, householdId]);

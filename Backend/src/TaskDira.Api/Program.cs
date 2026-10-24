@@ -100,6 +100,7 @@ builder.Services.AddScoped<IFamilyService, FamilyService>();
 builder.Services.AddScoped<IWorldRepository, WorldRepository>();
 builder.Services.AddScoped<IWorldService, WorldService>();
 builder.Services.AddScoped<FamilyPlayService>();
+builder.Services.AddSingleton<LiveUpdates>();
 
 var app = builder.Build();
 
@@ -119,6 +120,37 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 
 app.UseCors(FrontendCorsPolicy);
+
+// Live updates: every open screen holds a WebSocket and gets a "changed"
+// ping after any successful save, so it refreshes immediately.
+app.UseWebSockets(new WebSocketOptions { KeepAliveInterval = TimeSpan.FromSeconds(20) });
+var live = app.Services.GetRequiredService<LiveUpdates>();
+app.Use(async (context, next) =>
+{
+    await next();
+    var method = context.Request.Method;
+    if (!HttpMethods.IsGet(method) && !HttpMethods.IsHead(method) && !HttpMethods.IsOptions(method)
+        && context.Request.Path.StartsWithSegments("/api")
+        && context.Response.StatusCode < 400)
+    {
+        live.NotifyChanged();
+    }
+});
+app.Map("/live", async (HttpContext context, IAuthService auth) =>
+{
+    if (!context.WebSockets.IsWebSocketRequest)
+    {
+        context.Response.StatusCode = StatusCodes.Status400BadRequest;
+        return;
+    }
+    var origin = context.Request.Headers.Origin.ToString();
+    if (!string.IsNullOrEmpty(origin) && !frontendOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase))
+    {
+        context.Response.StatusCode = StatusCodes.Status403Forbidden;
+        return;
+    }
+    await live.HandleAsync(context, auth);
+});
 
 app.UseRateLimiter();
 app.UseMiddleware<SessionAuthenticationMiddleware>();

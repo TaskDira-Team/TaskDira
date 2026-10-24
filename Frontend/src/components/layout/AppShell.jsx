@@ -31,6 +31,14 @@ import "../../world.css";
 import "../../game-world.css";
 import "../../play-controls.css";
 
+// Short labels keep the phone tab bar on a single line.
+const SHORT = {
+  "/": ["Home", "בית"],
+  "/tasks": ["Quests", "משימות"],
+  "/rewards": ["Shop", "חנות"],
+  "/leaderboard": ["Stars", "מנצחים"],
+};
+
 const items = [
   ["/", LayoutDashboard, "Play home", "מבט על הבית"],
   ["/tasks", ListTodo, "Quest road", "המשימות שלנו"],
@@ -377,9 +385,10 @@ export default function AppShell({ children }) {
             key={href}
             onClick={() => go(href)}
             aria-current={path === href ? "page" : undefined}
+            aria-label={he ? heb : en}
           >
             <Icon size={21} />
-            <span>{he ? heb : en}</span>
+            <span>{(SHORT[href] || [en, heb])[he ? 1 : 0]}</span>
           </button>
         ))}
         <button onClick={() => setMenu(!menu)} aria-expanded={menu}>

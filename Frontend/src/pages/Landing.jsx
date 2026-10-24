@@ -1,7 +1,25 @@
-import { useEffect } from "react";
-import { Check, ChevronDown, Heart, Home, Leaf, Users, Wrench } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  Check,
+  ChevronDown,
+  Heart,
+  Home,
+  Leaf,
+  Share,
+  Smartphone,
+  SquarePlus,
+  Users,
+  Wrench,
+} from "lucide-react";
 import { useI18n } from "../context/I18nContext";
 import { useRoute } from "../context/RouteContext";
+import {
+  canPromptInstall,
+  isInstalled,
+  isIos,
+  onInstallAvailability,
+  promptInstall,
+} from "../services/installPrompt";
 import "../components/landing/landing.css";
 import "../components/landing/landingPage.css";
 
@@ -41,6 +59,25 @@ export default function Landing() {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+  const [installable, setInstallable] = useState(canPromptInstall);
+  const [installed, setInstalled] = useState(isInstalled);
+  const [showSteps, setShowSteps] = useState(false);
+  useEffect(
+    () =>
+      onInstallAvailability((available) => {
+        setInstallable(available);
+        if (!available) setInstalled(isInstalled());
+      }),
+    [],
+  );
+  const install = async () => {
+    if (installable) {
+      const accepted = await promptInstall();
+      if (accepted) setInstalled(true);
+    } else {
+      setShowSteps(true);
+    }
+  };
   const links = [
     ["inside", say("מה יש בפנים", "What’s inside")],
     ["who", say("למי זה מתאים", "Who it’s for")],
@@ -107,6 +144,10 @@ export default function Landing() {
             aria-label={he ? "Switch to English" : "מעבר לעברית"}
           >
             {he ? "EN" : "עב"}
+          </button>
+          <button className="lp-btn lp-btn-light lp-btn-app" onClick={() => go("app")}>
+            <Smartphone size={18} aria-hidden="true" />
+            {say("הורדה לטלפון", "Get the app")}
           </button>
           <button className="lp-btn lp-btn-light" onClick={login}>
             {say("כניסה", "Sign in")}
@@ -339,6 +380,65 @@ export default function Landing() {
                 )}
               </p>
             </article>
+          </div>
+        </section>
+
+        <section className="lp-wrap lp-section" id="app" tabIndex={-1}>
+          <div className="lp-app">
+            <div className="lp-app-phone" aria-hidden="true">
+              <img src="/icons/icon-192.png" alt="" />
+              <span>TaskDira</span>
+            </div>
+            <div className="lp-app-copy">
+              <h2>{say("TaskDira בטלפון שלכם", "TaskDira on your phone")}</h2>
+              <p>
+                {say(
+                  "מוסיפים למסך הבית ופותחים כמו כל אפליקציה. בלי חנות אפליקציות ובלי הורדה ארוכה.",
+                  "Add it to your home screen and open it like any app. No app store, no long download.",
+                )}
+              </p>
+              {installed ? (
+                <p className="lp-app-done">
+                  <Check size={22} strokeWidth={3} aria-hidden="true" />
+                  {say("האפליקציה כבר במכשיר הזה", "The app is already on this device")}
+                </p>
+              ) : (
+                <button className="lp-btn lp-btn-coral lp-btn-big" onClick={install}>
+                  <Smartphone size={22} aria-hidden="true" />
+                  {say("הורדה לטלפון", "Download to my phone")}
+                </button>
+              )}
+              {showSteps && !installed && (
+                <ol className="lp-app-steps" aria-live="polite">
+                  {isIos() ? (
+                    <>
+                      <li>
+                        <Share size={20} aria-hidden="true" />
+                        {say("בספארי, לוחצים על כפתור השיתוף", "In Safari, tap the Share button")}
+                      </li>
+                      <li>
+                        <SquarePlus size={20} aria-hidden="true" />
+                        {say("בוחרים \"הוספה למסך הבית\"", "Choose \"Add to Home Screen\"")}
+                      </li>
+                    </>
+                  ) : (
+                    <>
+                      <li>
+                        <Smartphone size={20} aria-hidden="true" />
+                        {say("פותחים את האתר בטלפון, בכרום", "Open this site on your phone in Chrome")}
+                      </li>
+                      <li>
+                        <SquarePlus size={20} aria-hidden="true" />
+                        {say(
+                          "בתפריט ⋮ בוחרים \"התקנת האפליקציה\" או \"הוספה למסך הבית\"",
+                          "In the ⋮ menu, choose \"Install app\" or \"Add to Home screen\"",
+                        )}
+                      </li>
+                    </>
+                  )}
+                </ol>
+              )}
+            </div>
           </div>
         </section>
 

@@ -83,7 +83,15 @@ export function installFamilySession(value) {
 
 export const familyApi = {
   async list(household = getActiveHouseholdId()) {
-    if (USE_REAL_API.auth) return http.get(`/api/family/${household}`);
+    if (USE_REAL_API.auth) {
+      // SQL Server's FOR JSON drops empty lists, so default them here.
+      const value = (await http.get(`/api/family/${household}`)) || {};
+      return {
+        ...value,
+        children: value.children ?? [],
+        invitations: value.invitations ?? [],
+      };
+    }
     demo();
     admin(household);
     return {

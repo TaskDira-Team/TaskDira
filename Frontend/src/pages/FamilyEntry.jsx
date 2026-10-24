@@ -321,7 +321,9 @@ export default function FamilyEntry() {
         )}
         {error && (
           <p role="alert" className="family-error">
-            {error}
+            {he && /expired, was used, or was cancelled/i.test(error)
+              ? "פג תוקף ההזמנה, היא כבר נוצלה או בוטלה. בקשו מהמארחים קישור חדש."
+              : error}
           </p>
         )}
         {IS_DEMO_MODE && (

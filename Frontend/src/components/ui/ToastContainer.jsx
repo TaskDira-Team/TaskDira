@@ -27,19 +27,23 @@ export default function ToastContainer({ toasts, onDismiss }) {
     <div className="absolute bottom-20 start-3 end-3 z-50 flex flex-col gap-2 pointer-events-none">
       {toasts.map((toast) => {
         const Icon = icons[toast.type] || Info;
+        const emoji = toast.message.match(/^(\p{Extended_Pictographic}️?)\s*/u);
+        const text = emoji ? toast.message.slice(emoji[0].length) : toast.message;
         return (
           <div
             key={toast.id}
-            className={`toast-enter pointer-events-auto flex items-start gap-3 rounded-xl border px-3 py-2.5 shadow-lg backdrop-blur-sm ${styles[toast.type] || styles.info}`}
+            onClick={() => onDismiss?.(toast.id)}
+            className={`td-toast td-toast-${toast.type || 'info'} toast-enter pointer-events-auto flex items-start gap-3 rounded-xl border px-3 py-2.5 shadow-lg backdrop-blur-sm ${styles[toast.type] || styles.info}`}
           >
-            <Icon className={`h-5 w-5 shrink-0 mt-0.5 ${iconStyles[toast.type] || iconStyles.info}`} />
-            <p className="text-sm font-medium flex-1 min-w-0 truncate" title={toast.message}>
-              {toast.message}
+            {emoji && <span className="td-toast-emoji" aria-hidden="true">{emoji[1]}</span>}
+            <Icon className={`td-toast-icon h-5 w-5 shrink-0 mt-0.5 ${iconStyles[toast.type] || iconStyles.info}`} />
+            <p className="td-toast-text text-sm font-medium flex-1 min-w-0 truncate" title={toast.message}>
+              {text}
             </p>
             <button
               type="button"
-              onClick={() => onDismiss?.(toast.id)}
-              className="shrink-0 opacity-60 hover:opacity-100 transition-opacity touch-manipulation p-0.5"
+              onClick={(event) => { event.stopPropagation(); onDismiss?.(toast.id); }}
+              className="td-toast-x shrink-0 opacity-60 hover:opacity-100 transition-opacity touch-manipulation p-0.5"
               aria-label={t('close')}
             >
               <X className="h-4 w-4" />

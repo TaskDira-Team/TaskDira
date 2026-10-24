@@ -5,16 +5,20 @@ import {
   useEffect,
   useCallback,
   useMemo,
+  useRef,
 } from "react";
 import { api } from "../services/api";
 import { getLocalMonthlyEarnedXp } from "../services/usersApi";
 import { fetchMonthlyEarnedXp } from "../services/pointsRemote";
-import { USE_REAL_API, IS_DEMO_MODE } from "../services/config";
+import { USE_REAL_API, IS_DEMO_MODE, API_BASE_URL } from "../services/config";
 import { savePreviewProgress } from "../services/previewProgress";
 import { store } from "../services/store";
 import { completedThisMonth } from "../utils/monthlyStats";
 import { STATUS_LABELS, TASK_STATUSES } from "../data/mockData";
 import { useAuth } from "./AuthContext";
+
+// Fallback poll; the live socket below normally refreshes instantly.
+const LIVE_SYNC_MS = 5000;
 import { useI18n } from "./I18nContext";
 import {
   fireTaskCompleteConfetti,
@@ -75,7 +79,7 @@ export function AppProvider({ children }) {
     setToasts((prev) => [...prev, { id, message, type }]);
     setTimeout(
       () => setToasts((prev) => prev.filter((t) => t.id !== id)),
-      3500,
+      2500,
     );
   }, []);
 
@@ -141,25 +145,47 @@ export function AppProvider({ children }) {
           ? fetchMonthlyEarnedXp()
           : Promise.resolve(getLocalMonthlyEarnedXp()),
       ]);
-      setHousehold(householdData);
-      setUsers(
-        usersData.map((member) => ({
+      const next = {
+        household: householdData,
+        users: usersData.map((member) => ({
           ...member,
           tasksCompletedThisMonth: completedThisMonth(tasksData, member.id),
         })),
-      );
-      setMonthlyXp(earnedXp);
-      setTasks(tasksData);
-      setLeaderboard(leaderboardData);
-      setRewards(rewardsData);
-      setMembers(membersData);
+        monthlyXp: earnedXp,
+        tasks: tasksData,
+        leaderboard: leaderboardData,
+        rewards: rewardsData,
+        members: membersData,
+      };
+      // Only touch state that actually changed, so the live poll below
+      // doesn't re-render every screen every few seconds.
+      const seen = lastSnapshot.current;
+      let changed = false;
+      for (const [key, set] of [
+        ["household", setHousehold],
+        ["users", setUsers],
+        ["monthlyXp", setMonthlyXp],
+        ["tasks", setTasks],
+        ["leaderboard", setLeaderboard],
+        ["rewards", setRewards],
+        ["members", setMembers],
+      ]) {
+        const json = JSON.stringify(next[key]);
+        if (seen[key] !== json) {
+          seen[key] = json;
+          set(next[key]);
+          changed = true;
+        }
+      }
       if (IS_DEMO_MODE) savePreviewProgress(store);
       setLoadError(null);
+      return changed;
     } catch (error) {
       setLoadError(error.message || "Could not load household data.");
       throw error;
     }
   }, []);
+  const lastSnapshot = useRef({});
 
   // syncUser after the first load: the auth user is hydrated before the roster
   // populates the points ledger, so its balance starts at 0 and only corrected
@@ -168,12 +194,77 @@ export function AppProvider({ children }) {
   useEffect(() => {
     if (!user?.id) return;
     setLoading(true);
+    lastSnapshot.current = {};
     refreshData()
       .then(() => syncUser())
       .catch(() => {
         /* The app shell displays a retryable loading error. */
       })
       .finally(() => setLoading(false));
+  }, [user?.id, user?.activeHouseholdId, refreshData, syncUser]);
+
+  // Live sync: everyone in the home sees new members, quests, rewards and
+  // points within a few seconds, without refreshing the page.
+  useEffect(() => {
+    if (!user?.id) return;
+    let busy = false;
+    const tick = async () => {
+      if (busy || document.hidden) return;
+      busy = true;
+      try {
+        if (await refreshData()) await syncUser();
+      } catch {
+        /* keep the last good data; the next tick retries */
+      } finally {
+        busy = false;
+      }
+    };
+    let again = false;
+    const tickNow = async () => {
+      if (busy) {
+        again = true;
+        return;
+      }
+      await tick();
+      if (again) {
+        again = false;
+        tickNow();
+      }
+    };
+    const poll = window.setInterval(tick, LIVE_SYNC_MS);
+    const wake = () => {
+      if (!document.hidden) tickNow();
+    };
+
+    // Instant updates: the server pings this socket after any save.
+    let socket = null;
+    let retry = null;
+    let closed = false;
+    const connect = () => {
+      const token = USE_REAL_API.auth && api.getSessionToken();
+      if (!token || closed) return;
+      socket = new WebSocket(`${API_BASE_URL.replace(/^http/, "ws")}/live`);
+      socket.onopen = () => socket.send(token);
+      socket.onmessage = () => {
+        if (document.hidden) return;
+        tickNow();
+        window.dispatchEvent(new Event("taskdira:live"));
+      };
+      socket.onclose = () => {
+        if (!closed) retry = window.setTimeout(connect, 2000);
+      };
+    };
+    connect();
+    window.addEventListener("focus", wake);
+    document.addEventListener("visibilitychange", wake);
+    return () => {
+      closed = true;
+      clearTimeout(retry);
+      socket?.close();
+      clearInterval(poll);
+      window.removeEventListener("focus", wake);
+      document.removeEventListener("visibilitychange", wake);
+    };
   }, [user?.id, user?.activeHouseholdId, refreshData, syncUser]);
 
   const createTask = useCallback(

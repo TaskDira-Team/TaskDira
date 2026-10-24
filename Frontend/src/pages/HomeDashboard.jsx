@@ -266,7 +266,7 @@ export default function HomeDashboard() {
                       onClick={() => setFilter(id)}
                     >
                       {he ? heb : en}
-                      {filter === id && ` · ${filtered.length}`}
+                      {filter === id && <span className="world-tab-count">{filtered.length}</span>}
                     </button>
                   ))}
                 </div>

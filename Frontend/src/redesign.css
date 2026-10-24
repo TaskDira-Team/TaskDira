@@ -754,3 +754,546 @@
 :root .world-app .world-goal-card > * {
   flex-shrink: 0;
 }
+
+/* ---------- Phone polish: one-line labels, right-aligned title, 3-up shop ---------- */
+:root .world-app .reward-label-short {
+  display: none;
+}
+@media (max-width: 640px) {
+  :root .world-app .world-bottom-nav > button span {
+    white-space: nowrap;
+  }
+
+  /* Home heading: title on the right, tabs on one line */
+  :root .world-app .fw-heading {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 16px;
+  }
+  :root .world-app .fw-heading h1 {
+    text-align: start;
+  }
+  :root .world-app .fw-heading .fw-destinations {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1.3fr) minmax(0, 1fr);
+    gap: 8px;
+  }
+  :root .world-app .fw-heading > div,
+  :root .world-app .fw-heading .fw-destinations {
+    min-width: 0;
+    width: 100%;
+  }
+  :root .world-app .fw-destinations button {
+    white-space: nowrap;
+    min-width: 0;
+    overflow: hidden;
+    padding: 11px 4px;
+    font-size: 14px !important;
+    gap: 4px;
+  }
+  :root .world-app .fw-destinations button svg {
+    display: none;
+  }
+  :root .world-app .fw-room-picker {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    max-width: 100%;
+    min-width: 0;
+  }
+  :root .world-app .fw-room-picker > * {
+    flex-shrink: 0;
+  }
+  :root .world-app .fw-room-button {
+    white-space: nowrap;
+    flex-direction: row;
+    padding: 10px 14px;
+  }
+
+  /* Reward shop: compact banner, one-line tabs, three cards per row */
+  :root .world-app .shop-front {
+    padding: 18px;
+    border-radius: 26px;
+  }
+  :root .world-app .shop-front h1 {
+    font-size: 30px;
+    margin-bottom: 10px;
+  }
+  :root .world-app .shop-purse .shop-wallet-coin {
+    width: 52px;
+    height: 52px;
+  }
+  :root .world-app .shop-purse strong {
+    font-size: 34px;
+  }
+  :root .world-app .shop-window {
+    height: 130px;
+  }
+  :root .world-app .shop-shelf-heading h2 {
+    font-size: 24px;
+  }
+  :root .world-app .shop-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+  :root .world-app .shop-tabs {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+  }
+  :root .world-app .shop-tabs button {
+    white-space: nowrap;
+    flex-shrink: 0;
+    padding: 10px 14px;
+    font-size: 15px !important;
+  }
+  :root .world-app .community-rewards {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+  }
+  :root .world-app .treasure-shop .community-reward {
+    padding: 8px;
+    border-radius: 20px;
+    box-shadow: 0 4px 0 #e3ecf2;
+  }
+  :root .world-app .treasure-shop .community-reward-art {
+    height: 84px;
+    min-height: 84px;
+    border-radius: 14px;
+  }
+  :root .world-app .treasure-shop .community-reward-art .prize-miniature {
+    width: 76px;
+    height: 76px;
+  }
+  :root .world-app .treasure-shop .community-reward-art .prize-custom {
+    width: 60px;
+    height: 60px;
+    border-radius: 18px;
+  }
+  :root .world-app .treasure-shop .community-reward-art .prize-custom svg {
+    width: 34px;
+    height: 34px;
+  }
+  :root .world-app .treasure-shop .treasure-status {
+    top: 4px;
+    inset-inline-end: 4px;
+    padding: 2px 6px;
+    gap: 3px;
+    font-size: 14px !important;
+  }
+  :root .world-app .treasure-shop .treasure-status svg {
+    width: 12px;
+    height: 12px;
+  }
+  :root .world-app .treasure-shop .community-reward-body {
+    padding-top: 8px;
+    gap: 6px;
+  }
+  :root .world-app .treasure-shop .community-reward-body h2 {
+    font-size: 16px;
+    line-height: 1.2;
+    min-height: 2.4em;
+  }
+  :root .world-app .treasure-shop .community-reward-body p {
+    display: none;
+  }
+  :root .world-app .treasure-shop .community-price,
+  :root[dir] .world-app .treasure-shop .community-price {
+    padding: 3px 8px;
+    gap: 4px;
+    font-size: 14px !important;
+  }
+  :root .world-app .treasure-shop .community-price svg {
+    width: 13px;
+    height: 13px;
+  }
+  :root .world-app .treasure-shop .community-reward-action {
+    min-height: 38px;
+    padding: 6px 4px;
+    font-size: 14px !important;
+    border-radius: 12px;
+  }
+  :root .world-app .reward-label-full {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+  }
+  :root .world-app .reward-label-short {
+    display: inline;
+  }
+  :root .world-app .reward-admin-tools summary {
+    padding: 0;
+  }
+}
+
+@media (max-width: 640px) {
+  :root .world-app .reward-price-word,
+  :root .world-app .reward-lock-word {
+    display: none;
+  }
+  :root .world-app .treasure-shop .community-price {
+    white-space: nowrap;
+  }
+  :root .world-app .treasure-shop .treasure-status {
+    white-space: nowrap;
+  }
+  :root .world-app .shop-window {
+    height: 150px;
+    overflow: visible;
+  }
+  :root .world-app .shop-window-toy {
+    scale: 0.72;
+    transform-origin: bottom center;
+  }
+}
+@media (max-width: 640px) {
+  :root .world-app .family-world,
+  :root .world-app .fw-scene,
+  :root .world-app .fw-scene-actions {
+    min-width: 0;
+    max-width: 100%;
+  }
+  :root .world-app .fw-scene-actions {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+  }
+}
+
+/* ---------- Phone: today's missions as a 3-up grid, like the shop ---------- */
+@media (max-width: 640px) {
+  :root .world-app .fw-missions .fw-section-heading {
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+  :root .world-app .fw-missions .fw-section-heading h2 {
+    font-size: 26px;
+    margin: 0;
+  }
+  :root .world-app .fw-missions .fw-quiet {
+    flex-shrink: 0;
+    padding: 9px 12px;
+    font-size: 14px;
+  }
+  :root .world-app .fw-mission-choices,
+  :root .world-app .fw-one-mission {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    padding: 4px 0;
+  }
+  :root .world-app .fw-mission {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 8px;
+    text-align: center;
+    border-radius: 20px;
+    box-shadow: 0 4px 0 #e3ecf2;
+  }
+  :root .world-app .fw-mission-art,
+  :root .world-app .fw-mission-1 .fw-mission-art,
+  :root .world-app .fw-mission-2 .fw-mission-art {
+    width: 58px;
+    height: 58px;
+    border-radius: 18px;
+  }
+  :root .world-app .fw-mission-art svg {
+    width: 30px;
+    height: 30px;
+  }
+  :root .world-app .fw-mission-copy {
+    align-items: center;
+    gap: 6px;
+    width: 100%;
+  }
+  :root .world-app .fw-mission-copy > strong {
+    font-size: 16px;
+    line-height: 1.2;
+    min-height: 3.6em;
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+  :root .world-app .fw-mission-reward {
+    font-size: 14px !important;
+    gap: 4px;
+    white-space: nowrap;
+  }
+  :root .world-app .fw-mission-reward svg {
+    width: 13px;
+    height: 13px;
+  }
+  :root .world-app .fw-mission-go {
+    width: 100%;
+    margin-top: auto;
+    padding: 8px 4px;
+    font-size: 14px;
+    border-radius: 12px;
+    white-space: nowrap;
+  }
+  :root .world-app .fw-mission-go svg {
+    display: none;
+  }
+}
+
+/* ---------- Phone: quest road as a 2-up grid ---------- */
+@media (max-width: 640px) {
+  :root .world-app .quest-path {
+    display: grid !important;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+  }
+  :root .world-app .quest-stop,
+  :root .world-app[dir="rtl"] .quest-stop,
+  :root .world-app .quest-stop.is-far {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    background: #ffffff;
+    border-radius: 22px;
+    padding: 12px;
+    box-shadow: 0 4px 0 #e3ecf2;
+    min-width: 0;
+  }
+  :root .world-app .quest-checkpoint {
+    width: 52px;
+    height: 52px;
+    align-self: flex-start;
+    margin-bottom: 8px;
+    box-shadow: 0 4px 0 #27936f;
+  }
+  :root .world-app .quest-checkpoint > svg {
+    width: 26px;
+    height: 26px;
+  }
+  :root .world-app .checkpoint-number {
+    width: 22px;
+    height: 22px;
+    font-size: 14px !important;
+  }
+  :root .world-app .quest-stop-card {
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+    gap: 4px;
+    flex: 1;
+  }
+  :root .world-app .checkpoint-title {
+    font-size: 17px !important;
+    line-height: 1.25;
+    -webkit-line-clamp: 2;
+  }
+  :root .world-app .quest-stop-meta {
+    font-size: 14px;
+  }
+  :root .world-app .checkpoint-prize,
+  :root .world-app .checkpoint-earned {
+    align-self: stretch;
+    margin-top: auto;
+    padding-top: 6px;
+  }
+}
+
+/* ---------- Phone: tasks tabs on one row ---------- */
+@media (max-width: 640px) {
+  :root .world-app .quest-tools .world-tabs {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 6px;
+    width: 100%;
+  }
+  :root .world-app .quest-tools .world-tabs > button {
+    min-width: 0;
+    padding: 10px 4px;
+    white-space: nowrap;
+    font-size: 15px;
+  }
+}
+
+/* ---------- Phone menu: everything fits, no scroll ---------- */
+@media (max-width: 1100px) {
+  :root .world-app .world-sidebar.is-open {
+    height: 100dvh;
+    max-height: 100dvh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    gap: clamp(4px, 1.2dvh, 12px);
+    padding-block: clamp(10px, 2dvh, 20px);
+  }
+  :root .world-app .world-sidebar.is-open > * { flex-shrink: 0; margin-block: 0; }
+  :root .world-app .world-sidebar.is-open .world-household-selector { padding-block: 8px; }
+  :root .world-app .world-sidebar.is-open .world-nav { gap: clamp(2px, 0.6dvh, 8px); }
+  :root .world-app .world-sidebar.is-open .world-nav > button {
+    min-height: 0;
+    padding-block: clamp(4px, 0.9dvh, 10px);
+  }
+  :root .world-app .world-sidebar.is-open .world-nav-tile { width: 38px; height: 38px; }
+  :root .world-app .world-sidebar.is-open .world-goal-card {
+    flex-shrink: 1;
+    min-height: 0;
+    padding: 10px 14px;
+    gap: 6px;
+  }
+  :root .world-app .world-sidebar.is-open .world-goal-card img { display: none; }
+  :root .world-app .world-sidebar.is-open .world-sidebar-bottom {
+    margin-top: auto;
+    padding-top: 8px;
+    gap: 4px;
+  }
+  :root .world-app .world-sidebar.is-open .world-logout { padding-block: 6px; }
+}
+
+/* ---------- Phone: tasks header + segmented tabs ---------- */
+@media (max-width: 640px) {
+  :root .world-app .world-page-heading {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  :root .world-app .world-page-heading h1 { font-size: 30px; line-height: 1.15; }
+  :root .world-app .world-page-heading .world-button {
+    padding: 12px 16px;
+    font-size: 16px;
+    font-weight: 900;
+    white-space: nowrap;
+    border-radius: 18px;
+  }
+  :root .world-app .quest-tools .world-tabs {
+    background: #ffffff;
+    padding: 5px;
+    border-radius: 20px;
+    box-shadow: 0 3px 0 #e3ecf2;
+    gap: 4px;
+  }
+  :root .world-app .quest-tools .world-tabs > button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    background: transparent;
+    box-shadow: none;
+    border: 0;
+    border-radius: 15px;
+    padding: 11px 4px;
+    font-size: 16px;
+    font-weight: 800;
+    color: #4b5d6b;
+  }
+  :root .world-app .quest-tools .world-tabs > button[aria-pressed="true"] {
+    background: #087963;
+    color: #ffffff;
+  }
+  :root .world-app .world-tab-count {
+    background: rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    padding: 1px 7px;
+    font-size: 14px;
+  }
+}
+
+/* ---------- Toasts: a small centered card on every screen ---------- */
+  :root .world-app .world-toast-region {
+    inset: 0;
+    width: auto;
+    display: grid;
+    place-items: center;
+    pointer-events: none;
+    padding: 24px;
+  }
+  :root .world-app .world-toast-region > div {
+    position: static;
+    width: min(290px, 100%);
+    align-items: stretch;
+  }
+  :root .world-app .td-toast {
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 22px 20px 20px;
+    border-radius: 28px;
+    border: 3px solid #bfe8d6;
+    background: #ffffff;
+    box-shadow: 0 8px 0 #d4efe3, 0 24px 50px rgba(15, 40, 60, 0.22);
+    text-align: center;
+    cursor: pointer;
+    animation: td-toast-pop 0.32s cubic-bezier(0.2, 1.4, 0.4, 1);
+  }
+  :root .world-app .td-toast-warning { border-color: #f7dc9a; box-shadow: 0 8px 0 #f8e9c4, 0 24px 50px rgba(15, 40, 60, 0.22); }
+  :root .world-app .td-toast-info { border-color: #bcdcf5; box-shadow: 0 8px 0 #dbeaf7, 0 24px 50px rgba(15, 40, 60, 0.22); }
+  :root .world-app .td-toast-emoji { font-size: 46px; line-height: 1; }
+  :root .world-app .td-toast-icon { width: 40px; height: 40px; margin: 0; }
+  :root .world-app .td-toast-emoji + .td-toast-icon { display: none; }
+  :root .world-app .td-toast-text {
+    white-space: normal;
+    overflow: visible;
+    font-size: 18px !important;
+    font-weight: 800;
+    line-height: 1.35;
+    color: #17324a;
+  }
+  :root .world-app .td-toast-x { display: none; }
+@keyframes td-toast-pop {
+  from { transform: scale(0.6); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+
+/* active tasks tab gets a little more room for its count */
+@media (max-width: 640px) {
+  :root .world-app .quest-tools .world-tabs { grid-template-columns: 1.45fr 1fr 1fr 1fr; }
+  :root .world-app .world-tab-count { padding: 0 6px; }
+}
+
+/* tab count badge (all sizes) */
+:root .world-app .world-tab-count {
+  display: inline-grid;
+  place-items: center;
+  min-width: 26px;
+  margin-inline-start: 8px;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(8, 121, 99, 0.14);
+  font-size: 14px;
+}
+@media (max-width: 640px) {
+  :root .world-app .world-tab-count { margin-inline-start: 0; padding: 0 6px; background: rgba(255, 255, 255, 0.25); }
+}
+
+/* "הנבחרת שלנו גדלה" dialog tabs: readable */
+.family-flow .family-tabs > button {
+  font-size: 16px !important;
+  font-weight: 800;
+  padding: 10px 14px;
+}
+.family-flow .family-tabs > button svg { width: 20px; height: 20px; }
+
+/* Join / invite pages: same bright green button as the app */
+.family-entry .world-kit-primary {
+  width: 100%;
+  min-height: 54px;
+  background: #87d953;
+  color: #285018;
+  border: 2px solid #74c442;
+  border-radius: 16px;
+  box-shadow: 0 5px 0 #4d982d;
+  font-size: 17px;
+  font-weight: 900;
+}
+.family-entry .world-kit-primary:hover:not(:disabled) { background: #93e05f; }
+.family-entry .world-kit-primary:active:not(:disabled) { transform: translateY(3px); box-shadow: 0 2px 0 #4d982d; }
+.family-entry .world-kit-primary > span {
+  display: inline-flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  white-space: nowrap;
+}
