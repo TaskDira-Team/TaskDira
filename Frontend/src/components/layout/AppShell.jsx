@@ -4,7 +4,6 @@ import {
   Home,
   LayoutDashboard,
   ListTodo,
-  ChartNoAxesCombined,
   Trophy,
   Gift,
   Medal,
@@ -35,7 +34,6 @@ import "../../play-controls.css";
 const items = [
   ["/", LayoutDashboard, "Play home", "מבט על הבית"],
   ["/tasks", ListTodo, "Quest road", "המשימות שלנו"],
-  ["/insights", ChartNoAxesCombined, "Power stats", "ההתקדמות שלנו"],
   ["/rewards", Gift, "Reward shop", "חנות הפרסים"],
   ["/leaderboard", Trophy, "Team stars", "לוח המנצחים"],
   ["/achievements", Medal, "Badge trail", "ההישגים שלנו"],
@@ -58,6 +56,7 @@ export default function AppShell({ children }) {
     dismissToast,
     xpBursts,
     dismissXpBurst,
+    monthlyXp,
   } = useApp();
   const [playersOpen, setPlayersOpen] = useState(false);
   const [menu, setMenu] = useState(false);
@@ -80,6 +79,8 @@ export default function AppShell({ children }) {
       ]
     : items;
   const me = users.find((u) => u.id === user?.id) || user;
+  const goal = household?.monthlyGoalPoints || 400;
+  const goalPct = Math.min(100, Math.round(((monthlyXp ?? 0) / goal) * 100));
   const active = path.startsWith("/adventures")
     ? ["/adventures", Home, "Our adventures", "ההרפתקאות שלנו"]
     : navItems.find((item) => item[0] === path);
@@ -158,7 +159,7 @@ export default function AppShell({ children }) {
                 (he ? "הבית שלנו" : "Our little home")}
             </strong>
             <small>
-              {users.length} {he ? "אנשים, קבוצה אחת" : "people, one team"}
+              {users.length} {he ? "אנשים בבית" : "people at home"}
             </small>
           </span>
           <ChevronRight size={16} className="direction-arrow" />
@@ -173,19 +174,38 @@ export default function AppShell({ children }) {
               onClick={() => go(href)}
               aria-current={path === href ? "page" : undefined}
             >
-              <Icon size={20} strokeWidth={1.8} />
+              <span className="world-nav-tile" aria-hidden="true">
+                <Icon size={21} strokeWidth={2.2} />
+              </span>
               <span>{he ? heb : en}</span>
-              {path === href && <span className="world-active-dot" />}
             </button>
           ))}
         </nav>
-        <div className="world-sidebar-note">
-          <img src="/images/dira-mascot.png" alt="" />
-          <strong>{he ? "בית טוב, ביחד." : "You’ve got this!"}</strong>
-          <p>
-            {he ? "כל משימה קטנה עושה הבדל." : "Tiny chores. Giant adventures."}
-          </p>
-        </div>
+        {!user?.isManagedProfile && (
+          <div className="world-sidebar-note world-goal-card">
+            <img src="/images/dira-mascot.png" alt="" />
+            <strong>
+              {he ? "יעד " : "Goal for "}
+              {new Date().toLocaleDateString(he ? "he-IL" : "en-US", {
+                month: "long",
+              })}
+            </strong>
+            <span
+              className="world-goal-bar"
+              role="progressbar"
+              aria-valuemin={0}
+              aria-valuemax={100}
+              aria-valuenow={goalPct}
+              aria-label={he ? "יעד החודש של הבית" : "Household goal this month"}
+            >
+              <span style={{ width: `${goalPct}%` }} />
+            </span>
+            <span className="world-goal-text">
+              {(monthlyXp ?? 0).toLocaleString()} {he ? "מתוך" : "of"}{" "}
+              {goal.toLocaleString()} XP
+            </span>
+          </div>
+        )}
         <div className="world-sidebar-bottom">
           <button
             className="world-profile-link"

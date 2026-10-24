@@ -148,24 +148,6 @@ export default function Achievements() {
           {en ? "milestones reached" : "אבני דרך שהושגו"}
         </span>
       </header>
-      <section
-        className="community-feature"
-        style={{ background: "var(--community-lilac)" }}
-      >
-        <div>
-          <h2>{en ? "Ready, set… collect!" : "למקומות, היכון… אוספים!"}</h2>
-          <p style={{ color: "#55436c" }}>
-            {en
-              ? "Hop along your trail! Any win can be next."
-              : "קופצים במסלול! כל הצלחה יכולה להיות הבאה."}
-          </p>
-        </div>
-        <Award
-          className="community-feature-icon"
-          style={{ color: "#7560a6" }}
-          aria-hidden="true"
-        />
-      </section>
       <div
         className="community-filters"
         aria-label={en ? "Filter milestones" : "סינון אבני דרך"}

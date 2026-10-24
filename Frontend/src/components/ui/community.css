@@ -469,9 +469,13 @@
 .community-leaderboard-world > aside {
   grid-row: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: minmax(0, 620px);
+  justify-content: center;
   align-items: center;
   gap: 28px;
+}
+.community-leaderboard-world > aside .community-section-title {
+  justify-content: center;
 }
 .community-leaderboard-world > section {
   grid-row: 2;

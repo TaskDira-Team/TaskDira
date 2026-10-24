@@ -1,4 +1,4 @@
-import { Star, Check, Heart, Sparkles } from "lucide-react";
+import { Star, Heart, Sparkles } from "lucide-react";
 import useVisibleMotion from "../../hooks/useVisibleMotion";
 
 export default function AuthCompanion({
@@ -110,42 +110,6 @@ export default function AuthCompanion({
               : say("ניצחונות ענקיים!", "GIANT high fives!")}
           </span>
         </h2>
-        <div
-          className="auth-pal-progress"
-          aria-label={say("התקדמות", "Your progress")}
-        >
-          {(signup
-            ? [
-                say("הגיבור", "Your hero"),
-                say("הבית", "Your home"),
-                say("הלוק", "Your look"),
-              ]
-            : [
-                say("אימייל מוכן", "Email ready"),
-                say("סיסמה הוזנה", "Password entered"),
-              ]
-          ).map((label, index) => {
-            const done = signup
-              ? index < journey.step
-              : index === 0
-                ? emailReady
-                : passwordReady;
-            return (
-              <span
-                key={label}
-                className={
-                  done
-                    ? "is-done"
-                    : signup && index === journey.step
-                      ? "is-current"
-                      : ""
-                }
-              >
-                {done ? <Check size={15} /> : <Star size={15} />} {label}
-              </span>
-            );
-          })}
-        </div>
       </div>
     </div>
   );

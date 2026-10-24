@@ -244,12 +244,6 @@ function Adventure({ onOpen, onNew }) {
               aria-hidden="true"
             />
           )}
-          <span className="adventure-art-stamp">
-            <Moon size={17} />
-            {he
-              ? "נבנה ביחד, משימה אחרי משימה"
-              : "Built together, one little mission at a time"}
-          </span>
         </div>
       </section>
       {setup ? (

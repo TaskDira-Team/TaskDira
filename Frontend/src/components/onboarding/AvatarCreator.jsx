@@ -168,11 +168,6 @@ export default function AvatarCreator({
       <div className="avatar-creator-preview flex flex-col items-center gap-2 py-4">
         <AvatarFrame avatar={preview} size="xl" showGlow />
         <p className={at.badgeLabel}>{t(preview.profileBadgeKey)}</p>
-        <p className={at.hint}>
-          {t(preview.iconLabelKey)} · {t("avatar.ring")}:{" "}
-          {t(preview.ringLabelKey)}
-          {preview.isAnimated && ` · 🎬 ${t("avatar.animated")}`}
-        </p>
       </div>
 
       {compact && (

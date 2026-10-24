@@ -2,7 +2,6 @@ import { useState } from "react";
 import {
   Star,
   Check,
-  Flag,
   Sparkles,
   ArrowUpRight,
   Loader2,
@@ -26,28 +25,25 @@ export default function QuestPath({
   getPermissions,
   busy,
   preview = false,
+  nameOf = () => "",
 }) {
   const [limit, setLimit] = useState(8);
   const visible = tasks.slice(0, preview ? 5 : limit);
-  const xs = [200, 270, 225, 130, 175, 270, 225, 135];
-  const height = Math.max(170, visible.length * 178);
-  const points = visible.map((_, i) => [xs[i % xs.length], 48 + i * 178]);
+  const step = 140;
+  const height = Math.max(150, visible.length * step);
+  // Stops alternate between the two edges; cards point inward. The road is
+  // drawn left-to-right and mirrored by CSS in right-to-left layouts.
+  const edge = (i) => (i % 2 === 0 ? 22 : 378);
+  const points = visible.map((_, i) => [edge(i), 46 + i * step]);
   const line = points
     .map(([x, y], i) =>
       i
-        ? `C ${points[i - 1][0]} ${y - 98}, ${x} ${y - 80}, ${x} ${y}`
+        ? `C ${points[i - 1][0]} ${y - 70}, ${x} ${y - 70}, ${x} ${y}`
         : `M ${x} ${y}`,
     )
     .join(" ");
   return (
     <div className="quest-adventure">
-      <div className="quest-path-intro">
-        <Flag size={20} />
-        <span>
-          {he ? "בוחרים משימה ויוצאים לדרך" : "Pick a stop. Play at your pace."}
-        </span>
-        <Star size={20} fill="currentColor" />
-      </div>
       <div className="quest-path" style={{ height }}>
         <svg
           className="quest-path-road"
@@ -58,16 +54,16 @@ export default function QuestPath({
           <path
             d={line}
             fill="none"
-            stroke="#e5dfc6"
-            strokeWidth="19"
+            stroke="#d9e6ee"
+            strokeWidth="26"
             strokeLinecap="round"
           />
           <path
             d={line}
             fill="none"
-            stroke="#fffdf3"
-            strokeWidth="4"
-            strokeDasharray="2 12"
+            stroke="#ffffff"
+            strokeWidth="5"
+            strokeDasharray="10 14"
             strokeLinecap="round"
           />
         </svg>
@@ -89,12 +85,9 @@ export default function QuestPath({
             !done && (pending ? permissions.canApprove : permissions.canMove);
           return (
             <div
-              className={`quest-stop stop-${i % 4} ${done ? "is-complete" : ""}`}
+              className={`quest-stop stop-${i % 4} ${i % 2 ? "is-far" : ""} ${done ? "is-complete" : ""}`}
               key={task.id}
-              style={{
-                top: `${i * 178}px`,
-                insetInlineStart: `${xs[i % xs.length] / 4}%`,
-              }}
+              style={{ top: `${i * step}px` }}
             >
               <button
                 className="quest-checkpoint"
@@ -111,9 +104,15 @@ export default function QuestPath({
                 )}
                 <span className="checkpoint-number">{i + 1}</span>
               </button>
+              <div className="quest-stop-card">
               <button className="checkpoint-title" onClick={() => onOpen(task)}>
                 {tx(task.title)}
               </button>
+              <span className="quest-stop-meta">
+                <b>+{taskPoints(task)} XP</b>
+                {nameOf(task) && ` · ${nameOf(task)}`}
+                {task.status === "InProgress" && ` · ${he ? "בביצוע" : "In progress"}`}
+              </span>
               {done ? (
                 <span className="checkpoint-earned">
                   <Check size={12} />
@@ -140,23 +139,12 @@ export default function QuestPath({
                     : he
                       ? "סיימתי!"
                       : "I did it!"}
-                  <b>+{taskPoints(task)} XP</b>
                 </button>
               )}
+              </div>
             </div>
           );
         })}
-        <span className="trail-spark trail-spark-one" aria-hidden="true">
-          ✦
-        </span>
-        {visible.length > 3 && (
-          <span className="trail-spark trail-spark-two" aria-hidden="true">
-            ✿
-          </span>
-        )}
-        <span className="trail-spark trail-spark-three" aria-hidden="true">
-          ✦
-        </span>
       </div>
       {!preview && tasks.length > limit && (
         <button

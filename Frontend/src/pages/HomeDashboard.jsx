@@ -18,7 +18,6 @@ import { useAuth } from "../context/AuthContext";
 import { useApp } from "../context/AppContext";
 import { useRoute } from "../context/RouteContext";
 import useSavedChores from "../hooks/useSavedChores";
-import { AdventureInvitation } from "../components/world/PlayBits";
 import FamilyWorld from "../components/world/FamilyWorld";
 import QuestPath from "../components/board/QuestPath";
 import RoomPicker from "../components/board/RoomPicker";
@@ -226,11 +225,6 @@ export default function HomeDashboard() {
           <div className="world-page-heading">
             <div>
               <h1>{he ? "בוחרים משימה" : "Pick your next mission"}</h1>
-              <p>
-                {he
-                  ? "כל מה שהבית צריך, במקום אחד."
-                  : "Take any path. Every mission can be played in any order."}
-              </p>
             </div>
             {permissions.canCreateTask && (
               <button className="world-button" onClick={() => setEditor(null)}>
@@ -239,9 +233,9 @@ export default function HomeDashboard() {
               </button>
             )}
           </div>
-          <AdventureInvitation />
           <div className="quests-full">
             <section className="world-panel quest-panel">
+              {!tasksPage && (
               <div className="world-section-heading">
                 <h2>
                   {tasksPage
@@ -254,6 +248,7 @@ export default function HomeDashboard() {
                 </h2>
                 <span className="world-count">{filtered.length}</span>
               </div>
+              )}
               <div className="quest-tools">
                 <div
                   className="world-tabs"
@@ -271,6 +266,7 @@ export default function HomeDashboard() {
                       onClick={() => setFilter(id)}
                     >
                       {he ? heb : en}
+                      {filter === id && ` · ${filtered.length}`}
                     </button>
                   ))}
                 </div>
@@ -328,6 +324,12 @@ export default function HomeDashboard() {
                     getPermissions={getTaskPermissions}
                     busy={busy}
                     preview={!tasksPage}
+                    nameOf={(task) => {
+                      const person = users.find(
+                        (u) => u.id === (task.assignedUserId ?? task.assigneeId),
+                      );
+                      return (person?.fullName || person?.name || "").split(" ")[0];
+                    }}
                   />
                 ) : view === "list" ? (
                   filtered.map(taskRow)

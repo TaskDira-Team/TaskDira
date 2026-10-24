@@ -134,17 +134,6 @@ export default function AuthRoute() {
                   : say("אלופי הבית!", "home heroes!")}
               </span>
             </h1>
-            <p className="td-auth-intro">
-              {signup
-                ? say(
-                    "שלוש תחנות קטנות בדרך להרפתקה הראשונה שלכם.",
-                    "Three little checkpoints. One big adventure ahead.",
-                  )
-                : say(
-                    "עוד משימה קטנה, עוד ניצחון גדול. נכנסים וממשיכים לשחק!",
-                    "Another little quest. Another BIG win. Hop in and keep the adventure going!",
-                  )}
-            </p>
             <div
               className="td-auth-tabs"
               aria-label={say("כניסה או הרשמה", "Login or sign up")}

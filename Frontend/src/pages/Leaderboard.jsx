@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Crown, Flame, HeartHandshake, Trophy, Users } from "lucide-react";
+import { Crown, Flame, Trophy, Users } from "lucide-react";
 import { useI18n } from "../context/I18nContext";
 import { useAuth } from "../context/AuthContext";
 import { useApp } from "../context/AppContext";
@@ -36,8 +36,6 @@ export default function Leaderboard() {
     }));
   }, [leaderboard, users, tasks, user?.id]);
   const max = players[0]?.xp || 1;
-  const total = players.reduce((sum, p) => sum + p.xp, 0);
-  const myRank = players.find((p) => p.you)?.rank;
   const podium = players.length >= 3 && players[0].xp > 0;
   return (
     <ScreenShell
@@ -45,19 +43,8 @@ export default function Leaderboard() {
       width="max-w-7xl"
       className="community-page stars-page"
     >
-      <header className="community-heading">
-        <div>
-          <h1>{en ? "Meet the home heroes!" : "קבלו את גיבורי הבית!"}</h1>
-          <p>
-            {en
-              ? "A little friendly competition. A whole lot of care for the place you share."
-              : "קצת תחרות ידידותית. המון אכפתיות למקום שכולכם קוראים לו בית."}
-          </p>
-        </div>
-        <span className="community-chip">
-          <Users size={16} />
-          {players.length} {en ? "housemates" : "חברי בית"}
-        </span>
+      <header className="community-heading stars-heading">
+        <h1>{en ? "Meet the home heroes!" : "קבלו את גיבורי הבית!"}</h1>
       </header>
       <div className="community-split community-leaderboard-world">
         <section>
@@ -125,32 +112,8 @@ export default function Leaderboard() {
           </p>
         </section>
         <aside>
-          <section
-            className="community-team-cheer"
-            style={{ background: "var(--community-gold)" }}
-          >
-            <HeartHandshake
-              size={34}
-              className="mb-4 text-gold"
-              aria-hidden="true"
-            />
-            <h2 className="text-2xl font-extrabold">
-              {en ? "Teamwork makes the dream work!" : "ביחד אנחנו צוות מנצח!"}
-            </h2>
-            <p className="mt-3 text-sm leading-relaxed text-ink-dim">
-              {en
-                ? "Together, your household has earned"
-                : "יחד, הבית שלכם צבר"}{" "}
-              <strong className="text-ink">{total.toLocaleString()} XP.</strong>
-            </p>
-            {myRank && (
-              <p className="mt-4 text-sm font-bold">
-                {en ? "Your current place" : "המקום הנוכחי שלכם"} · #{myRank}
-              </p>
-            )}
-          </section>
           {podium && (
-            <section className="mt-7">
+            <section>
               <h2 className="community-section-title flex items-center gap-2">
                 <Trophy size={21} />
                 {en ? "The home team" : "נבחרת הבית"}

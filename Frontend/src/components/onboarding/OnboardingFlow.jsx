@@ -142,7 +142,6 @@ export default function OnboardingFlow({
         {showBrand && (
           <div className="text-center mb-6 lg:hidden">
             <h1 className={th.brandTitle}>{t("brandName")}</h1>
-            <p className={th.brandHint}>{t("onboard.tagline")}</p>
           </div>
         )}
 
@@ -186,7 +185,6 @@ export default function OnboardingFlow({
           {step === 0 && (
             <div className="go-fields space-y-4">
               <h2 className={th.heading}>{t("onboard.profileTitle")}</h2>
-              <p className={th.hint}>{t("onboard.profileHint")}</p>
 
               <div>
                 <label htmlFor="onboard-full-name" className={th.label}>
@@ -270,7 +268,6 @@ export default function OnboardingFlow({
           {step === 1 && (
             <div className="go-fields space-y-4">
               <h2 className={th.heading}>{t("onboard.householdTitle")}</h2>
-              <p className={th.hint}>{t("onboard.householdHint")}</p>
 
               <div>
                 <label htmlFor="onboard-household" className={th.label}>
@@ -317,7 +314,6 @@ export default function OnboardingFlow({
           {step === 2 && (
             <div className="space-y-2">
               <h2 className={th.heading}>{t("onboard.avatarTitle")}</h2>
-              <p className={th.hint}>{t("onboard.avatarHint")}</p>
               <AvatarCreator
                 compact={compact}
                 config={form.avatarConfig}

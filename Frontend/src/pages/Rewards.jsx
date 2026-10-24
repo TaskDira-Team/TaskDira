@@ -42,7 +42,9 @@ function RewardCard({
   const { ref, running } = useVisibleMotion();
   const xpGap = Math.max(0, reward.requiredPoints - xp);
   const shortBy = Math.max(0, reward.cost - balance);
-  const affordable = reward.unlocked && reward.affordable && shortBy === 0;
+  // Use the live balance; reward.affordable is computed when rewards load and
+  // goes stale as soon as coins are earned or spent.
+  const affordable = reward.unlocked && shortBy === 0;
   return (
     <article
       ref={ref}
@@ -58,20 +60,25 @@ function RewardCard({
     >
       <div className="community-reward-art">
         <PrizeArt reward={reward} />
-        <div className="community-price">
-          <Coins size={16} aria-hidden="true" />
-          {reward.cost.toLocaleString()}
-        </div>
+        {!reward.claimed && !reward.unlocked && (
+          <div
+            className="treasure-status"
+            title={`${xpGap.toLocaleString()} XP ${en ? "to go" : "לפתיחה"}`}
+          >
+            <LockKeyhole size={15} aria-hidden="true" />
+            {en
+              ? `Unlocks at ${reward.requiredPoints} XP`
+              : `נפתח ב-${reward.requiredPoints} XP`}
+          </div>
+        )}
       </div>
       <div className="community-reward-body">
         <h2>{tx(reward.title)}</h2>
         <p>{tx(reward.description)}</p>
-        {!reward.claimed && !reward.unlocked && (
-          <div className="treasure-status">
-            <LockKeyhole size={15} aria-hidden="true" />
-            {xpGap.toLocaleString()} XP {en ? "to unlock" : "לפתיחה"}
-          </div>
-        )}
+        <div className="community-price">
+          <Coins size={16} aria-hidden="true" />
+          {reward.cost.toLocaleString()} {en ? "coins" : "מטבעות"}
+        </div>
         {reward.claimed ? (
           <div className="community-chip justify-center py-3">
             <Check size={18} aria-hidden="true" />
@@ -96,7 +103,9 @@ function RewardCard({
                   : "ממשיכים לצבור XP"
                 : affordable
                   ? `${en ? "Get for" : "מימוש תמורת"} ${reward.cost} ${en ? "coins" : "מטבעות"}`
-                  : `${shortBy.toLocaleString()} ${en ? "more coins needed" : "מטבעות נוספים נדרשים"}`}
+                  : en
+                    ? `${shortBy.toLocaleString()} more coins`
+                    : `עוד ${shortBy.toLocaleString()} מטבעות`}
           </button>
         )}
         {isAdmin && (
@@ -213,12 +222,13 @@ export default function Rewards() {
     }
   };
 
+  const canAfford = (reward) => balance >= reward.cost;
   const matches = (reward, value) =>
     value === "all" ||
     (value === "ready"
-      ? !reward.claimed && reward.unlocked && reward.affordable
+      ? !reward.claimed && reward.unlocked && canAfford(reward)
       : value === "saving"
-        ? !reward.claimed && (!reward.unlocked || !reward.affordable)
+        ? !reward.claimed && (!reward.unlocked || !canAfford(reward))
         : reward.claimed);
   const visible = rewards.filter(
     (r) =>
@@ -245,11 +255,6 @@ export default function Rewards() {
           <h1>
             {en ? "Little shop. Big smiles." : "חנות קטנה. חיוכים גדולים."}
           </h1>
-          <p>
-            {en
-              ? "You helped your home. Now pick a little happy."
-              : "עזרתם לבית. עכשיו בוחרים משהו משמח."}
-          </p>
           <div
             className="shop-purse"
             aria-label={en ? "Your wallet" : "הארנק שלכם"}
@@ -258,14 +263,8 @@ export default function Rewards() {
               <Star size={27} fill="currentColor" />
             </span>
             <div>
-              <strong>
-                {balance.toLocaleString()}{" "}
-                <small>{en ? "coins to spend" : "מטבעות למימוש"}</small>
-              </strong>
-              <p>
-                {xp.toLocaleString()} XP ·{" "}
-                {en ? "Your XP is yours to keep." : "הניסיון נשאר שלכם."}
-              </p>
+              <strong>{balance.toLocaleString()}</strong>
+              <small>{en ? "coins to spend" : "מטבעות למימוש"}</small>
             </div>
           </div>
         </div>
@@ -278,16 +277,11 @@ export default function Rewards() {
           <span className="shop-window-shelf" />
         </div>
       </header>
-      <RewardTickets />
       <div className="shop-shelf-heading">
         <div>
           <h2>
             {en ? "Pick your next happy moment" : "בוחרים את הרגע המשמח הבא"}
           </h2>
-          <p>
-            {rewards.filter((r) => matches(r, "ready")).length}{" "}
-            {en ? "treasures ready for your coins" : "אוצרות שאפשר לממש עכשיו"}
-          </p>
         </div>
         {isAdmin && (
           <button className="shop-add" onClick={handleCreate}>
@@ -309,7 +303,8 @@ export default function Rewards() {
               onClick={() => setFilter(id)}
             >
               {en ? english : hebrew}
-              <span>{rewards.filter((r) => matches(r, id)).length}</span>
+              {" · "}
+              {rewards.filter((r) => matches(r, id)).length}
             </button>
           ))}
         </div>
@@ -381,6 +376,8 @@ export default function Rewards() {
           </button>
         </div>
       )}
+
+      <RewardTickets />
 
       <RewardFormDialog
         open={formOpen}

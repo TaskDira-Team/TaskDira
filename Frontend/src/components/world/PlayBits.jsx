@@ -1,10 +1,8 @@
-import { ArrowRight, Check, HandHeart, Rocket, RotateCcw } from "lucide-react";
+import { Check, HandHeart, RotateCcw } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { useI18n } from "../../context/I18nContext";
 import { usePlay } from "../../context/PlayContext";
-import { useRoute } from "../../context/RouteContext";
 import {
-  ADVENTURES,
   HELP_KINDS,
   HELP_REPLIES,
   owner,
@@ -28,44 +26,6 @@ export function PlayNotice() {
       {lang === "he" ? "פותחים את ההרפתקה…" : "Opening your adventure…"}
     </p>
   ) : null;
-}
-export function AdventureInvitation() {
-  const { state } = usePlay();
-  const { lang } = useI18n();
-  const { navigate } = useRoute();
-  const he = lang === "he";
-  const adventure = state?.adventures.findLast((a) => !a.archived);
-  const theme =
-    ADVENTURES.find((a) => a.id === adventure?.theme) || ADVENTURES[0];
-  return (
-    <button
-      className="adventure-invitation"
-      onClick={() => navigate("/adventures")}
-    >
-      <span className="invitation-moon">
-        <Rocket size={28} />
-      </span>
-      <span>
-        <strong>
-          {adventure
-            ? he
-              ? theme.he
-              : theme.en
-            : he
-              ? "ההרפתקה המשפחתית הבאה"
-              : "Your next family adventure"}
-        </strong>
-        <small>
-          {adventure
-            ? `${adventure.missions.filter((m) => m.done).length}/${adventure.missions.length} ${he ? "משימות · כולנו באותו צוות" : "missions · all on the same team"}`
-            : he
-              ? "החדר שלי, בחירות השבוע ועזרה כשצריך"
-              : "My room, weekly picks, and a hand when you need one"}
-        </small>
-      </span>
-      <ArrowRight size={22} />
-    </button>
-  );
 }
 export function MissionHelp({ task, step = 0 }) {
   const { state, busy, change, error } = usePlay();

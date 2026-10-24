@@ -37,7 +37,6 @@ import {
   supportFor,
   taskSkill,
 } from "../../utils/familyWorld";
-import { AdventureInvitation } from "./PlayBits";
 import { usePlay } from "../../context/PlayContext";
 import HouseStage from "../landing/HouseStage";
 import "./familyWorld.css";
@@ -162,8 +161,6 @@ export default function FamilyWorld({ onOpen, onNew }) {
       t.status === "PendingApproval",
   );
   const count = world?.completed ?? 0;
-  const stage = [1, 4, 8].filter((n) => count >= n).length;
-  const next = [1, 4, 8][stage];
   const targetUser =
     selectedUser ||
     String(users.find((u) => u.isManagedProfile)?.id ?? user?.id ?? "");
@@ -178,14 +175,7 @@ export default function FamilyWorld({ onOpen, onNew }) {
       <header className="fw-heading">
         <div>
           <h1>{text(`${firstName}’s home base`, `הבית של ${firstName}`)}</h1>
-          <p>
-            {text(
-              "Come on in. There’s a mission with your name on it.",
-              "בואו להיכנס. יש כאן משימה בשבילכם.",
-            )}
-          </p>
         </div>
-      </header>
       <nav
         className="fw-destinations"
         aria-label={text("Your adventure", "ההרפתקה שלכם")}
@@ -209,7 +199,7 @@ export default function FamilyWorld({ onOpen, onNew }) {
           {text("My treasures", "האוצרות שלי")}
         </button>
       </nav>
-      <AdventureInvitation />
+      </header>
       {(error || loadError) && (
         <div className="fw-error" role="alert">
           {error || text("Your household didn’t load.", "הבית לא נטען.")}
@@ -254,20 +244,6 @@ export default function FamilyWorld({ onOpen, onNew }) {
           </div>
           <div className="fw-companion">
             <img src="/images/dira-mascot.png" alt="" />
-            <p>
-              {choices.length
-                ? text(
-                    "Drag to turn · two fingers on phones. Use − to see more.",
-                    "גוררים לסיבוב · שתי אצבעות בטלפון. לחצו − כדי לראות יותר.",
-                  )
-                : text(
-                    "There’s always room for you here.",
-                    "תמיד יש כאן מקום בשבילכם.",
-                  )}
-              <strong>
-                {text("Dira, your home buddy", "דירה, החבר של הבית")}
-              </strong>
-            </p>
           </div>
         </div>
         <div className="fw-scene-actions">
@@ -319,57 +295,6 @@ export default function FamilyWorld({ onOpen, onNew }) {
           </div>
         </div>
       </section>
-      <div className="fw-project fw-build-summary">
-        <TentTree size={34} />
-        <h2>{text("The crew’s clubhouse", "המועדון של הצוות")}</h2>
-        <p>
-          {stage === 3
-            ? text(
-                "The clubhouse is ready. Take a look inside.",
-                "בנינו ביחד. מוכנים להרפתקאות!",
-              )
-            : text(
-                "Finish family missions to build the next part.",
-                "כל משימה משפחתית שהושלמה מוסיפה קצת קסם.",
-              )}
-        </p>
-        <ol
-          className="fw-build-trail"
-          aria-label={text("Clubhouse building stages", "שלבי בניית המועדון")}
-        >
-          {[
-            [1, "A place to stand", "בונים בסיס"],
-            [4, "Room for everyone", "מקום לכולם"],
-            [8, "Raise the flag!", "מרימים דגל!"],
-          ].map(([need, en, heb], index) => (
-            <li key={need} className={count >= need ? "is-built" : ""}>
-              <span>{count >= need ? <Check size={17} /> : index + 1}</span>
-              <div>
-                <strong>{text(en, heb)}</strong>
-                <small>
-                  {text(
-                    `${need} family ${need === 1 ? "mission" : "missions"}`,
-                    `${need} משימות משפחתיות`,
-                  )}
-                </small>
-              </div>
-            </li>
-          ))}
-        </ol>
-        <p className="fw-project-count">
-          {world
-            ? next
-              ? text(
-                  `${Math.max(0, next - count)} more to the next piece`,
-                  `עוד ${Math.max(0, next - count)} לחלק הבא`,
-                )
-              : text(
-                  `${count} missions. One brilliant team.`,
-                  `${count} משימות. צוות אחד נפלא.`,
-                )
-            : text("Opening your world…", "פותחים את העולם שלכם…")}
-        </p>
-      </div>
       {decorating && (
         <section
           className="fw-decorations"
@@ -464,12 +389,6 @@ export default function FamilyWorld({ onOpen, onNew }) {
         <div className="fw-section-heading">
           <div>
             <h2>{text("What will you try today?", "מה ננסה היום?")}</h2>
-            <p>
-              {text(
-                "Choose one. Take your time. Ask for help whenever you need it.",
-                "בוחרים אחת. בקצב שלכם. מבקשים עזרה מתי שצריך.",
-              )}
-            </p>
           </div>
           {permissions.canCreateTask && (
             <button className="fw-quiet" onClick={onNew}>
@@ -489,7 +408,6 @@ export default function FamilyWorld({ onOpen, onNew }) {
             {visible.map((task, index) => {
               const Icon = skillIcons[taskSkill(task)];
               const level = supportFor(world, user?.id, task);
-              const support = SUPPORT_LEVELS.find((s) => s.id === level);
               return (
                 <button
                   className={`fw-mission fw-mission-${index}`}
@@ -501,19 +419,12 @@ export default function FamilyWorld({ onOpen, onNew }) {
                     <span>{index + 1}</span>
                   </span>
                   <span className="fw-mission-copy">
-                    <small>
-                      {he ? support.he : support.en}
-                      {task.subItems?.length
-                        ? text(
-                            ` · ${task.subItems.length} little steps`,
-                            ` · ${task.subItems.length} צעדים קטנים`,
-                          )
-                        : ""}
-                    </small>
                     <strong>{tx(task.title)}</strong>
                     <span className="fw-mission-reward">
                       <Coins size={16} /> +
                       {task.pointsValue ?? task.points ?? 0} XP
+                      {task.status === "InProgress" &&
+                        ` · ${text("In progress", "בביצוע")}`}
                     </span>
                     <span className="fw-mission-go">
                       {task.status === "InProgress"

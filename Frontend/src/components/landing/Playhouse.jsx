@@ -53,7 +53,6 @@ export default function Playhouse({ he }) {
           <Home size={16} />
         </span>
         <strong>{say('הבית של משפחת שמש', 'The Sunshine household')}</strong>
-        <span className="td-demo-chip">{say('דמו אינטראקטיבי', 'INTERACTIVE DEMO')}</span>
       </div>
       <div className="td-window-dots" aria-hidden="true">
         <i />
@@ -63,7 +62,6 @@ export default function Playhouse({ he }) {
     </div>
     <div className="td-app-layout">
       <aside className="td-app-sidebar">
-        <div className="td-sidebar-label">{say('המקום שלנו', 'OUR LITTLE WORLD')}</div>
         <nav aria-label={say('מסכי ההדגמה', 'Demo screens')}>{tabs.map(([id, Icon, label]) => <button key={id} className={tab === id ? 'is-selected' : ''} onClick={() => changeTab(id)} aria-pressed={tab === id}>
           <Icon size={19} />
           <span>{label}</span>{id === 'tasks' && <small>{QUESTS.length - state.completed.length}</small>}</button>)}</nav>
@@ -75,19 +73,13 @@ export default function Playhouse({ he }) {
           </div>
           {savedQuests.length ? <div className="td-saved-items">{savedQuests.map(quest => <button key={quest.id} onClick={() => { changeTab('tasks'); setFilter('saved'); }}>
             <span>{quest.emoji}</span>
-            <strong>{he ? quest.he : quest.en}</strong>{state.completed.includes(quest.id) && <Check size={12} />}</button>)}</div> : <p>{say('לחצו על סימניית המשימה כדי לשמור אותה קרוב.', 'Tap a quest’s bookmark to keep it close.')}</p>}
-          <small>{say('נשמר בדפדפן הזה', 'Saved in this browser')}</small>
+            <strong>{he ? quest.he : quest.en}</strong>{state.completed.includes(quest.id) && <Check size={12} />}</button>)}</div> : null}
         </div>
         <div className="td-sidebar-bottom">
-          <div className="td-sidebar-note">
-            <Sparkles size={18} />
-            <p>{say('הדברים הקטנים שאתם עושים? הם עושים הבדל גדול.', 'The little things you do? They make a big difference.')}</p>
-          </div>
           <div className="td-sidebar-user">
             <span>🧑🏽</span>
             <div>
               <strong>{say('נועם שמש', 'Noam Sunshine')}</strong>
-              <small>{say('גיבור הבית · רמה 8', 'Home hero · Level 8')}</small>
             </div>
             <span className="td-online" />
           </div>
@@ -96,7 +88,6 @@ export default function Playhouse({ he }) {
       <div className="td-app-main">
         <div className="td-app-welcome">
           <div>
-            <span className="td-app-date">{say('יום חדש, הזדמנויות קטנות', 'A NEW DAY, A FEW LITTLE WINS')}</span>
             <h3>{tab === 'tasks' ? say('היי נועם, מה עושים היום?', 'Hey Noam, what’s the plan?') : tab === 'rewards' ? say('עבדתם בשביל זה. תהנו.', 'You earned this. Enjoy it.') : say('ביחד, הבית מנצח.', 'Together, home wins.')} <span>{tab === 'tasks' ? '☀️' : tab === 'rewards' ? '✨' : '🏆'}</span>
             </h3>
           </div>
@@ -214,8 +205,6 @@ export default function Playhouse({ he }) {
               <b dir="ltr">{member.points}<span> XP</span>
               </b>
             </div>)}</div>
-            <div className="td-team-note">
-              <span aria-hidden="true">♡</span>{say('הנקודות כאן מצטברות מהמשימות. פרסים לא מורידים את הדירוג שלכם.', 'Your rank reflects effort. Spending points on rewards won’t lower it.')}</div>
           </>}
         </div>
         <div className={`td-demo-notice ${notice ? 'is-visible' : ''}`} role="status" aria-live="polite">

@@ -1,0 +1,123 @@
+/*
+ * Readable text floor: no text in the app renders below 14px.
+ * Loaded last and marked !important so it wins over per-component sizes.
+ */
+
+/* Tailwind tiny-size utilities */
+.text-xs,
+.text-\[9px\],
+.text-\[10px\],
+.text-\[11px\],
+.text-\[13px\],
+
+/* App shell: sidebar, header, bottom navigation */
+.world-household-selector span strong,
+.world-household-selector span small,
+.world-profile-link span strong,
+.world-profile-link span small,
+.world-logout,
+.world-language,
+.family-shell-player span,
+.game-wallet span small,
+.world-bottom-nav button span,
+
+/* Home */
+.td-camera-tools button span,
+.fw-destinations button,
+.fw-destinations button b,
+.fw-primary,
+.fw-quiet,
+.checkpoint-title,
+.family-play-nav button span,
+.fw-room-button span,
+.fw-mission-art span,
+.fw-mission-reward,
+
+/* Tasks */
+.world-count,
+.world-tabs button,
+.checkpoint-number,
+.mini-coin,
+.checkpoint-prize,
+.checkpoint-prize b,
+
+/* Insights */
+.world-switch button,
+.world-stat span,
+.world-stat strong em,
+.chart-toolbar span,
+.chart-scale span,
+.chart-value,
+.chart-day,
+.chart-note,
+.member-dot,
+.contribution-row div strong,
+.contribution-row div span,
+.contribution-row div span small,
+.momentum-labels span,
+.momentum-labels strong,
+.workload-legend span,
+.workload-label strong,
+.workload-label span,
+.activity-heatmap div span,
+
+/* Leaderboard, rewards, profile, household, adventures */
+.community-chip,
+.community-rank-score small,
+.community-price,
+.community-reward-body p,
+.community-reward-action,
+.community-note,
+.community-member-actions button,
+.treasure-status,
+.shop-purse div strong small,
+.shop-add,
+.shop-tabs button,
+.shop-tabs button span,
+.crew-house-line span,
+.crew-member-menu summary,
+.text-coral,
+.num,
+.play-wayfinding span,
+
+/* Landing page and its playable demo */
+.td-lang,
+.td-game-auth .td-lang,
+.td-lang span,
+.td-login,
+.td-explore-launch span,
+.tw-next-quest span small,
+.tw-chart-footer span,
+.tw-game-coin:not(.tw-prize-coin) span span,
+.td-footer-links button,
+.td-app-address strong,
+.td-app-sidebar nav button small,
+.td-saved-heading strong,
+.td-saved-heading span,
+.td-sidebar-user div strong,
+.td-app-stats div span small,
+.td-app-stats div span strong span,
+.td-task-filters button,
+.td-task-title small,
+.td-task-title small span,
+.td-complete span,
+.td-next-reward div strong,
+.td-next-reward div small,
+.td-next-reward button,
+.td-rewards-budget,
+.td-shop-item h5,
+.td-shop-item p,
+.td-shop-item button,
+.td-team-list div b,
+.td-team-list div b span,
+.td-rank,
+.td-team-list .is-you strong small,
+.td-team-list .is-you b span,
+
+/* Sign-in and onboarding */
+.go-checkpoint-number,
+.go-checkpoint-label,
+.go-label,
+.play-select-text {
+  font-size: 14px !important;
+}

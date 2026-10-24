@@ -2,6 +2,8 @@ import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import App from "./App";
 import "./index.css";
+import "./readable-text.css";
+import "./redesign.css";
 import "@fontsource-variable/fredoka";
 import "@fontsource-variable/nunito";
 

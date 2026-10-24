@@ -97,9 +97,6 @@ export default function Insights() {
           <CheckCheck />
           <span>{he ? "הושלמו בתקופה" : "Quests completed"}</span>
           <strong>{insight.periodDone}</strong>
-          <small>
-            {days} {he ? "הימים האחרונים" : "days of little wins"}
-          </small>
         </div>
         <div className="world-stat peach">
           <Sparkles />
@@ -108,9 +105,6 @@ export default function Insights() {
             {insight.periodXp}
             <em>XP</em>
           </strong>
-          <small>
-            {he ? "לפי ניקוד המשימות הנוכחי" : "Based on current quest values"}
-          </small>
         </div>
         <div className="world-stat lavender">
           <Activity />
@@ -119,49 +113,25 @@ export default function Insights() {
             {insight.completionRate}
             <em>%</em>
           </strong>
-          <small>
-            {insight.completed} / {insight.total}{" "}
-            {he ? "משימות קיימות" : "current quests"}
-          </small>
         </div>
       </div>
       <div className="insights-grid">
         <section className="world-panel">
           <h2>{he ? "הקצב של הבית" : "Your daily rhythm"}</h2>
-          <p>
-            {he
-              ? "כל עמודה היא עוד יום של עשייה."
-              : "Every bar is another day of showing up."}
-          </p>
           <ActivityChart data={insight.daily} he={he} />
         </section>
         <section className="world-panel">
           <h2>{he ? "כולם חלק מהסיפור" : "Everyone plays a part"}</h2>
-          <p>
-            {he
-              ? "משימות שהושלמו בתקופה שנבחרה."
-              : "Contributions in the selected period."}
-          </p>
           <ContributionChart data={insight.contributions} he={he} />
         </section>
         <section className="world-panel">
           <h2>
             {he ? "ממשיכים לצבור מומנטום" : "Small wins, growing momentum"}
           </h2>
-          <p>
-            {he
-              ? "ניקוד מצטבר של משימות שהושלמו בתקופה."
-              : "Cumulative quest points in this period."}
-          </p>
           <MomentumChart data={insight.daily} he={he} />
         </section>
         <section className="world-panel">
           <h2>{he ? "מה קורה בכל פינה?" : "A little good in every corner"}</h2>
-          <p>
-            {he
-              ? "מצב כל המשימות לפי קטגוריה."
-              : "Current workload across every category."}
-          </p>
           <WorkloadChart
             data={insight.categories}
             categoryLabel={category}
@@ -173,20 +143,8 @@ export default function Insights() {
         <h2>
           {he ? "יום ועוד יום. ופתאום, הרגל." : "Day by day. Then, a habit."}
         </h2>
-        <p>
-          {he
-            ? "כל ריבוע מספר על יום קטן של התקדמות."
-            : "A calendar of your household’s little wins."}
-        </p>
         <ActivityHeatmap data={history.daily} he={he} />
       </section>
-      <p className="world-data-note">
-        {he
-          ? "הגרפים מבוססים על משימות זמינות ותאריכי השלמה. משימות שנמחקו אינן כלולות. ניקוד משימות אינו יתרת המטבעות או דוח תנועות היסטורי."
-          : "Charts use available quests and completion dates. Deleted quests are not included. Quest points are not your spendable balance or a historical transaction ledger."}
-        {insight.missingHistory > 0 &&
-          ` ${insight.missingHistory} ${he ? "משימות ללא תאריך השלמה לא נכללו בגרפי הזמן." : "quests without completion dates are excluded from time charts."}`}
-      </p>
     </div>
   );
 }

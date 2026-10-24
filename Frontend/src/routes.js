@@ -10,7 +10,6 @@ const Household = lazy(() => import("./pages/Household"));
 const AuthRoute = lazy(() => import("./pages/AuthRoute"));
 const FamilyEntry = lazy(() => import("./pages/FamilyEntry"));
 const FamilyAdventure = lazy(() => import("./pages/FamilyAdventure"));
-const Insights = lazy(() => import("./pages/Insights"));
 
 export function preloadPlayRoutes() {
   return Promise.allSettled([loadRewards(), import("./pages/HomeDashboard")]);
@@ -80,13 +79,6 @@ export const ROUTES = [
     key: "tasks",
     path: "/tasks",
     component: HomeDashboard,
-    access: "private",
-    wired: true,
-  },
-  {
-    key: "insights",
-    path: "/insights",
-    component: Insights,
     access: "private",
     wired: true,
   },

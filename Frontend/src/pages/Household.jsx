@@ -132,11 +132,17 @@ export default function Household() {
       <header className="community-heading crew-heading">
         <div>
           <h1>{householdName(household?.displayName || household?.name)}</h1>
-          <p>
-            {en
-              ? "This is your crew. Everyone brings a little magic."
-              : "זאת הנבחרת שלכם. כל אחד מוסיף קצת קסם."}
-          </p>
+          <div className="crew-house-line">
+            <span>
+              {rows.length} {en ? "people" : "אנשים"}
+            </span>
+            <span>
+              {familyXp.toLocaleString()} {en ? "XP together" : "XP ביחד"}
+            </span>
+            <span>
+              {monthlyDone} {en ? "missions this month" : "משימות החודש"}
+            </span>
+          </div>
         </div>
         {isAdmin && (
           <LimeButton onClick={() => setInviteOpen(true)} disabled={busy}>
@@ -147,19 +153,6 @@ export default function Household() {
           </LimeButton>
         )}
       </header>
-      <div className="crew-house-line">
-        <span>
-          <Users size={18} />
-          {rows.length} {en ? "people, one team" : "אנשים, קבוצה אחת"}
-        </span>
-        <span>
-          {familyXp.toLocaleString()}{" "}
-          {en ? "XP earned together" : "נקודות ניסיון ביחד"}
-        </span>
-        <span>
-          {monthlyDone} {en ? "missions this month" : "משימות החודש"}
-        </span>
-      </div>
       <section>
         <h2 className="community-section-title crew-list-title flex items-center gap-2">
           <Users size={22} />
@@ -300,6 +293,7 @@ export default function Household() {
           </div>
         )}
       </section>
+      <div className="crew-bottom-grid">
       <section className="community-team-goal">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
           <h2 className="text-lg font-extrabold">{t("monthlyGoal")}</h2>
@@ -317,11 +311,6 @@ export default function Household() {
         >
           <span style={{ width: `${goalPct}%` }} />
         </div>
-        <p className="community-note mt-3">
-          {en
-            ? "One shared goal. Every earned point moves your household forward."
-            : "מטרה משותפת אחת. כל נקודה שנצברת מקדמת את הבית שלכם."}
-        </p>
       </section>
       <section
         className="community-house-rules crew-settings flex items-center gap-4"
@@ -336,16 +325,12 @@ export default function Household() {
           <h2 className="text-lg font-extrabold">
             {en ? "Photo checks" : "בדיקת תמונות"}
           </h2>
-          <p className="community-note mt-1">
-            {en
-              ? "A grown-up checks mission photos before completion is approved."
-              : "מבוגר בודק את תמונת המשימה לפני אישור ההשלמה."}
-          </p>
         </div>
         <span className="community-chip">
           {household?.requireProofApproval ? t("on") : t("off")}
         </span>
       </section>
+      </div>
 
       <GrowCrew open={inviteOpen} onClose={() => setInviteOpen(false)} />
 

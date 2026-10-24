@@ -1,5 +1,5 @@
 import { useId, useState } from "react";
-import { BarChart3, TrendingUp } from "lucide-react";
+import { TrendingUp } from "lucide-react";
 
 const colours = [
   "#17675c",
@@ -111,13 +111,11 @@ export function ActivityChart({ data, he, compact = false }) {
             : "Complete a quest to start your story here."}
         </p>
       )}
-      <p className="chart-note">
-        {active === null || !data[active]
-          ? he
-            ? "בחרו עמודה כדי לראות את הערך היומי."
-            : "Choose a bar to explore that day."
-          : `${data[active].date.toLocaleDateString(locale, { day: "numeric", month: "short" })} · ${data[active][metric]} ${caption}`}
-      </p>
+      {active !== null && data[active] && (
+        <p className="chart-note">
+          {`${data[active].date.toLocaleDateString(locale, { day: "numeric", month: "short" })} · ${data[active][metric]} ${caption}`}
+        </p>
+      )}
     </div>
   );
 }
@@ -307,12 +305,6 @@ export function ActivityHeatmap({ data, he }) {
           </div>
         ))}
       </div>
-      <p className="chart-note">
-        <BarChart3 size={14} />
-        {he
-          ? "84 הימים האחרונים · צבע כהה מסמן יותר משימות"
-          : "Last 84 days · Deeper colour means more completed quests"}
-      </p>
     </div>
   );
 }

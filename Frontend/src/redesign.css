@@ -1,0 +1,756 @@
+/*
+ * Approved polish (October 2026): sidebar, top bar, home, quest road,
+ * reward shop, leaderboard and household screens.
+ * Selectors start with ":root .world-app" so they win over the older
+ * per-screen sheets, which load later as lazy chunks.
+ */
+
+/* ---------- Sidebar ---------- */
+:root .world-app .world-sidebar {
+  background: #ffffff;
+  border-inline-end: 2px solid #e3ecf2;
+  width: 272px;
+  flex-basis: 272px;
+  padding: 26px 18px 18px;
+}
+:root .world-app .world-brand > span:first-child {
+  background: #ffc5b3;
+  color: #d3483e;
+  border: 0;
+  box-shadow: 0 4px 0 #f0a48d;
+  transform: none;
+}
+:root .world-app .world-household-selector {
+  background: #f1f7fc;
+  border-radius: 18px;
+  margin: 24px 0 18px;
+  padding: 12px 14px;
+}
+:root .world-app .world-household-selector strong {
+  font-size: 17px;
+}
+:root .world-app .world-household-selector small {
+  font-size: 15px !important;
+  color: #526963;
+}
+:root .world-app .world-nav {
+  gap: 6px;
+}
+:root .world-app .world-nav > button {
+  min-height: 56px;
+  padding: 9px 12px;
+  font-size: 18px;
+  font-weight: 700;
+  border: 0;
+  box-shadow: none;
+  gap: 14px;
+  color: #244c49;
+}
+:root .world-app .world-nav > button:hover {
+  background: #f4f7f9;
+  transform: none;
+}
+:root .world-app .world-nav > button[aria-current="page"] {
+  background: #d7f2df;
+  color: #155b4c;
+  box-shadow: inset 0 0 0 2px #9fdcb5;
+}
+:root .world-app .world-nav-tile {
+  width: 40px;
+  height: 40px;
+  flex-shrink: 0;
+  display: grid;
+  place-items: center;
+  border-radius: 13px;
+  background: #d7f2df;
+  color: #087963;
+}
+:root .world-app .world-nav-tile svg {
+  width: 22px;
+  height: 22px;
+  color: inherit;
+}
+:root .world-app .world-nav > button:nth-child(2) .world-nav-tile,
+:root .world-app .world-nav > button:nth-child(5) .world-nav-tile {
+  background: #ffe4dc;
+  color: #d3483e;
+}
+:root .world-app .world-nav > button:nth-child(3) .world-nav-tile,
+:root .world-app .world-nav > button:nth-child(4) .world-nav-tile {
+  background: #fff3c4;
+  color: #b07a00;
+}
+:root .world-app .world-nav > button:nth-child(6) .world-nav-tile {
+  background: #e3eefe;
+  color: #3a67c4;
+}
+:root .world-app .world-nav > button[aria-current="page"] .world-nav-tile {
+  background: #ffffff;
+}
+:root .world-app .world-goal-card {
+  margin: 22px 0 16px;
+  padding: 18px 16px;
+  border-radius: 24px;
+  background: #fff9e9;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  text-align: center;
+}
+:root .world-app .world-goal-card img {
+  width: 100px;
+  height: 100px;
+}
+:root .world-app .world-goal-card strong {
+  font-size: 21px;
+  color: #244c49;
+}
+:root .world-app .world-goal-bar {
+  display: block;
+  width: 100%;
+  height: 16px;
+  border-radius: 99px;
+  background: #ffe796;
+  overflow: hidden;
+}
+:root .world-app .world-goal-bar > span {
+  display: block;
+  height: 100%;
+  border-radius: 99px;
+  background: #27b697;
+}
+:root .world-app .world-goal-text {
+  font-weight: 800;
+  font-size: 16px;
+}
+
+/* ---------- Top bar ---------- */
+:root .world-app .world-topbar {
+  background: #f1f7fcf2;
+  border-bottom: 2px solid #e3ecf2;
+}
+:root .world-app .game-wallet {
+  gap: 10px;
+}
+:root .world-app .game-wallet > span {
+  padding: 8px 16px;
+  border-radius: 99px;
+  background: #fff3c4;
+  color: #956001;
+}
+:root .world-app .game-wallet > span + span {
+  background: #efe6ff;
+  color: #624584;
+}
+:root .world-app .family-shell-player {
+  border-radius: 99px;
+}
+
+/* ---------- Home ---------- */
+:root .world-app .fw-heading {
+  flex-wrap: wrap;
+  align-items: flex-end;
+  margin-bottom: 26px;
+}
+:root .world-app .fw-heading h1 {
+  font-size: clamp(40px, 4vw, 58px);
+  line-height: 1;
+  margin: 0;
+}
+:root .world-app .fw-heading .fw-destinations {
+  margin: 0;
+}
+:root .world-app .fw-destinations button {
+  font-size: 17px !important;
+  font-weight: 700;
+  border: 0;
+  border-radius: 18px;
+  padding: 12px 20px;
+  box-shadow: 0 4px 0 #dfe6ea;
+}
+:root .world-app .fw-destinations button:first-child {
+  background: #d9eefc;
+  color: #1d5a86;
+  box-shadow: 0 4px 0 #a9d3f0;
+}
+:root .world-app .fw-destinations b {
+  background: #bdeace;
+  border-radius: 99px;
+  padding: 0 9px;
+}
+:root .world-app .fw-scene {
+  border-radius: 34px;
+}
+:root .world-app .fw-room-button {
+  font-size: 16px !important;
+  font-weight: 700;
+  border: 0;
+  border-radius: 16px;
+  padding: 11px 18px;
+  background: #ffffff;
+  box-shadow: 0 3px 0 #b8d5e6;
+}
+:root .world-app .fw-room-button[aria-pressed="true"] {
+  background: #244c49;
+  color: #ffffff;
+  box-shadow: none;
+}
+:root .world-app .fw-room-button[aria-pressed="true"] svg {
+  color: #ffffff;
+}
+:root .world-app .fw-missions .fw-section-heading h2 {
+  font-size: 36px;
+}
+:root .world-app .fw-mission-choices {
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+}
+:root .world-app .fw-one-mission {
+  grid-template-columns: minmax(0, 520px);
+}
+:root .world-app .fw-mission {
+  flex-direction: row;
+  align-items: center;
+  gap: 20px;
+  padding: 24px;
+  text-align: start;
+  background: #ffffff;
+  border-radius: 30px;
+  box-shadow: 0 6px 0 #e3ecf2;
+}
+:root .world-app .fw-mission-art,
+:root .world-app .fw-mission-1 .fw-mission-art,
+:root .world-app .fw-mission-2 .fw-mission-art {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  border-radius: 28px;
+  transform: none;
+}
+:root .world-app .fw-mission-art {
+  background: #7dd36a;
+  box-shadow: 0 6px 0 #4fae3f;
+}
+:root .world-app .fw-mission-1 .fw-mission-art {
+  background: #ffd25e;
+  box-shadow: 0 6px 0 #e0a92e;
+}
+:root .world-app .fw-mission-2 .fw-mission-art {
+  background: #c8acf6;
+  box-shadow: 0 6px 0 #9474c6;
+}
+:root .world-app .fw-mission-art > span {
+  display: none;
+}
+:root .world-app .fw-mission:hover .fw-mission-art {
+  transform: translateY(-3px);
+}
+:root .world-app .fw-mission-copy {
+  align-items: flex-start;
+  margin-top: 0;
+  gap: 8px;
+}
+:root .world-app .fw-mission-copy > strong {
+  font-size: 25px;
+  max-width: none;
+}
+:root .world-app .fw-mission-reward {
+  font-size: 16px !important;
+  color: #956001;
+}
+:root .world-app .fw-mission-go {
+  width: auto;
+  max-width: none;
+  margin-top: 4px;
+  padding: 11px 22px;
+  gap: 10px;
+  font-size: 17px;
+  font-weight: 800;
+  border: 0;
+  border-radius: 16px;
+  background: #27b697;
+  color: #103f35;
+  box-shadow: 0 4px 0 #138c73;
+}
+:root .world-app .fw-mission-1 .fw-mission-go,
+:root .world-app .fw-mission-2 .fw-mission-go {
+  background: #ffffff;
+  color: #244c49;
+  box-shadow: inset 0 0 0 2px #cfe0d6, 0 4px 0 #dfe6ea;
+}
+
+/* ---------- Quest road (Tasks) ---------- */
+:root .world-app .quests-full {
+  max-width: 980px;
+}
+:root .world-app .quests-full .quest-tools {
+  justify-content: flex-start;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+:root .world-app .world-tabs button {
+  font-size: 17px !important;
+  font-weight: 700;
+  border: 0;
+  border-radius: 16px;
+  padding: 11px 20px;
+  background: #ffffff;
+  box-shadow: 0 4px 0 #dfe6ea;
+}
+:root .world-app .world-tabs button[aria-pressed="true"] {
+  background: #d7f2df;
+  color: #155b4c;
+  box-shadow: 0 4px 0 #9fdcb5;
+}
+:root .world-app .quests-full .quest-search {
+  margin-inline: 0;
+  max-width: none;
+}
+:root .world-app .quests-full .quest-adventure {
+  max-width: 760px;
+}
+:root .world-app .quest-path {
+  max-width: 760px;
+  margin-top: 30px;
+}
+:root .world-app .quest-stop,
+:root .world-app[dir="rtl"] .quest-stop {
+  transform: none;
+  width: auto;
+  max-width: 62%;
+  flex-direction: row;
+  align-items: center;
+  gap: 16px;
+  text-align: start;
+  inset-inline-start: 0;
+}
+:root .world-app .quest-stop.is-far {
+  inset-inline-start: auto;
+  inset-inline-end: 0;
+  flex-direction: row-reverse;
+}
+:root .world-app .quest-checkpoint {
+  flex-shrink: 0;
+  margin-bottom: 0;
+  width: 84px;
+  height: 84px;
+  border-width: 0;
+}
+:root .world-app .quest-stop-card {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 12px 18px;
+  border-radius: 22px;
+  background: #ffffff;
+  box-shadow: 0 5px 0 #e3ecf2;
+  min-width: 0;
+}
+:root .world-app .checkpoint-title {
+  font-family: "Fredoka Variable", "Heebo", sans-serif;
+  font-size: 21px !important;
+  font-weight: 600;
+  max-width: 280px;
+  background: transparent;
+  padding: 0;
+  text-align: start;
+}
+:root .world-app .quest-stop-meta {
+  font-size: 16px;
+  color: #526963;
+}
+:root .world-app .quest-stop-meta b {
+  color: #956001;
+  font-weight: 800;
+}
+:root .world-app .checkpoint-prize,
+:root .world-app .checkpoint-earned {
+  margin-top: 4px;
+  font-size: 15px !important;
+  padding: 5px 12px;
+}
+
+/* ---------- Leaderboard ---------- */
+:root .world-app .stars-heading {
+  justify-content: center;
+  text-align: center;
+}
+:root .world-app .stars-page h1,
+:root .world-app .crew-page .crew-heading h1 {
+  font-size: clamp(40px, 4vw, 58px);
+  line-height: 1;
+}
+:root .world-app .stars-page .community-leaderboard-world > section {
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
+}
+:root .world-app .stars-page .community-rank-row {
+  border-radius: 24px;
+  box-shadow: 0 5px 0 #e3ecf2;
+  padding: 16px 22px;
+}
+:root .world-app .stars-page .community-rank-row.is-you {
+  background: #e9f7dc;
+  box-shadow: 0 5px 0 #c9e6b1;
+}
+
+/* ---------- People (household) ---------- */
+:root .world-app .crew-page .crew-heading {
+  align-items: flex-end;
+  flex-wrap: wrap;
+  margin-bottom: 26px;
+}
+:root .world-app .crew-heading .crew-house-line {
+  padding: 14px 0 0;
+  gap: 10px;
+}
+:root .world-app .crew-heading .crew-house-line > span {
+  padding: 7px 14px;
+  border-radius: 99px;
+  background: #ffffff;
+  color: #244c49;
+  font-size: 16px !important;
+  font-weight: 700;
+}
+:root .world-app .crew-list-title {
+  font-size: 32px !important;
+}
+:root .world-app .crew-list-title svg {
+  display: none;
+}
+:root .world-app .crew-page .community-member {
+  border-radius: 26px;
+  padding: 18px 22px;
+  box-shadow: 0 5px 0 #e3ecf2;
+}
+:root .world-app .crew-page .community-member > .community-note {
+  font-size: 16px !important;
+}
+:root .world-app .crew-page .community-member .community-progress {
+  height: 14px;
+}
+:root .world-app .crew-member-menu summary {
+  font-size: 16px !important;
+  padding: 10px 18px;
+  border-radius: 14px;
+  background: #f1f7fc;
+  color: #244c49;
+}
+:root .world-app .crew-bottom-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 28px;
+}
+:root .world-app .crew-bottom-grid > section {
+  margin: 0;
+  padding: 24px 26px;
+  border-radius: 28px;
+  border: 0;
+}
+:root .world-app .crew-page .community-team-goal {
+  background: #e9f7dc;
+}
+:root .world-app .crew-page .community-team-goal .community-progress {
+  height: 20px;
+  background: #ffffff;
+}
+:root .world-app .crew-page .community-team-goal .community-progress > span {
+  background: #4fae3f;
+}
+:root .world-app .crew-bottom-grid .community-house-rules {
+  background: #efe6ff !important;
+}
+
+/* ---------- Reward shop ---------- */
+:root .world-app .shop-front {
+  padding: 30px 34px;
+  border-radius: 34px;
+  background: #fff9e9;
+  min-height: 0;
+}
+:root .world-app .shop-front h1 {
+  font-size: clamp(40px, 4vw, 54px);
+  color: #244c49;
+  margin-bottom: 18px;
+}
+:root .world-app .shop-purse .shop-wallet-coin {
+  width: 72px;
+  height: 72px;
+  border: 0;
+  background: #ffd34a;
+  box-shadow: 0 5px 0 #c48a00;
+  color: #c48a00;
+  transform: none;
+}
+:root .world-app .shop-purse > div {
+  display: flex;
+  flex-direction: column;
+}
+:root .world-app .shop-purse strong {
+  font-size: 44px;
+  line-height: 1;
+  color: #244c49;
+}
+:root .world-app .shop-purse small {
+  font-size: 17px !important;
+  font-weight: 700;
+  color: #956001;
+}
+:root .world-app .shop-shelf-heading h2 {
+  font-size: 34px;
+}
+:root .world-app .shop-tabs button {
+  font-size: 17px !important;
+  font-weight: 700;
+  border: 0;
+  border-radius: 16px;
+  padding: 11px 20px;
+  background: #ffffff;
+  color: #244c49;
+  box-shadow: 0 4px 0 #dfe6ea;
+}
+:root .world-app .shop-tabs button[aria-pressed="true"] {
+  background: #d7f2df;
+  color: #155b4c;
+  box-shadow: 0 4px 0 #9fdcb5;
+}
+:root .world-app .community-rewards {
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 20px;
+}
+:root .world-app .treasure-shop .community-reward {
+  background: #ffffff;
+  border-radius: 30px;
+  padding: 20px;
+  text-align: center;
+  box-shadow: 0 6px 0 #e3ecf2;
+}
+:root .world-app .treasure-shop .community-reward-art {
+  min-height: 150px;
+  height: 150px;
+  border-radius: 22px;
+  background: var(--reward-fill, #e5edf4);
+}
+:root .world-app .treasure-shop .community-reward-art::before,
+:root .world-app .treasure-shop .community-reward-art::after {
+  display: none;
+}
+:root .world-app .treasure-shop .treasure-status {
+  position: absolute;
+  top: 10px;
+  inset-inline-end: 10px;
+  margin: 0;
+  padding: 5px 12px;
+  border-radius: 99px;
+  background: #efe6ff;
+  color: #624584;
+  font-size: 15px !important;
+  font-weight: 800;
+}
+:root .world-app .treasure-shop .community-reward-body {
+  align-items: center;
+  padding: 14px 0 0;
+  gap: 8px;
+}
+:root .world-app .treasure-shop .community-reward-body h2 {
+  font-size: 23px;
+}
+:root .world-app .treasure-shop .community-reward-body p {
+  margin: 0;
+  font-size: 16px;
+}
+:root .world-app .treasure-shop .community-price,
+:root[dir] .world-app .treasure-shop .community-price {
+  position: static;
+  transform: none;
+  border: 0;
+  box-shadow: none;
+  padding: 6px 14px;
+  border-radius: 99px;
+  background: #fff3c4;
+  color: #956001;
+  font-size: 18px !important;
+  font-weight: 800;
+}
+:root .world-app .treasure-shop .community-reward-action {
+  width: 100%;
+  margin-top: 6px;
+  border-radius: 16px;
+  font-size: 16px !important;
+}
+:root .world-app .treasure-shop .community-reward-action:disabled {
+  background: #eef2f4;
+  color: #526963;
+  box-shadow: none;
+}
+:root .world-app .treasure-shop .community-reward-art {
+  overflow: hidden;
+}
+:root .world-app .treasure-shop .community-reward-art > *:not(.treasure-status) {
+  max-width: 130px;
+  max-height: 130px;
+  transform: none;
+}
+:root .world-app .treasure-shop .community-reward-art > *:not(.treasure-status) img,
+:root .world-app .treasure-shop .community-reward-art > *:not(.treasure-status) svg {
+  max-width: 120px;
+  max-height: 120px;
+}
+:root .world-app .treasure-shop .treasure-status {
+  z-index: 3;
+}
+:root .world-app .treasure-shop .community-reward-art .prize-miniature {
+  width: 130px;
+  height: 130px;
+}
+:root .world-app .treasure-shop .community-reward-art .prize-custom {
+  width: 104px;
+  height: 104px;
+  border-radius: 28px;
+}
+
+/* Fit the sidebar on short laptop screens. */
+:root .world-app .world-sidebar {
+  overflow-y: auto;
+}
+:root .world-app .world-nav > button {
+  min-height: 52px;
+}
+:root .world-app .world-goal-card {
+  margin: 16px 0 12px;
+  padding: 14px;
+  gap: 8px;
+}
+:root .world-app .world-goal-card img {
+  width: 72px;
+  height: 72px;
+}
+:root .world-app .world-goal-card strong {
+  font-size: 19px;
+}
+:root .world-app .stars-page .community-rank-row {
+  background: #ffffff;
+}
+:root .world-app .stars-page .community-rank-row.is-you {
+  background: #e9f7dc;
+}
+
+/* ---------- Phone ---------- */
+@media (max-width: 640px) {
+  :root .world-app .quest-path {
+    height: auto !important;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 18px;
+  }
+  :root .world-app .quest-path-road {
+    display: none;
+  }
+  :root .world-app .quest-stop,
+  :root .world-app[dir="rtl"] .quest-stop,
+  :root .world-app .quest-stop.is-far {
+    position: static;
+    max-width: none;
+    flex-direction: row;
+  }
+  :root .world-app .quest-checkpoint {
+    width: 68px;
+    height: 68px;
+  }
+  :root .world-app .quest-stop-card {
+    flex: 1;
+  }
+  :root .world-app .checkpoint-title {
+    font-size: 19px !important;
+    max-width: none;
+    -webkit-line-clamp: 3;
+  }
+  :root .world-app .shop-front {
+    grid-template-columns: 1fr;
+    padding: 22px;
+  }
+  :root .world-app .shop-front h1 {
+    font-size: 36px;
+    max-width: none;
+  }
+  :root .world-app .shop-window {
+    height: 200px;
+    margin-top: 12px;
+    overflow: hidden;
+  }
+  :root .world-app .fw-heading h1,
+  :root .world-app .stars-page h1,
+  :root .world-app .crew-page .crew-heading h1 {
+    font-size: 36px;
+  }
+}
+
+/* ---------- Reward claimed popup: small, centered, closes itself ---------- */
+:root .reward-reveal {
+  background: #244c4933;
+  backdrop-filter: blur(3px);
+  padding: 20px;
+}
+:root .reward-reveal-stage {
+  width: min(360px, 100%);
+  padding: 26px 26px 24px;
+  border-radius: 30px;
+  background: #ffffff;
+  box-shadow: 0 8px 0 #dfe6ea, 0 20px 40px #244c4926;
+}
+:root .reward-reveal .reveal-prize {
+  width: 150px;
+  height: 130px;
+  margin-bottom: 6px;
+}
+:root .reward-reveal .reveal-prize .prize-miniature {
+  width: 120px;
+  height: 120px;
+}
+:root .reward-reveal h2 {
+  font-size: 32px;
+  margin-bottom: 6px;
+}
+:root .reward-reveal h3 {
+  font-size: 22px;
+  margin: 8px 0 6px;
+}
+:root .reward-reveal p {
+  font-size: 16px;
+}
+:root .reward-reveal .reveal-balance {
+  font-size: 16px !important;
+}
+
+/* ---------- Golden quest road, light-green finished stops ---------- */
+:root .world-app .quest-path-road path:first-child {
+  stroke: #f5c542;
+}
+:root .world-app .quest-path-road path + path {
+  stroke: #fff4c2;
+}
+:root .world-app .quest-stop.is-complete .quest-checkpoint {
+  background: #7fdc8c;
+  color: #ffffff;
+  box-shadow: 0 7px 0 #4fb85f;
+}
+:root .world-app .quest-stop.is-complete .quest-checkpoint > svg {
+  filter: drop-shadow(0 2px 0 #3f9e4e);
+}
+:root .world-app .quest-stop.is-complete .checkpoint-shine {
+  background: #c8f5cf;
+}
+:root .world-app .checkpoint-earned {
+  background: #dcf7df;
+  border-color: #9fe0a8;
+  color: #2f7d3c;
+}
+:root .world-app .world-sidebar > *,
+:root .world-app .world-goal-card > * {
+  flex-shrink: 0;
+}
