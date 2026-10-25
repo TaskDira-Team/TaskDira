@@ -46,12 +46,12 @@ Nobody fights over a game. TaskDira gives every chore a reward and every member 
 
 ### 🏡 Every member gets their own home
 
-Each person logs in to their own view of the shared home: their name on the house and their own missions on the "שלי" (Mine) tab.
+Each person logs in to their own view of the shared home: their name on the house and their own missions on the Mine (שלי) tab.
 
 <table>
   <tr>
-    <th width="50%">🏡 הבית של עמית: Amit's home</th>
-    <th width="50%">🏡 הבית של אופק: Ofek's home</th>
+    <th width="50%">🏡 Amit's home<br/>הבית של עמית</th>
+    <th width="50%">🏡 Ofek's home<br/>הבית של אופק</th>
   </tr>
   <tr>
     <td><img src="docs/screenshots/amit-home.jpg" alt="Amit's home" /></td>
