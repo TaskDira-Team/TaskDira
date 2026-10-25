@@ -44,6 +44,40 @@ Nobody fights over a game. TaskDira gives every chore a reward and every member 
   </tr>
 </table>
 
+### 🏡 Every member gets their own home
+
+Each person logs in to their own view of the shared home: their name on the house and their own missions on the "שלי" (Mine) tab.
+
+<table>
+  <tr>
+    <th width="50%">🏡 הבית של עמית: Amit's home</th>
+    <th width="50%">🏡 הבית של אופק: Ofek's home</th>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/amit-home.jpg" alt="Amit's home" /></td>
+    <td><img src="docs/screenshots/ofek-home.jpg" alt="Ofek's home" /></td>
+  </tr>
+  <tr>
+    <th>📋 Amit's missions: wash the floor, empty the dishwasher, take out the trash…</th>
+    <th>📋 Ofek's missions: feed the cat, clean the litter box, vacuum the rooms…</th>
+  </tr>
+  <tr>
+    <td><img src="docs/screenshots/amit-missions.jpg" alt="Amit's missions" /></td>
+    <td><img src="docs/screenshots/ofek-missions.jpg" alt="Ofek's missions" /></td>
+  </tr>
+</table>
+
+<p align="center">
+  <img src="docs/screenshots/amit-phone-home.jpg" width="190" alt="Amit's home on a phone" />
+  &nbsp;
+  <img src="docs/screenshots/amit-phone-missions.jpg" width="190" alt="Amit's missions on a phone" />
+  &nbsp;&nbsp;&nbsp;&nbsp;
+  <img src="docs/screenshots/ofek-phone-home.jpg" width="190" alt="Ofek's home on a phone" />
+  &nbsp;
+  <img src="docs/screenshots/ofek-phone-missions.jpg" width="190" alt="Ofek's missions on a phone" />
+</p>
+<p align="center"><sub>Amit (left) and Ofek (right) on their phones</sub></p>
+
 ### 📱 Made for phones too
 
 <p align="center">
