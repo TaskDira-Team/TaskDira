@@ -325,8 +325,8 @@ Three teammates, one home. This is us in TaskDira's own people page:
   <tr>
     <td align="center" width="33%">
       <h3>🛠️ Amit Amos</h3>
-      <b>Database · Server · Backend</b><br/><br/>
-      Led the database design in SSMS and SQL Server, built the server and most of the backend APIs, and worked on the final design fixes.
+      <b>Database · Server · Backend · UI</b><br/><br/>
+      Led the database design in SSMS and SQL Server, built the server and most of the backend APIs, and worked on the UI and the final design fixes.
     </td>
     <td align="center" width="33%">
       <h3>⚙️ Rafael Olaru</h3>
