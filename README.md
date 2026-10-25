@@ -137,18 +137,26 @@ When anyone saves something, every open screen refreshes almost at once. The pin
 ```mermaid
 sequenceDiagram
     autonumber
-    participant K as 📱 Karina
+    participant A as 📱 Amit
     participant API as ⚙️ API
     participant DB as 🗄️ SQL Server
+    participant O as 📱 Ofek
     participant R as 💻 Rafael
+    O->>API: open /live WebSocket + session token
     R->>API: open /live WebSocket + session token
-    K->>API: POST complete chore
+    A->>API: POST complete chore
     API->>DB: save
-    API-->>K: 200 OK
-    API--)R: "changed"
+    API-->>A: 200 OK
+    par every open screen
+        API--)O: "changed"
+    and
+        API--)R: "changed"
+    end
+    O->>API: refresh data
     R->>API: refresh data
+    API-->>O: new chores, points, leaderboard
     API-->>R: new chores, points, leaderboard
-    Note over R: Screen updates in about 0.1 s ✨
+    Note over O,R: Both screens update in about 0.1 s ✨
 ```
 
 If the socket drops, the app reconnects on its own. A 5-second poll stays as a backup.
