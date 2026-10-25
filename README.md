@@ -335,7 +335,7 @@ Three teammates, one home. This is us in TaskDira's own people page:
     </td>
     <td align="center" width="33%">
       <h3>🎨 Ofek Nissim</h3>
-      <b>First UI · Canva designs</b><br/><br/>
+      <b>UI · Designs · Bug fixes</b><br/><br/>
       Designed the first screens in Canva, built the first version of the UI, and contributed designs and bug fixes.
     </td>
   </tr>
