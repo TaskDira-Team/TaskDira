@@ -315,6 +315,34 @@ flowchart LR
 
 ---
 
+## 👥 Meet the team
+
+Three teammates, one home. This is us in TaskDira's own people page:
+
+<p align="center"><img src="docs/screenshots/team.jpg" width="820" alt="Rafael, Amit and Ofek in the TaskDira people page" /></p>
+
+<table>
+  <tr>
+    <td align="center" width="33%">
+      <h3>🛠️ Amit Amos</h3>
+      <b>Database · Server · Backend</b><br/><br/>
+      Led the database design in SSMS and SQL Server, built the server and most of the backend APIs, and worked on the final design fixes.
+    </td>
+    <td align="center" width="33%">
+      <h3>⚙️ Rafael Olaru</h3>
+      <b>Backend · UI</b><br/><br/>
+      Built backend features, connected the app to the API, added live updates, and led the final UI design fixes.
+    </td>
+    <td align="center" width="33%">
+      <h3>🎨 Ofek Nissim</h3>
+      <b>First UI · Canva designs</b><br/><br/>
+      Designed the first screens in Canva, built the first version of the UI, and contributed designs and bug fixes.
+    </td>
+  </tr>
+</table>
+
+---
+
 ## 📚 More docs
 
 | Doc | What's in it |
