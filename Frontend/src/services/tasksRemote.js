@@ -15,14 +15,22 @@ async function categories() {
   // seed migration, and caching [] would pin every task to a null category for
   // the rest of the page's life.
   if (categoryCache && categoryCache.length > 0) return categoryCache;
-  try {
-    categoryCache = await getAllPages('/api/categories');
-  } catch {
-    categoryCache = null;
-    return [];
-  }
-  return categoryCache ?? [];
+  // Share one in-flight request: every task asks at once on a refresh.
+  categoryRequest ??= getAllPages('/api/categories')
+    .then((list) => {
+      categoryCache = list;
+      return list ?? [];
+    })
+    .catch(() => {
+      categoryCache = null;
+      return [];
+    })
+    .finally(() => {
+      categoryRequest = null;
+    });
+  return categoryRequest;
 }
+let categoryRequest = null;
 
 export function resetCategoryCache() {
   categoryCache = null;
@@ -116,7 +124,20 @@ export async function fetchTasksRemote() {
   const dtos = await getAllPages(`/api/households/${householdId}/tasks`);
   if (dtos.length === 0) return [];
 
-  const subItemLists = await Promise.all(dtos.map((dto) => fetchSubItems(dto.id)));
+  // One request for every checklist in the home; older servers without the
+  // endpoint fall back to one request per task.
+  let subItemLists;
+  try {
+    const all = (await http.get(`/api/households/${householdId}/subitems`)) ?? [];
+    const byTask = new Map();
+    for (const s of all) {
+      if (!byTask.has(s.taskId)) byTask.set(s.taskId, []);
+      byTask.get(s.taskId).push(s);
+    }
+    subItemLists = dtos.map((dto) => byTask.get(dto.id) ?? []);
+  } catch {
+    subItemLists = await Promise.all(dtos.map((dto) => fetchSubItems(dto.id)));
+  }
   return Promise.all(dtos.map((dto, i) => toFrontendTask(dto, subItemLists[i])));
 }
 

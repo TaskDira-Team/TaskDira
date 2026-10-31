@@ -32,9 +32,17 @@ builder.Services.AddCors(options =>
 builder.Services.AddRateLimiter(options =>
 {
     options.RejectionStatusCode = 429;
-    options.AddPolicy("family", context => RateLimitPartition.GetFixedWindowLimiter(
-        context.Connection.RemoteIpAddress?.ToString() ?? "unknown",
-        _ => new FixedWindowRateLimiterOptions { PermitLimit = 90, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 }));
+    // Partition by signed-in session, not just IP: behind a tunnel or shared
+    // venue Wi-Fi every player arrives from the same address.
+    options.AddPolicy("family", context =>
+    {
+        var session = context.Request.Headers.Authorization.ToString();
+        var key = !string.IsNullOrEmpty(session)
+            ? "s:" + session
+            : "ip:" + ClientAddress(context);
+        return RateLimitPartition.GetFixedWindowLimiter(key,
+            _ => new FixedWindowRateLimiterOptions { PermitLimit = 1200, Window = TimeSpan.FromMinutes(1), QueueLimit = 0 });
+    });
 });
 builder.Services.AddControllers();
 builder.Services.AddOpenApi();
@@ -129,28 +137,51 @@ app.Use(async (context, next) =>
 {
     await next();
     var method = context.Request.Method;
-    if (!HttpMethods.IsGet(method) && !HttpMethods.IsHead(method) && !HttpMethods.IsOptions(method)
-        && context.Request.Path.StartsWithSegments("/api")
-        && context.Response.StatusCode < 400)
+    var path = context.Request.Path;
+    if (HttpMethods.IsGet(method) || HttpMethods.IsHead(method) || HttpMethods.IsOptions(method)
+        || !path.StartsWithSegments("/api") || path.StartsWithSegments("/api/auth")
+        || context.Response.StatusCode >= 400)
     {
-        live.NotifyChanged();
+        return;
+    }
+    var userId = context.User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    if (int.TryParse(userId, out var id))
+    {
+        await live.NotifyHomesOfAsync(id, context.RequestServices.GetRequiredService<IHouseholdRepository>(), CancellationToken.None);
+    }
+    else
+    {
+        // Anonymous saves are rare (joining by invite link): ping everyone.
+        live.NotifyEveryone();
     }
 });
-app.Map("/live", async (HttpContext context, IAuthService auth) =>
+app.Map("/live", async (HttpContext context, IAuthService auth, IHouseholdRepository households) =>
 {
     if (!context.WebSockets.IsWebSocketRequest)
     {
         context.Response.StatusCode = StatusCodes.Status400BadRequest;
         return;
     }
-    var origin = context.Request.Headers.Origin.ToString();
-    if (!string.IsNullOrEmpty(origin) && !frontendOrigins.Contains(origin, StringComparer.OrdinalIgnoreCase))
+    if (!IsAllowedOrigin(context, frontendOrigins))
     {
         context.Response.StatusCode = StatusCodes.Status403Forbidden;
         return;
     }
-    await live.HandleAsync(context, auth);
+    await live.HandleAsync(context, auth, households);
 });
+
+// Optional: serve the built website from the API so the whole app lives on
+// one address (one tunnel, no CORS). Set Frontend:DistPath to Frontend/dist.
+var distPath = builder.Configuration["Frontend:DistPath"];
+if (!string.IsNullOrWhiteSpace(distPath) && !Path.IsPathRooted(distPath))
+    distPath = Path.Combine(builder.Environment.ContentRootPath, distPath);
+if (!string.IsNullOrWhiteSpace(distPath) && Directory.Exists(distPath))
+{
+    var files = new Microsoft.Extensions.FileProviders.PhysicalFileProvider(Path.GetFullPath(distPath));
+    app.UseDefaultFiles(new DefaultFilesOptions { FileProvider = files });
+    app.UseStaticFiles(new StaticFileOptions { FileProvider = files });
+    app.MapFallbackToFile("index.html", new StaticFileOptions { FileProvider = files });
+}
 
 app.UseRateLimiter();
 app.UseMiddleware<SessionAuthenticationMiddleware>();
@@ -160,3 +191,24 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+static string ClientAddress(HttpContext context)
+{
+    var forwarded = context.Request.Headers["CF-Connecting-IP"].ToString();
+    if (string.IsNullOrEmpty(forwarded))
+        forwarded = context.Request.Headers["X-Forwarded-For"].ToString().Split(',')[0].Trim();
+    return string.IsNullOrEmpty(forwarded)
+        ? context.Connection.RemoteIpAddress?.ToString() ?? "unknown"
+        : forwarded;
+}
+
+static bool IsAllowedOrigin(HttpContext context, string[] configured)
+{
+    var origin = context.Request.Headers.Origin.ToString();
+    if (string.IsNullOrEmpty(origin) || configured.Contains(origin, StringComparer.OrdinalIgnoreCase)) return true;
+    if (!Uri.TryCreate(origin, UriKind.Absolute, out var uri)) return false;
+    // Same-origin page (the API serving the website, e.g. through a tunnel).
+    var host = context.Request.Headers["X-Forwarded-Host"].ToString();
+    if (string.IsNullOrEmpty(host)) host = context.Request.Host.Value ?? "";
+    return string.Equals(uri.Authority, host, StringComparison.OrdinalIgnoreCase);
+}

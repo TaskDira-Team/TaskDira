@@ -1,5 +1,10 @@
+// VITE_API_URL=same-origin: the API serves this website, so call whatever
+// address the page was opened from (e.g. a public tunnel URL).
+const RAW_API_URL = import.meta.env?.VITE_API_URL;
 export const API_BASE_URL =
-  import.meta.env?.VITE_API_URL?.replace(/\/+$/, "") || "http://localhost:5188";
+  RAW_API_URL === "same-origin"
+    ? ""
+    : RAW_API_URL?.replace(/\/+$/, "") || "http://localhost:5188";
 
 function flag(name, fallback) {
   const raw = import.meta.env?.[name];

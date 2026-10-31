@@ -18,7 +18,7 @@ import { STATUS_LABELS, TASK_STATUSES } from "../data/mockData";
 import { useAuth } from "./AuthContext";
 
 // Fallback poll; the live socket below normally refreshes instantly.
-const LIVE_SYNC_MS = 5000;
+const LIVE_SYNC_MS = 15000;
 import { useI18n } from "./I18nContext";
 import {
   fireTaskCompleteConfetti,
@@ -243,7 +243,8 @@ export function AppProvider({ children }) {
     const connect = () => {
       const token = USE_REAL_API.auth && api.getSessionToken();
       if (!token || closed) return;
-      socket = new WebSocket(`${API_BASE_URL.replace(/^http/, "ws")}/live`);
+      const base = API_BASE_URL || window.location.origin;
+      socket = new WebSocket(`${base.replace(/^http/, "ws")}/live`);
       socket.onopen = () => socket.send(token);
       socket.onmessage = () => {
         if (document.hidden) return;

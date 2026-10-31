@@ -74,7 +74,21 @@ function errorMessage(status, body) {
   return STATUS_MESSAGES[status] || `שגיאה בלתי צפויה (${status})`;
 }
 
-export async function request(path, { method = 'GET', body, auth = true, signal } = {}) {
+// Identical GETs already on the wire share one response: a screen refresh
+// asks for the same members, users and points from several places at once.
+const inFlightGets = new Map();
+
+export function request(path, options = {}) {
+  const { method = 'GET', auth = true, signal } = options;
+  if (method !== 'GET' || signal) return send(path, options);
+  const key = `${auth ? authHeader().Authorization ?? '' : ''} ${path}`;
+  if (!inFlightGets.has(key)) {
+    inFlightGets.set(key, send(path, options).finally(() => inFlightGets.delete(key)));
+  }
+  return inFlightGets.get(key);
+}
+
+async function send(path, { method = 'GET', body, auth = true, signal } = {}) {
   const headers = { Accept: 'application/json' };
   if (body !== undefined) headers['Content-Type'] = 'application/json';
   if (auth) Object.assign(headers, authHeader());

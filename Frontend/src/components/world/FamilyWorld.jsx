@@ -123,7 +123,7 @@ export default function FamilyWorld({ onOpen, onNew }) {
     window.addEventListener("taskdira:live", focus);
     const poll = window.setInterval(() => {
       if (!document.hidden) refresh();
-    }, 5000);
+    }, 15000);
     return () => {
       clearInterval(poll);
       window.removeEventListener("focus", focus);

@@ -70,7 +70,7 @@ export function PlayProvider({ children }) {
     document.addEventListener("visibilitychange", visibility);
     const poll = window.setInterval(() => {
       if (!document.hidden) refresh();
-    }, 5000);
+    }, 15000);
     return () => {
       clearInterval(poll);
       window.removeEventListener("focus", focus);

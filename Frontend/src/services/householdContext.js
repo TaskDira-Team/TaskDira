@@ -10,8 +10,18 @@ import { store } from './store';
  * rewards) go on filtering their seed data correctly. The two converge when
  * the households domain is wired.
  */
+let householdRequest = null;
+
 export async function getRealHouseholdId() {
   if (store.realHouseholdId) return store.realHouseholdId;
+  // Share one in-flight lookup between the many callers of a first load.
+  householdRequest ??= resolveHouseholdId().finally(() => {
+    householdRequest = null;
+  });
+  return householdRequest;
+}
+
+async function resolveHouseholdId() {
 
   // The server is the only authority on which households the caller belongs to.
   // A remembered id is a preference, never a source of truth: trusting one from

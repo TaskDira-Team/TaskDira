@@ -1,24 +1,33 @@
 using System.Collections.Concurrent;
 using System.Net.WebSockets;
 using System.Text;
+using TaskDira.Api.Repositories;
 
 namespace TaskDira.Api.Services;
 
 /// <summary>
-/// Keeps one WebSocket per open app screen and pings them all with "changed"
-/// whenever data is saved, so every screen refreshes right away instead of
-/// waiting for its next poll. Only a ping is sent, never the data itself.
+/// Keeps one WebSocket per open app screen and pings it with "changed" when
+/// something in one of its homes is saved, so the screen refreshes right away
+/// instead of waiting for its next poll. Only a ping is sent, never the data.
 /// </summary>
 public sealed class LiveUpdates
 {
     private const int MaxTokenBytes = 4096;
+    private const int MaxHouseholdsPerUser = 50;
     private static readonly byte[] ChangedMessage = Encoding.UTF8.GetBytes("changed");
 
     private readonly ConcurrentDictionary<Guid, Client> _clients = new();
 
-    private sealed record Client(WebSocket Socket, SemaphoreSlim SendLock);
+    private sealed class Client(WebSocket socket, int userId, IReadOnlySet<int> households)
+    {
+        public WebSocket Socket { get; } = socket;
+        public int UserId { get; } = userId;
+        public SemaphoreSlim SendLock { get; } = new(1, 1);
+        public volatile IReadOnlySet<int> Households = households;
+        public int PingScheduled;
+    }
 
-    public async Task HandleAsync(HttpContext context, IAuthService auth)
+    public async Task HandleAsync(HttpContext context, IAuthService auth, IHouseholdRepository households)
     {
         using var socket = await context.WebSockets.AcceptWebSocketAsync();
         var aborted = context.RequestAborted;
@@ -26,14 +35,15 @@ public sealed class LiveUpdates
         // Browsers can't send headers on a WebSocket, so the session token
         // arrives as the first message instead of in the URL.
         var token = await ReceiveTextAsync(socket, aborted);
-        if (token is null || await auth.ValidateTokenAsync(token, aborted) is null)
+        var userId = token is null ? null : await auth.ValidateTokenAsync(token, aborted);
+        if (userId is null)
         {
             await CloseQuietlyAsync(socket, WebSocketCloseStatus.PolicyViolation, "unauthorized");
             return;
         }
 
         var id = Guid.NewGuid();
-        var client = new Client(socket, new SemaphoreSlim(1, 1));
+        var client = new Client(socket, userId.Value, await LoadHouseholdsAsync(households, userId.Value, aborted));
         _clients[id] = client;
         try
         {
@@ -56,12 +66,49 @@ public sealed class LiveUpdates
         }
     }
 
-    public void NotifyChanged()
+    /// <summary>
+    /// Called after a signed-in user saves something: pings everyone who shares
+    /// a home with them. Their own home list is reloaded first, so a home they
+    /// just created or joined is included.
+    /// </summary>
+    public async Task NotifyHomesOfAsync(int userId, IHouseholdRepository households, CancellationToken cancellationToken)
+    {
+        var homes = await LoadHouseholdsAsync(households, userId, cancellationToken);
+        foreach (var client in _clients.Values)
+        {
+            if (client.UserId == userId) client.Households = homes;
+        }
+        Notify(client => client.Households.Overlaps(homes));
+    }
+
+    /// <summary>Pings every open screen (used for rare anonymous saves such as joining by invite).</summary>
+    public void NotifyEveryone() => Notify(_ => true);
+
+    // Bursts of saves (a busy home) collapse into one ping per screen.
+    private static readonly TimeSpan PingCoalesceWindow = TimeSpan.FromMilliseconds(300);
+
+    private void Notify(Func<Client, bool> shouldPing)
     {
         foreach (var (id, client) in _clients)
         {
-            _ = SendAsync(id, client);
+            if (shouldPing(client) && Interlocked.Exchange(ref client.PingScheduled, 1) == 0)
+            {
+                _ = PingSoonAsync(id, client);
+            }
         }
+    }
+
+    private async Task PingSoonAsync(Guid id, Client client)
+    {
+        await Task.Delay(PingCoalesceWindow);
+        Interlocked.Exchange(ref client.PingScheduled, 0);
+        await SendAsync(id, client);
+    }
+
+    private static async Task<IReadOnlySet<int>> LoadHouseholdsAsync(IHouseholdRepository households, int userId, CancellationToken cancellationToken)
+    {
+        var page = await households.GetPageForUserAsync(userId, 0, MaxHouseholdsPerUser, cancellationToken);
+        return page.Select(h => h.Id).ToHashSet();
     }
 
     private async Task SendAsync(Guid id, Client client)
